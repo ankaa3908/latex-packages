@@ -14,6 +14,7 @@
 \usepackage{tikz-decofonts}
 \usepackage{enumitem}
 \usepackage{fancyvrb}
+\usepackage{lipsum}
 \usepackage{setspace}
 \usepackage{fancyhdr}
 \usepackage{tabularray}
@@ -33,8 +34,8 @@
 \hypersetup{pdfborder=0 0 0}
 \usepackage[margin=2cm]{geometry}
 \setlength{\parindent}{0pt}
-\def\TPversion{0.1.7}
-\def\TPdate{17/01/2026}
+\def\TPversion{0.1.8}
+\def\TPdate{29/04/2026}
 \usepackage{tcolorbox}
 \tcbuselibrary{breakable,skins,hooks,listingsutf8}
 
@@ -52,7 +53,7 @@
 	keywordstyle={\color{violet}},%
 	classoffset=2,%
 	alsoletter={-},%
-	morekeywords={\tkzbrush,\tkzink,\tkzpixl,\tkzpixletter,\tkzpixlquote,\tkzcomicbubble,\tkzunderline,\tkzsurround,\tkzfittextinarrow,\tkzcircledtxt,\tkzletterblock},%
+	morekeywords={\tkzbrush,\tkzink,\tkzpixl,\tkzpixletter,\tkzpixlquote,\tkzcomicbubble,\tkzunderline,\tkzsurround,\tkzfittextinarrow,\tkzcircledtxt,\tkzletterblock,\tkzunderlinepen,\phantomulinewithpen},%
 	keywordstyle={\color{green!50!black}},%
 	classoffset=3,%
 	morekeywords={},%
@@ -82,7 +83,7 @@
 		keywordstyle={\color{violet}},%
 		classoffset=2,%
 		alsoletter={-},%
-		morekeywords={\tkzbrush,\tkzink,\tkzpixl,\tkzpixletter,\tkzpixlquote,\tkzbicolor,\tkzcomicbubble,\tkzunderline,\tkzsurround,\tkzfittextinarrow,\tkzcircledtxt,\tkzletterblock},%
+		morekeywords={\tkzbrush,\tkzink,\tkzpixl,\tkzpixletter,\tkzpixlquote,\tkzbicolor,\tkzcomicbubble,\tkzunderline,\tkzsurround,\tkzfittextinarrow,\tkzcircledtxt,\tkzletterblock,\tkzunderlinepen,\phantomulinewithpen},%
 		keywordstyle={\color{green!50!black}},%
 		classoffset=3,%
 		morekeywords={color,lines,scale,height,offseth,offsetv,thick,gridcolor,gridafter,nospaceafter,border,colors,style,intdelta,paralcolors,width,node,txtcolor,width,bheight,sheight,hoffset,shadow,shownodes,expand,globalwidth,absolute,thickness,strut,dstrut,hstretch,font,height,spacestretch},%
@@ -384,7 +385,7 @@ Some adjustments (keys, paths) are maid from original code, but the global usage
 \end{DemoCode}
 
 \begin{DemoCode}{}
-\tkzbicolor[style=midh]{\sampleformula} 
+\tkzbicolor[style=midh]{\sampleformula}
 or \tkzbicolor[colors=violet/magenta,style=midv]{\sampleformula}
 or \tkzbicolor[colors=darkgray/olive,style=ndiag]{\sampleformula}
 or \tkzbicolor[colors=orange/teal,style=sdiag]{\sampleformula}
@@ -402,12 +403,12 @@ or \tkzbicolor[colors=pink/violet,style=rect]{\sampleformula}
 \end{DemoCode}
 
 \begin{DemoCode}{}
-\tkzbicolor[style=midh]{\parbox{2.5cm}{\sampletxt}} 
-\tkzbicolor[colors=violet/gray,style=midv]{\parbox{2.5cm}{\sampletxt}} 
-\tkzbicolor[colors=darkgray/olive,style=ndiag]{\parbox{2.5cm}{\sampletxt}} 
-\tkzbicolor[colors=orange/cyan,style=sdiag]{\parbox{2.5cm}{\sampletxt}} 
-\tkzbicolor[colors=pink/violet,style=ellips]{\parbox{2.5cm}{\sampletxt}} 
-\tkzbicolor[colors=pink/violet,style=ellips,intdelta=0.85]{\parbox{2.5cm}{\sampletxt}} 
+\tkzbicolor[style=midh]{\parbox{2.5cm}{\sampletxt}}
+\tkzbicolor[colors=violet/gray,style=midv]{\parbox{2.5cm}{\sampletxt}}
+\tkzbicolor[colors=darkgray/olive,style=ndiag]{\parbox{2.5cm}{\sampletxt}}
+\tkzbicolor[colors=orange/cyan,style=sdiag]{\parbox{2.5cm}{\sampletxt}}
+\tkzbicolor[colors=pink/violet,style=ellips]{\parbox{2.5cm}{\sampletxt}}
+\tkzbicolor[colors=pink/violet,style=ellips,intdelta=0.85]{\parbox{2.5cm}{\sampletxt}}
 \tkzbicolor[colors=cyan/darkgray,style=rect]{\parbox{2.5cm}{\sampletxt}}
 \end{DemoCode}
 
@@ -480,10 +481,10 @@ or \tkzbicolor[colors=pink/violet,style=rect]{\sampleformula}
 \end{DemoCode}
 
 \begin{DemoCode}{}
-\tkzsurround[node=AAA]{This is a sample text} and we're trying to see what it does 
+\tkzsurround[node=AAA]{This is a sample text} and we're trying to see what it does
 by \tkzsurround[color=blue,width=1.5pt,node=BBB]{surrounding} certain portions of the text!
 
-{\tikz[remember picture,overlay] 
+{\tikz[remember picture,overlay]
     \draw[densely dashed,orange,<->,very thick,>=latex]
     ([yshift=-1mm]AAA.south east) to[bend right] ([yshift=-1mm]BBB.south west) ;
 }
@@ -705,7 +706,46 @@ H
 
 \pagebreak
 
+\subsection{Underline with pen pictogram}
+
+\begin{DemoCode}{listing only}
+%main macro
+\tkzunderlinepen[keys]{text}
+%macro with hphantom of pen
+\phantomulinewithpen
+
+%thick          = thickness (0.8pt)
+%color          = color for underling
+%chardepth      = characters for depth calculus
+%vstretchoffset = float for raising depth (0.5)
+%scale          = scale of pen (1)
+%swap           = boolean for 'downside' version (false)
+\end{DemoCode}
+
+\begin{DemoCode}{}
+\tkzunderlinepen{Exercise n°1}\par
+\lipsum[1][1-3]
+
+\tkzunderlinepen[swap]{Exercise n°1}\par
+\phantomulinewithpen\lipsum[1][1-3]
+\end{DemoCode}
+
+\begin{DemoCode}{}
+{\bfseries\sffamily\LARGE\textcolor{blue}{\tkzunderlinepen[thick=1pt]{Exercise n°2}}}\par
+\lipsum[1][1-3]
+
+{\bfseries\sffamily\LARGE\textcolor{violet}{\tkzunderlinepen[color=teal]{Exercise n°3}}}\par
+\lipsum[1][1-3]
+
+{\bfseries\sffamily\LARGE\textcolor{brown}{\tkzunderlinepen[color=orange]{Exercise (important) n°4}}}\par
+\lipsum[1][1-3]
+\end{DemoCode}
+
+\pagebreak
+
 \section{History}
+
+\texttt{0.1.8: Pen-underline}
 
 \texttt{0.1.7: AlphabetCubes}
 
