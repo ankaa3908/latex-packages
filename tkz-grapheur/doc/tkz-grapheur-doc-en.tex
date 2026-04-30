@@ -1479,6 +1479,7 @@ The last mandatory argument is the work point (abscissa version or node followin
 First argument, \textit{optional} and within \MontreCode{[...]}, gives following keys:
 
 \begin{itemize}
+  \item \MontreCode{swap=TF} for shading non-solution (\MontreCode{false} by default) ;
 	\item \MontreCode{opacity=...} (\MontreCode{0.25} by default) ;
 	\item \MontreCode{color=...} (\MontreCode{black} by default) ;
 	\item \MontreCode{style=...} (\MontreCode{hatch} by default) ;
@@ -1486,36 +1487,41 @@ First argument, \textit{optional} and within \MontreCode{[...]}, gives following
 \end{itemize}
 
 \begin{tcblisting}{listing engine=minted,minted language=latex,colframe=lightgray,colback=lightgray!5}
-\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
 	\DrawAxisGrids[Font=\tiny]{auto}{auto}
 	\LinearInequality[color=blue]{-3x+2}{>0}
 \end{GraphTikz}
 ~~
-\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
 	\DrawAxisGrids[Font=\tiny]{auto}{auto}
 	\LinearInequality[color=pink]{-x+y+2}{<=0}
 \end{GraphTikz}
 ~~
-\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
 	\DrawAxisGrids[Font=\tiny]{auto}{auto}
 	\LinearInequality[color=teal]{-x+y-4}{>0}
 \end{GraphTikz}
 \end{tcblisting}
 
 \begin{tcblisting}{listing engine=minted,minted language=latex,colframe=lightgray,colback=lightgray!5}
-\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
 	\DrawAxisGrids[Font=\tiny]{auto}{auto}
 	\LinearInequality[color=blue]{-4*y+5}{<=0}
 \end{GraphTikz}
 ~~
-\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
 	\DrawAxisGrids[Font=\tiny]{auto}{auto}
 	\LinearInequality[color=pink,hatch={north east lines}]{-x-2y+2}{<=0}
 \end{GraphTikz}
 ~~
-\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
 	\DrawAxisGrids[Font=\tiny]{auto}{auto}
 	\LinearInequality[style=fill,color=teal]{-x-y-4}{>0}
+\end{GraphTikz}
+
+\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
+  \DrawAxisGrids[Font=\tiny]{auto}{auto}
+  \LinearInequality[swap,style=fill,color=teal]{-x-y-4}{>0}
 \end{GraphTikz}
 \end{tcblisting}
 

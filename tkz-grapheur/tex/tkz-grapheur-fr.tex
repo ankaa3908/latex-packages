@@ -38,13 +38,13 @@
 %====PATCH NUM
 \@ifundefined{ArrondirNum}%
   {%
-    \NewDocumentCommand\ArrondirNum{ s O{2} m}{%
+    \NewDocumentCommand\ArrondirNum{ s O{2} D<>{} m}{%
       \IfBooleanTF{#1}%
         {%
-          \xintfloateval{round(#3,#2)}\relax%
+          \xintfloateval{round(#4,#2)}\relax%
         }%
         {%
-          \num{\xintfloateval{round(#3,#2)}}\relax%
+          \num[#3]{\xintfloateval{round(#4,#2)}}\relax%
         }%
     }%
   }%
@@ -52,10 +52,10 @@
     \RenewDocumentCommand\ArrondirNum{ s O{2} m}{%
       \IfBooleanTF{#1}%
         {%
-          \xintfloateval{round(#3,#2)}\relax%
+          \xintfloateval{round(#4,#2)}\relax%
         }%
         {%
-          \num{\xintfloateval{round(#3,#2)}}\relax%
+          \num[#3]{\xintfloateval{round(#4,#2)}}\relax%
         }%
     }%
   }%
@@ -228,8 +228,9 @@
     \DistanceEntreNoeuds[\pflyunit]{@0}{@Y}
 }
 
+%TailleGrad=\setlength\pflthickgrad{#1},%
 \defKV[GraphiqueTikz]{%
-  TailleGrad=\setlength\pflthickgrad{#1},%
+  TailleGrad=\def\pfltmpthickgrad{#1},%
   Xmin=\def\pflxmintmp{#1},%
   Xmax=\def\pflxmaxtmp{#1},%
   Ymin=\def\pflymintmp{#1},%
@@ -282,6 +283,17 @@
 {%
   \restoreKV[GraphiqueTikz]%
   \setKV[GraphiqueTikz]{#2}%
+  %les graduations
+  \IfSubStr{\pfltmpthickgrad}{/}%
+    {%
+      \StrCut{\pfltmpthickgrad}{/}{\pfltmpthickgradu}{\pfltmpthickgradd}%
+      \setlength\pflthickgradu{\pfltmpthickgradu}%
+      \setlength\pflthickgradd{\pfltmpthickgradd}%
+    }%
+    {%
+      \setlength\pflthickgradu{\pfltmpthickgrad}%
+      \setlength\pflthickgradd{\pfltmpthickgrad}%
+    }%
   %l'environnement
   \IfStrEq{\pflgraphdims}{}%
   {%pas de Taille
@@ -341,6 +353,7 @@
     {vert}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepgreen!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillesgreen}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleigreen}}}%
     {chaud}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepwarm!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrilleswarm}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleiwarm}}}%
     {contraste}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepcontrast!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillescontrast}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleicontrast}}}%
+    {seyes}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepseyes}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillesseyes}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleiseyes}}}%
   }%
   %unités x/y pour des calculs de coordonnées (dommage vu que dans certains cas on les connais déjà :-/)
   \TikZUnites
@@ -390,7 +403,8 @@
 
 %====AXES
 \defKV[GraphiqueTikzAxes]{
-  Format=\def\pflformataxes{#1}
+  Format=\def\pflformataxes{#1},%
+  Rotation=\def\pfllanglelabel{#1}%
 }
 \setKVdefault[GraphiqueTikzAxes]{%
   Grille=true,%
@@ -406,13 +420,15 @@
   Devant=false,%
   Fleches=true,%
   Puissance=true,%
-  AxeOy=true
+  AxeOy=true,%
+  Rotation=0%
 }
 
 \NewDocumentCommand\FormatterValeurAxex{ m m }{%
   \IfStrEqCase{#1}{%
     {num}{\num{#2}}%
     {annee}{#2}%
+    {year}{#2}%
     {frac}{\FormatterFraction{#2}}%
     {dfrac}{\FormatterFraction[d]{#2}}%
     {nfrac}{\FormatterFraction[n]{#2}}%
@@ -429,6 +445,7 @@
   \IfStrEqCase{#1}{%
     {num}{\num{#2}}%
     {annee}{#2}%
+    {year}{#2}%
     {frac}{\FormatterRacine{#2}}%
     {dfrac}{\FormatterFraction[d]{#2}}%
     {nfrac}{\FormatterFraction[n]{#2}}%
@@ -531,10 +548,10 @@
     {%
       \xdef\tmprangeyvalues{#5}%
     }%
-  \foreach \x in \tmprangexvalues {\draw[pfltrait] ([yshift=\pflthickgrad]{\x},{\pflOy})--++(0,{-2\pflthickgrad}) ;}
+  \foreach \x in \tmprangexvalues {\draw[pfltrait] ([yshift=\pflthickgradu]{\x},{\pflOy}) -- ([yshift=-\pflthickgradd]{\x},{\pflOy}) ;}% ++(0,{-2\pflthickgrad}) ;}
   \ifboolKV[GraphiqueTikzAxes]{AxeOy}%
     {%
-      \foreach \y in \tmprangeyvalues {\draw[pfltrait] ([xshift=\pflthickgrad]{\pflOx},{\y})--++({-2\pflthickgrad},0) ;}
+      \foreach \y in \tmprangeyvalues {\draw[pfltrait] ([xshift=\pflthickgradu]{\pflOx},{\y}) -- ([xshift=-\pflthickgradd]{\pflOx},{\y}) ;}%++({-2\pflthickgrad},0) ;}
     }%
     {}%
   \ifboolKV[GraphiqueTikzAxes]{Grads}%
@@ -549,10 +566,10 @@
       \foreach \x in \tmprangexvalues {%
         \IfBooleanTF{#1}%
           {%
-            \xintifboolexpr{\x == \pflOx}{}{\draw ([yshift={-\pflthickgrad}]{\x},{\pflOy}) node[pflnoeud,below,font={\useKV[GraphiqueTikzAxes]{Police}}] {\FormatterValeurAxex{\pflformataxex}{\x}} ;}
+            \xintifboolexpr{\x == \pflOx}{}{\draw ([yshift={-\pflthickgradd}]{\x},{\pflOy}) node[pflnoeud,below,font={\useKV[GraphiqueTikzAxes]{Police}}] {\FormatterValeurAxex{\pflformataxex}{\x}} ;}
           }%
           {%
-            \draw ([yshift={-\pflthickgrad}]{\x},{\pflOy}) node[pflnoeud,below,font={\useKV[GraphiqueTikzAxes]{Police}}] {\FormatterValeurAxex{\pflformataxex}{\x}} ;
+            \draw ([yshift={-\pflthickgradd}]{\x},{\pflOy}) node[pflnoeud,below,font={\useKV[GraphiqueTikzAxes]{Police}}] {\FormatterValeurAxex{\pflformataxex}{\x}} ;
           }%
         }%
       \ifboolKV[GraphiqueTikzAxes]{AxeOy}%
@@ -560,10 +577,10 @@
           \foreach \y in \tmprangeyvalues {%
             \IfBooleanTF{#1}%
               {%
-                \xintifboolexpr{\y == \pflOy}{}{\draw ([xshift={-\pflthickgrad}]{\pflOx},{\y}) node[pflnoeud,left,font={\useKV[GraphiqueTikzAxes]{Police}}] {\FormatterValeurAxey{\pflformataxey}{\y}} ;}
+                \xintifboolexpr{\y == \pflOy}{}{\draw ([xshift={-\pflthickgradd}]{\pflOx},{\y}) node[pflnoeud,left,font={\useKV[GraphiqueTikzAxes]{Police}}] {\FormatterValeurAxey{\pflformataxey}{\y}} ;}
               }%
               {%
-                \draw ([xshift={-\pflthickgrad}]{\pflOx},{\y}) node[pflnoeud,left,font={\useKV[GraphiqueTikzAxes]{Police}}] {\FormatterValeurAxey{\pflformataxey}{\y}} ;
+                \draw ([xshift={-\pflthickgradd}]{\pflOx},{\y}) node[pflnoeud,left,font={\useKV[GraphiqueTikzAxes]{Police}}] {\FormatterValeurAxey{\pflformataxey}{\y}} ;
               }%
             }%
         }%
@@ -849,28 +866,76 @@
 \NewDocumentCommand\RajouterValeursAxeX{ O{} m m }{%
   \restoreKV[GraphiqueTikzAxes]%
   \setKV[GraphiqueTikzAxes]{#1}%
-  \ifboolKV[GraphiqueTikzAxes]{Traits}{\foreach \x in {#2}{\draw[pfltrait] ([yshift=\pflthickgrad]{\x},{\pflOy})--++(0,{-2\pflthickgrad}) ;}}{}%
+  \ifboolKV[GraphiqueTikzAxes]{Traits}{\foreach \x in {#2}{\draw[pfltrait] ([yshift=\pflthickgradu]{\x},{\pflOy})--++(0,{-\pflthickgradu-\pflthickgradd}) ;}}{}%
   \setsepchar{,}%
   \readlist*\LstValX{#2}%
   \readlist*\LstValFmtX{#3}%
   \foreach \i in {1,...,\LstValXlen}{%
     \itemtomacro\LstValX[\i]\mavalx%
     \itemtomacro\LstValFmtX[\i]\mavalfmtx%
-    \draw ([yshift={-\pflthickgrad}]{\mavalx},{\pflOy}) node[pflnoeud,below,font={\useKV[GraphiqueTikzAxes]{Police}}] {\mavalfmtx} ;
+    \draw ([yshift={-\pflthickgradd}]{\mavalx},{\pflOy}) node[pflnoeud,below,font={\useKV[GraphiqueTikzAxes]{Police}}] {\mavalfmtx} ;
   }%
 }
 
 \NewDocumentCommand\RajouterValeursAxeY{ O{} m m }{%
   \restoreKV[GraphiqueTikzAxes]%
   \setKV[GraphiqueTikzAxes]{#1}%
-  \ifboolKV[GraphiqueTikzAxes]{Traits}{\foreach \y in {#2}{\draw[pfltrait] ([xshift=\pflthickgrad]{\pflOx},{\y})--++({-2\pflthickgrad},0) ;}}{}%
+  \ifboolKV[GraphiqueTikzAxes]{Traits}{\foreach \y in {#2}{\draw[pfltrait] ([xshift=\pflthickgradu]{\pflOx},{\y})--++({-\pflthickgradu-\pflthickgradd},0) ;}}{}%
   \setsepchar{,}%
   \readlist*\LstValY{#2}%
   \readlist*\LstValFmtY{#3}%
   \foreach \i in {1,...,\LstValYlen}{%
     \itemtomacro\LstValY[\i]\mavaly%
     \itemtomacro\LstValFmtY[\i]\mavalfmty%
-    \draw ([xshift={-\pflthickgrad}]{\pflOx},{\mavaly}) node[pflnoeud,left,font={\useKV[GraphiqueTikzAxes]{Police}}] {\mavalfmty} ;
+    \draw ([xshift={-\pflthickgradd}]{\pflOx},{\mavaly}) node[pflnoeud,left,font={\useKV[GraphiqueTikzAxes]{Police}}] {\mavalfmty} ;
+  }%
+}
+
+\NewDocumentCommand\RajouterLabelsAxeX{ O{} m m }{%
+  \restoreKV[GraphiqueTikzAxes]%
+  \setKV[GraphiqueTikzAxes]{#1}%
+  \ifboolKV[GraphiqueTikzAxes]{Traits}{\foreach \x in {#2}{\draw[pfltrait] ([yshift=\pflthickgradu]{\x},{\pflOy})--++(0,{-\pflthickgradu-\pflthickgradd}) ;}}{}%
+  \IfEq{\pfllanglelabel}{0}%
+    {%
+      \tikzset{pfllegendelabelsqualix/.style={font=\small,below}}
+    }%
+    {%
+      \xintifboolexpr{ \pfllanglelabel > 0 }%
+        {%
+          \tikzset{pfllegendelabelsqualix/.style={font=\small,rotate=\pfllanglelabel,anchor=east}}
+        }%
+        {%
+          \tikzset{pfllegendelabelsqualix/.style={font=\small,rotate=\pfllanglelabel,anchor=west}}
+        }%
+    }%
+  \setsepchar{,}%
+  \readlist*\LstValX{#2}%
+  \readlist*\LstValFmtX{#3}%
+  \foreach \i in {1,...,\LstValXlen}{%
+    \itemtomacro\LstValX[\i]\mavalx%
+    \itemtomacro\LstValFmtX[\i]\mavalfmtx%
+    \draw ([yshift={-\pflthickgradd}]{\mavalx},{\pflOy}) node[pfllegendelabelsqualix,font={\useKV[GraphiqueTikzAxes]{Police}}] {\mavalfmtx} ;
+  }%
+}
+
+\NewDocumentCommand\RajouterLabelsAxeY{ O{} m m }{%
+  \restoreKV[GraphiqueTikzAxes]%
+  \setKV[GraphiqueTikzAxes]{#1}%
+  \ifboolKV[GraphiqueTikzAxes]{Traits}{\foreach \y in {#2}{\draw[pfltrait] ([xshift=\pflthickgradu]{\pflOx},{\y})--++({-\pflthickgradu-\pflthickgradd},0) ;}}{}%
+  \IfEq{\pfllanglelabel}{0}%
+    {%
+      \tikzset{pfllegendelabelsqualiy/.style={font=\small,left}}
+    }%
+    {%
+      \tikzset{pfllegendelabelsqualiy/.style={font=\small,left,rotate=\pfllanglelabel,anchor=east}}
+    }%
+  \setsepchar{,}%
+  \readlist*\LstValY{#2}%
+  \readlist*\LstValFmtY{#3}%
+  \foreach \i in {1,...,\LstValYlen}{%
+    \itemtomacro\LstValY[\i]\mavaly%
+    \itemtomacro\LstValFmtY[\i]\mavalfmty%
+    \draw ([xshift={-\pflthickgradd}]{\pflOx},{\mavaly}) node[pfllegendelabelsqualiy,font={\useKV[GraphiqueTikzAxes]{Police}}] {\mavalfmty} ;
   }%
 }
 
@@ -4233,8 +4298,10 @@
 \setKVdefault[GraphiquetikzInegLin]{%
   Opacite=0.25,
   Couleur=black,%
-  Style=hachures,
-  Hachures={north west lines}
+  Style=hachures,%
+  Hachures={north west lines},%
+  Swap=false,%
+  PointillesSiStrict=true
 }
 
 \NewDocumentCommand\InegaliteLineaire{O{}D<>{f}mm}{%
@@ -4251,6 +4318,19 @@
       \tikzset{dominegallintikzstyle/.style={draw=none,fill={\useKV[GraphiquetikzInegLin]{Couleur}},fill opacity=\pflineglinopac,line join=bevel}}
     }%
     {}%
+  \ifboolKV[GraphiquetikzInegLin]{PointillesSiStrict}%
+    {%
+      \IfSubStr{#4}{=}%
+        {%
+          \tikzset{stylelinelinineq/.style={pfltrait}}%
+        }%
+        {%
+          \tikzset{stylelinelinineq/.style={pfltraitpointille}}%
+        }%
+    }%
+    {%
+      \tikzset{stylelinelinineq/.style={pfltrait}}%
+    }%
   %dummy equation
   \xintdeffloatfunc pfldummy(x,y) := #3;
   %coeffc
@@ -4259,6 +4339,10 @@
   \xdef\coeffa{\xintfloateval{pfldummy(1,0)-pfldummy(0,0)}}%
   %coeffb
   \xdef\coeffb{\xintfloateval{pfldummy(0,1)-pfldummy(0,0)}}%
+  %swap
+  \ifboolKV[GraphiquetikzInegLin]{Swap}%
+    {\IfBeginWith{#4}{<}{\def\tmpinegalsign{>}}{\def\tmpinegalsign{<}}}%
+    {\def\tmpinegalsign{#4}}%
   %particular part
   \xintifboolexpr{ \coeffb == 0 }%vertical
     {%
@@ -4266,24 +4350,24 @@
         \clip ({\pflxmin},{\pflymin}) rectangle ({\pflxmax},{\pflymax}) ;
         \xintifboolexpr{ \coeffa > 0 }%
           {%
-            \IfBeginWith{#4}{>}%
+            \IfBeginWith{\tmpinegalsign}{>}%
               {%
-                \draw[pfltrait,dominegallintikzstyle] ({-(\coeffc)/(\coeffa)},{\pflymin}) rectangle ({\pflxmax},{\pflymax}) ;
+                \draw[stylelinelinineq,dominegallintikzstyle] ({-(\coeffc)/(\coeffa)},{\pflymin}) rectangle ({\pflxmax},{\pflymax}) ;
               }%
               {%
-                \draw[pfltrait,dominegallintikzstyle] ({-(\coeffc)/(\coeffa)},{\pflymin}) rectangle ({\pflxmin},{\pflymax}) ;
+                \draw[stylelinelinineq,dominegallintikzstyle] ({-(\coeffc)/(\coeffa)},{\pflymin}) rectangle ({\pflxmin},{\pflymax}) ;
               }%
           }%
           {%
-            \IfBeginWith{#4}{>}%
+            \IfBeginWith{\tmpinegalsign}{>}%
               {%
-                \draw[pfltrait,dominegallintikzstyle] ({-(\coeffc)/(\coeffa)},{\pflymin}) rectangle ({\pflxmin},{\pflymax}) ;
+                \draw[stylelinelinineq,dominegallintikzstyle] ({-(\coeffc)/(\coeffa)},{\pflymin}) rectangle ({\pflxmin},{\pflymax}) ;
               }%
               {%
-                \draw[pfltrait,dominegallintikzstyle] ({-(\coeffc)/(\coeffa)},{\pflymin}) rectangle ({\pflxmax},{\pflymax}) ;
+                \draw[stylelinelinineq,dominegallintikzstyle] ({-(\coeffc)/(\coeffa)},{\pflymin}) rectangle ({\pflxmax},{\pflymax}) ;
               }%
           }%
-        \draw[pfltrait,{\useKV[GraphiquetikzInegLin]{Couleur}}] ({-(\coeffc)/(\coeffa)},{\pflymin}) -- ({-(\coeffc)/(\coeffa)},{\pflymax}) ;
+        \draw[stylelinelinineq,{\useKV[GraphiquetikzInegLin]{Couleur}}] ({-(\coeffc)/(\coeffa)},{\pflymin}) -- ({-(\coeffc)/(\coeffa)},{\pflymax}) ;
       \end{scope}
     }%
     {% b!=0 ()
@@ -4294,48 +4378,31 @@
         %---
           \xintifboolexpr{ \coeffb > 0 }%
             {%
-              \IfBeginWith{#4}{>}%
+              \IfBeginWith{\tmpinegalsign}{<}%
                 {%
-                  \draw[pfltrait,dominegallintikzstyle] ({\pflxmin},{\tmpvalzzyxmin}) |- ({\pflxmax},{\tmpvalzzyxmax}) ;
-                  \xintifboolexpr{\tmpvalzzyxmax < \pflymax}%
-                    {%
-                      \filldraw[pfltrait,dominegallintikzstyle] ({\pflxmin},{\pflxmax}) rectangle ({\pflxmax},{\tmpvalzzyxmax}) ;
-                    }%
-                    {}%
+                  \clip ({\pflxmin},{\pflymin}) -- ({\pflxmax},{\pflymin}) -- ({\pflxmax},{\tmpvalzzyxmax}) -- ({\pflxmin},{\tmpvalzzyxmin}) -- cycle ;
+                  \fill[dominegallintikzstyle] ({\pflxmin},{\pflymin}) rectangle ({\pflxmax},{\pflymax}) ;
                 }%
                 {%
-                  \draw[pfltrait,dominegallintikzstyle] ({\pflxmin},{\tmpvalzzyxmin}) -| ({\pflxmax},{\tmpvalzzyxmax}) ;
-                  \xintifboolexpr{\tmpvalzzyxmin > \pflymin}%
-                    {%
-                      \filldraw[pfltrait,dominegallintikzstyle] ({\pflxmax},{\pflymin}) rectangle ({\pflxmin},{\tmpvalzzyxmin}) ;
-                    }%
-                    {}%
+                  \clip ({\pflxmin},{\tmpvalzzyxmin}) -- ({\pflxmax},{\tmpvalzzyxmax}) -- ({\pflxmax},{\pflymax}) -- ({\pflxmin},{\pflymax}) -- cycle ;
+                  \fill[dominegallintikzstyle] ({\pflxmin},{\pflymin}) rectangle ({\pflxmax},{\pflymax}) ;
                 }%
             }%
             {%
-              \IfBeginWith{#4}{>}%
+              \IfBeginWith{\tmpinegalsign}{<}%
                 {%
-                  \draw[pfltrait,dominegallintikzstyle] ({\pflxmin},{\tmpvalzzyxmin}) |- ({\pflxmax},{\tmpvalzzyxmax}) ;
-                  \xintifboolexpr{\tmpvalzzyxmax > \pflymin}%
-                    {%
-                      \filldraw[pfltrait,dominegallintikzstyle] ({\pflxmin},{\pflymin}) rectangle ({\pflxmax},{\tmpvalzzyxmax}) ;
-                    }%
-                    {}%
+                  \clip ({\pflxmin},{\tmpvalzzyxmin}) -- ({\pflxmax},{\tmpvalzzyxmax}) -- ({\pflxmax},{\pflymax}) -- ({\pflxmin},{\pflymax}) -- cycle ;
+                  \fill[dominegallintikzstyle] ({\pflxmin},{\pflymin}) rectangle ({\pflxmax},{\pflymax}) ;
                 }%
                 {%
-                  \draw[pfltrait,dominegallintikzstyle] ({\pflxmin},{\tmpvalzzyxmin}) -| ({\pflxmax},{\tmpvalzzyxmax}) ;
-                  \xintifboolexpr{\tmpvalzzyxmin < \pflymax}%
-                    {%
-                      \filldraw[pfltrait,dominegallintikzstyle] ({\pflxmin},{\tmpvalzzyxmin}) rectangle ({\pflxmax},{\pflymax}) ;
-                    }%
-                    {}%
+                  \clip ({\pflxmin},{\pflymin}) -- ({\pflxmax},{\pflymin}) -- ({\pflxmax},{\tmpvalzzyxmax}) -- ({\pflxmin},{\tmpvalzzyxmin}) -- cycle ;
+                  \fill[dominegallintikzstyle] ({\pflxmin},{\pflymin}) rectangle ({\pflxmax},{\pflymax}) ;
                 }%
             }%
         %---
-        \draw[pfltrait,{\useKV[GraphiquetikzInegLin]{Couleur}}] ({\pflymin},{(-\coeffc-\coeffa*(\pflxmin))/(\coeffb)}) -- ({\pflymax},{(-\coeffc-\coeffa*(\pflxmax))/(\coeffb)}) ;
+        \draw[stylelinelinineq,{\useKV[GraphiquetikzInegLin]{Couleur}}] ({\pflxmin},{(-\coeffc-\coeffa*(\pflxmin))/(\coeffb)}) -- ({\pflxmax},{(-\coeffc-\coeffa*(\pflxmax))/(\coeffb)}) ;
       \end{scope}
     }%
-  
 }
 
 %====TRANSFORMATION f(x-a)+b (formule, spline, interpo)
@@ -5870,14 +5937,14 @@
   }%
   {\xdef\tmprangexvalues{#3}}%
   % graduations X
-  \draw[pfltrait] ([yshift=\pflthickgrad]{\pflxmin},{0})--++(0,{-2\pflthickgrad}) ;
+  \draw[pfltrait] ([yshift=\pflthickgradu]{\pflxmin},{0})--++(0,{-\pflthickgradu-\pflthickgradd}) ;
   \foreach \x in \tmprangexvalues{%
-    \draw[pfltrait] ([yshift=\pflthickgrad]{\x},{0})--++(0,{-2\pflthickgrad}) ;%
+    \draw[pfltrait] ([yshift=\pflthickgradu]{\x},{0})--++(0,{-\pflthickgradu-\pflthickgradd}) ;%
   }%
   % graduations Y
   \foreach \n in {0,...,\pflymax}{%
     \xdef\tmpexpo{\inteval{\n+\pflslogexpomin}}%
-    \draw[pfltrait] ([xshift=\pflthickgrad]{\pflxmin},{\n})--++({-2\pflthickgrad},0) ;%
+    \draw[pfltrait] ([xshift=\pflthickgradu]{\pflxmin},{\n})--++({-\pflthickgradu-\pflthickgradd},0) ;%
   }%
   \ifboolKV[GraphiqueTikzAxes]{Grads}%
   {%
@@ -5885,13 +5952,13 @@
     \foreach \x in \tmprangexvalues{%
       \IfBooleanTF{#1}%
       {\xintifboolexpr{\x == \pflOx}{}%
-        {\draw ([yshift={-\pflthickgrad}]{\x},{0}) node[pflnoeud,below,font={\useKV[GraphiqueTikzAxes]{Police}}] {\FormatterValeurAxex{\pflformataxex}{\x}} ;}}%
-      {\draw ([yshift={-\pflthickgrad}]{\x},{0}) node[pflnoeud,below,font={\useKV[GraphiqueTikzAxes]{Police}}] {\FormatterValeurAxex{\pflformataxex}{\x}} ;}%
+        {\draw ([yshift={-\pflthickgradd}]{\x},{0}) node[pflnoeud,below,font={\useKV[GraphiqueTikzAxes]{Police}}] {\FormatterValeurAxex{\pflformataxex}{\x}} ;}}%
+      {\draw ([yshift={-\pflthickgradd}]{\x},{0}) node[pflnoeud,below,font={\useKV[GraphiqueTikzAxes]{Police}}] {\FormatterValeurAxex{\pflformataxex}{\x}} ;}%
     }%
     % labels Y —> $10^n$
     \foreach \n in {0,...,\pflymax}{%
       \xdef\tmpexpo{\inteval{\n+\pflslogexpomin}}%
-      \draw ([xshift={-\pflthickgrad}]{\pflxmin},{\n}) node[left,pflnoeud,font={\useKV[GraphiqueTikzAxes]{Police}}] { \ifboolKV[GraphiqueTikzAxes]{Puissance}{$10^{\tmpexpo}$}{\num{\xintfloateval{10^(\tmpexpo)}}} } ;
+      \draw ([xshift={-\pflthickgradd}]{\pflxmin},{\n}) node[left,pflnoeud,font={\useKV[GraphiqueTikzAxes]{Police}}] { \ifboolKV[GraphiqueTikzAxes]{Puissance}{$10^{\tmpexpo}$}{\num{\xintfloateval{10^(\tmpexpo)}}} } ;
     }%
   }%
   {}%
@@ -6019,14 +6086,14 @@
     % labels X — $10^n$
     \foreach \n in {0,...,\pflxmax}{%
       \xdef\tmpexpox{\inteval{\n+\pflslogexpominx}}%
-      \draw[pfltrait] ([yshift={\pflthickgrad}]{\n},{0})--++(0,{-2\pflthickgrad}) ;%
-      \draw ([yshift={-\pflthickgrad}]{\n},{0})  node[pflnoeud,below,font={\useKV[GraphiqueTikzAxes]{Police}}] { \ifboolKV[GraphiqueTikzAxes]{Puissance}{$10^{\tmpexpox}$}{\num{\xintfloateval{10^(\tmpexpox)}}} } ;
+      \draw[pfltrait] ([yshift={\pflthickgradu}]{\n},{0})--++(0,{-\pflthickgradu-\pflthickgradd}) ;%
+      \draw ([yshift={-\pflthickgradd}]{\n},{0})  node[pflnoeud,below,font={\useKV[GraphiqueTikzAxes]{Police}}] { \ifboolKV[GraphiqueTikzAxes]{Puissance}{$10^{\tmpexpox}$}{\num{\xintfloateval{10^(\tmpexpox)}}} } ;
     }%
     % labels Y — $10^n$
     \foreach \n in {0,...,\pflymax}{%
       \xdef\tmpexpo{\inteval{\n+\pflslogexpomin}}%
-      \draw[pfltrait] ([xshift={\pflthickgrad}]{0},{\n})--++({-2\pflthickgrad},0) ;%
-      \draw ([xshift={-\pflthickgrad}]{0},{\n}) node[left,pflnoeud,font={\useKV[GraphiqueTikzAxes]{Police}}] { \ifboolKV[GraphiqueTikzAxes]{Puissance}{$10^{\tmpexpo}$}{\num{\xintfloateval{10^(\tmpexpo)}}} } ;
+      \draw[pfltrait] ([xshift={\pflthickgradu}]{0},{\n})--++({-\pflthickgradu-\pflthickgradd},0) ;%
+      \draw ([xshift={-\pflthickgradd}]{0},{\n}) node[left,pflnoeud,font={\useKV[GraphiqueTikzAxes]{Police}}] { \ifboolKV[GraphiqueTikzAxes]{Puissance}{$10^{\tmpexpo}$}{\num{\xintfloateval{10^(\tmpexpo)}}} } ;
     }%
   }%
   {}%

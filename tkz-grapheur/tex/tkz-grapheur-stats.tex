@@ -1,0 +1,478 @@
+% tkz-grapheur-stats.tex
+% Copyright 2026 Cédric Pierquet
+% Environnement GraphiqueTikzStats : graphiques statistiques avec grandes valeurs
+% Principe : normalisation interne, TikZ travaille dans [0,Largeur]x[0,Hauteur]
+% Structure calquée sur GraphiqueTikz pour cohérence maximale
+
+%====LENGTHS
+\newlength\tmptkzgstwidth
+\newlength\tmptkzgstheight
+
+%====CLÉS — même structure que GraphiqueTikz + clés stats
+\defKV[GraphiqueTikzStats]{%
+  TailleGrad=\setlength\pflthickgrad{#1},%
+  Xmin=\def\pflstxmintmp{#1},%
+  Xmax=\def\pflstxmaxtmp{#1},%
+  Ymin=\def\pflstymintmp{#1},%
+  Ymax=\def\pflstymaxtmp{#1},%
+  Largeur=\setlength\tmptkzgstwidth{#1},%
+  Hauteur=\setlength\tmptkzgstheight{#1},%
+  Origx=\def\pflstOxtmp{#1},%
+  Origy=\def\pflstOytmp{#1},%
+  Theme=\def\pflstgraphthem{#1},%
+  NomFigure=\def\pflstgraphnom{#1},%
+  Xgrille=\def\pflstgrillextmp{#1},%
+  Xgrillei=\def\pflstgrillexitmp{#1},%
+  Xgrilles=\def\pflstgrillexstmp{#1},%
+  Ygrille=\def\pflstgrilleytmp{#1},%
+  Ygrillei=\def\pflstgrilleyitmp{#1},%
+  Ygrilles=\def\pflstgrilleystmp{#1}%
+}
+\setKVdefault[GraphiqueTikzStats]{%
+  AffCadre=false,%
+  TailleGrad=3pt,%
+  Xmin=0,%
+  Xmax=10,%
+  Ymin=0,%
+  Ymax=10,%
+  Largeur=8cm,%
+  Hauteur=6cm,%
+  Origx={},%
+  Origy={},%
+  Theme={},%
+  Milli=false,%
+  NomFigure={},%
+  Xgrille={1},%
+  Xgrillei={1},%
+  Xgrilles={0.5},%
+  Ygrille={1},%
+  Ygrillei={1},%
+  Ygrilles={0.5}%
+}
+
+
+%====ENVIRONNEMENT
+\NewDocumentEnvironment{GraphiqueTikzStats}{ O{} D<>{} }{%
+  \restoreKV[GraphiqueTikzStats]%
+  \setKV[GraphiqueTikzStats]{#2}%
+  %---- valeurs réelles stockées
+  \xdef\pflstxmin{\xintfloateval{\pflstxmintmp}}%
+  \xdef\pflstxmax{\xintfloateval{\pflstxmaxtmp}}%
+  \xdef\pflstymin{\xintfloateval{\pflstymintmp}}%
+  \xdef\pflstymax{\xintfloateval{\pflstymaxtmp}}%
+  \xdef\pflstgrillex{\xintfloateval{\pflstgrillextmp}}%
+  \xdef\pflstgrillexi{\xintfloateval{\pflstgrillexitmp}}%
+  \xdef\pflstgrillexs{\xintfloateval{\pflstgrillexstmp}}%
+  \xdef\pflstgrilley{\xintfloateval{\pflstgrilleytmp}}%
+  \xdef\pflstgrilleyi{\xintfloateval{\pflstgrilleyitmp}}%
+  \xdef\pflstgrilleys{\xintfloateval{\pflstgrilleystmp}}%
+  %---- amplitude réelle
+  \xdef\pflstampx{\xintfloateval{\pflstxmax-\pflstxmin}}%
+  \xdef\pflstampy{\xintfloateval{\pflstymax-\pflstymin}}%
+  %---- dimensions en cm (Largeur et Hauteur sont des dimensions pures : 8cm, 120mm...)
+  \xdef\pflstlargeur{\xintfloateval{\fpeval{\the\tmptkzgstwidth/1cm}}}%
+  \xdef\pflsthauteur{\xintfloateval{\fpeval{\the\tmptkzgstheight/1cm}}}%
+  %---- pas de grille normalisés (en cm dans [0,Largeur]x[0,Hauteur])
+  \xdef\pflstngrillex{\xintfloateval{\pflstgrillex/\pflstampx*\pflstlargeur}}%
+  \xdef\pflstngrillexs{\xintfloateval{\pflstgrillexs/\pflstampx*\pflstlargeur}}%
+  \xdef\pflstngrillexj{\xintfloateval{\pflstgrillexi/\pflstampx*\pflstlargeur}}%
+  \xdef\pflstngrillery{\xintfloateval{\pflstgrilley/\pflstampy*\pflsthauteur}}%
+  \xdef\pflstngrilleys{\xintfloateval{\pflstgrilleys/\pflstampy*\pflsthauteur}}%
+  \xdef\pflstngrilleys{\xintfloateval{\pflstgrilleys/\pflstampy*\pflsthauteur}}%
+  \xdef\pflstngrilleyj{\xintfloateval{\pflstgrilleyi/\pflstampy*\pflsthauteur}}%
+  %---- origine normalisée
+  \IfStrEq{\pflstOxtmp}{}%
+    {\xdef\pflstox{0}}%
+    {\xdef\pflstox{\xintfloateval{(\pflstOxtmp-\pflstxmin)/\pflstampx*\pflstlargeur}}}%
+  \IfStrEq{\pflstOytmp}{}%
+    {\xdef\pflstoy{0}}%
+    {\xdef\pflstoy{\xintfloateval{(\pflstOytmp-\pflstymin)/\pflstampy*\pflsthauteur}}}%
+  %---- ouverture tikzpicture (x=1cm, y=1cm : coordonnées en cm purs)
+  \begin{tikzpicture}[x=1cm,y=1cm,#1]%
+  %---- thèmes (identiques à GraphiqueTikz)
+  \IfStrEqCase{\pflstgraphthem}{%
+    {standard}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepdefault!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillesdefault}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleidefault}}}%
+    {gris}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepgray!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillesgray}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleigray}}}%
+    {bleu}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepblue!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillesblue}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleiblue}}}%
+    {vert}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepgreen!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillesgreen}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleigreen}}}%
+    {chaud}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepwarm!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrilleswarm}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleiwarm}}}%
+    {contraste}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepcontrast!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillescontrast}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleicontrast}}}%
+  }%
+  %---- nœuds fenêtre (coordonnées normalisées)
+  \IfStrEq{\pflstgraphnom}{}%
+    {%
+      \coordinate (st-ne) at (\pflstlargeur,\pflsthauteur) ;%
+      \coordinate (st-nw) at (0,\pflsthauteur) ;%
+      \coordinate (st-se) at (\pflstlargeur,0) ;%
+      \coordinate (st-sw) at (0,0) ;%
+      \coordinate (st-n)  at ($(st-ne)!0.5!(st-nw)$) ;%
+      \coordinate (st-e)  at ($(st-ne)!0.5!(st-se)$) ;%
+      \coordinate (st-s)  at ($(st-se)!0.5!(st-sw)$) ;%
+      \coordinate (st-w)  at ($(st-sw)!0.5!(st-nw)$) ;%
+      \coordinate (st-c)  at ($(st-sw)!0.5!(st-ne)$) ;%
+      \coordinate (st-orig) at (\pflstox,\pflstoy) ;%
+    }%
+    {%
+      \coordinate (\pflstgraphnom-st-ne) at (\pflstlargeur,\pflsthauteur) ;%
+      \coordinate (\pflstgraphnom-st-nw) at (0,\pflsthauteur) ;%
+      \coordinate (\pflstgraphnom-st-se) at (\pflstlargeur,0) ;%
+      \coordinate (\pflstgraphnom-st-sw) at (0,0) ;%
+      \coordinate (\pflstgraphnom-st-orig) at (\pflstox,\pflstoy) ;%
+    }%
+  \ifboolKV[GraphiqueTikzStats]{AffCadre}%
+    {\draw[pflcadre] (0,0) rectangle (\pflstlargeur,\pflsthauteur) ;}{}%
+}{%
+  \end{tikzpicture}%
+}
+
+%====AXES ET GRILLES STATS — même structure que TracerAxesGrilles
+\defKV[GraphiqueTikzStatsAxes]{%
+  Format=\def\pflstformataxes{#1},%
+  Elargir=\def\pflstaxeselarg{#1},%
+  Police=\def\pflstaxespol{#1}%
+}
+\setKVdefault[GraphiqueTikzStatsAxes]{%
+  Grille=true,%
+  GrilleIntermediaire=false,%
+  Elargir=0,%
+  Grads=true,%
+  Origine=false,%
+  Police={},%
+  Format=num,%
+  Dernier=false,%
+  Derriere=false,%
+  Devant=false,%
+  Fleches=true,%
+  AxeOy=true%
+}
+
+\NewDocumentCommand\TracerAxesGrillesStats{ s O{} m m }{%
+  % #1=étoile (saute origine)  #2=clés  #3=liste valeurs X (vraies)  #4=liste valeurs Y (vraies)
+  \restoreKV[GraphiqueTikzStatsAxes]%
+  \setKV[GraphiqueTikzStatsAxes]{#2}%
+  % format axes
+  \IfSubStr{\pflstformataxes}{/}%
+    {\StrCut{\pflstformataxes}{/}{\pflstformataxex}{\pflstformataxey}}%
+    {\xdef\pflstformataxex{\pflstformataxes}\xdef\pflstformataxey{\pflstformataxes}}%
+  % cas Derriere/Devant
+  \ifboolKV[GraphiqueTikzStatsAxes]{Derriere}{\setKV[GraphiqueTikzStatsAxes]{Grads=false}}{}%
+  \ifboolKV[GraphiqueTikzStatsAxes]{Devant}{\setKV[GraphiqueTikzStatsAxes]{Grille=false}}{}%
+  % grille (pas normalisés)
+  \ifboolKV[GraphiqueTikzStatsAxes]{Grille}%
+    {%
+      \ifboolKV[GraphiqueTikzStats]{Milli}%
+        {%
+          \draw[pflgrilles,xstep=\xintfloateval{0.1*\pflstngrillex},ystep=\xintfloateval{0.1*\pflstngrillery}]
+            (0,0) grid (\pflstlargeur,\pflsthauteur) ;%
+          \draw[pflgrillei,xstep=\xintfloateval{0.5*\pflstngrillex},ystep=\xintfloateval{0.5*\pflstngrillery}]
+            (0,0) grid (\pflstlargeur,\pflsthauteur) ;%
+        }%
+        {%
+          \draw[pflgrilles,xstep=\pflstngrillexs,ystep=\pflstngrilleys]
+            (0,0) grid (\pflstlargeur,\pflsthauteur) ;%
+        }%
+      \ifboolKV[GraphiqueTikzStatsAxes]{GrilleIntermediaire}%
+        {\draw[pflgrillei,xstep=\pflstngrillexj,ystep=\pflstngrilleyj]
+          (0,0) grid (\pflstlargeur,\pflsthauteur) ;}%
+        {}%
+      \draw[pflgrillep,xstep=\pflstngrillex,ystep=\pflstngrillery]
+        (0,0) grid (\pflstlargeur,\pflsthauteur) ;%
+      \ifboolKV[GraphiqueTikzStatsAxes]{Dernier}%
+        {%
+          \draw[pflgrillep] (0,\pflsthauteur)--(\pflstlargeur,\pflsthauteur) ;%
+          \draw[pflgrillep] (\pflstlargeur,0)--(\pflstlargeur,\pflsthauteur) ;%
+        }{}%
+    }{}%
+  % axes
+  \ifboolKV[GraphiqueTikzStatsAxes]{Fleches}%
+    {%
+      \draw[pflaxes] (0,\pflstoy)
+        -- ([xshift=\pflstaxeselarg]\pflstlargeur,\pflstoy) ;%
+      \ifboolKV[GraphiqueTikzStatsAxes]{AxeOy}%
+        {\draw[pflaxes] (\pflstox,0)
+          -- ([yshift=\pflstaxeselarg]\pflstox,\pflsthauteur) ;}{}%
+    }%
+    {%
+      \draw[pflaxessansfleche] (0,\pflstoy)
+        -- ([xshift=\pflstaxeselarg]\pflstlargeur,\pflstoy) ;%
+      \ifboolKV[GraphiqueTikzStatsAxes]{AxeOy}%
+        {\draw[pflaxessansfleche] (\pflstox,0)
+          -- ([yshift=\pflstaxeselarg]\pflstox,\pflsthauteur) ;}{}%
+    }%
+  % graduations X
+  \foreach \tmpstx in {#3}{%
+    \xdef\tmpstnx{\xintfloateval{(\tmpstx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    \draw[pfltrait] (\tmpstnx,{\pflstoy+\pflthickgrad}) -- (\tmpstnx,{\pflstoy-\pflthickgrad}) ;%
+  }%
+  % graduations Y
+  \ifboolKV[GraphiqueTikzStatsAxes]{AxeOy}%
+    {%
+      \foreach \tmpsty in {#4}{%
+        \xdef\tmpstny{\xintfloateval{(\tmpsty-\pflstymin)/\pflstampy*\pflsthauteur}}%
+        \draw[pfltrait] ({\pflstox+\pflthickgrad},\tmpstny) -- ({\pflstox-\pflthickgrad},\tmpstny) ;%
+      }%
+    }{}%
+  % labels
+  \ifboolKV[GraphiqueTikzStatsAxes]{Grads}%
+    {%
+      \ifboolKV[GraphiqueTikzStatsAxes]{Origine}%
+        {\node[pflnoeud,below left,font=\pflstaxespol] at (\pflstox,\pflstoy)
+          {\FormatterValeurAxex{\pflstformataxex}{\pflstxmin}} ;}{}%
+      \foreach \tmpstx in {#3}{%
+        \xdef\tmpstnx{\xintfloateval{(\tmpstx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+        \IfBooleanTF{#1}%
+          {\xdef\tmpisorigx{\xintfloateval{\tmpstnx == \pflstox}}%
+           \xintifboolexpr{\tmpisorigx == 1}{}%
+             {\node[pflnoeud,below,font=\pflstaxespol] at (\tmpstnx,{\pflstoy-\pflthickgrad})
+               {\FormatterValeurAxex{\pflstformataxex}{\tmpstx}} ;}}%
+          {\node[pflnoeud,below,font=\pflstaxespol] at (\tmpstnx,{\pflstoy-\pflthickgrad})
+            {\FormatterValeurAxex{\pflstformataxex}{\tmpstx}} ;}%
+      }%
+      \ifboolKV[GraphiqueTikzStatsAxes]{AxeOy}%
+        {%
+          \foreach \tmpsty in {#4}{%
+            \xdef\tmpstny{\xintfloateval{(\tmpsty-\pflstymin)/\pflstampy*\pflsthauteur}}%
+            \IfBooleanTF{#1}%
+              {\xdef\tmpisorigy{\xintfloateval{\tmpstny == \pflstoy}}%
+               \xintifboolexpr{\tmpisorigy == 1}{}%
+                 {\node[pflnoeud,left,font=\pflstaxespol] at ({\pflstox-\pflthickgrad},\tmpstny)
+                   {\FormatterValeurAxey{\pflstformataxey}{\tmpsty}} ;}}%
+              {\node[pflnoeud,left,font=\pflstaxespol] at ({\pflstox-\pflthickgrad},\tmpstny)
+                {\FormatterValeurAxey{\pflstformataxey}{\tmpsty}} ;}%
+          }%
+        }{}%
+    }{}%
+}
+
+%====NUAGE DE POINTS
+\defKV[GraphiqueTikzStatsNuage]{%
+  Couleur=\def\pflstnuagecoul{#1},%
+  Taille=\def\pflstnuagetaille{#1}%
+}
+\setKVdefault[GraphiqueTikzStatsNuage]{%
+  Couleur=black,%
+  Style=o,%
+  Taille=1.75pt%
+}
+
+\NewDocumentCommand\TracerNuageStats{ O{} m m }{%
+  % #1=clés  #2=liste X  #3=liste Y
+  \restoreKV[GraphiqueTikzStatsNuage]%
+  \setKV[GraphiqueTikzStatsNuage]{#1}%
+  \setsepchar{,}%
+  \readlist*\pflstnuagex{#2}%
+  \readlist*\pflstnuagey{#3}%
+  \xintFor* ##1 in {\xintSeq{1}{\pflstnuagexlen}} \do{%
+    \itemtomacro\pflstnuagex[##1]\tmpstx%
+    \itemtomacro\pflstnuagey[##1]\tmpsty%
+    \xdef\tmpstnx{\xintfloateval{(\tmpstx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    \xdef\tmpstny{\xintfloateval{(\tmpsty-\pflstymin)/\pflstampy*\pflsthauteur}}%
+    \filldraw[\pflstnuagecoul] (\tmpstnx,\tmpstny) circle[radius=\pflstnuagetaille] ;%
+  }%
+}
+
+%====DIAGRAMME EN BÂTONS
+\NewDocumentCommand\TracerDiagBatonsStats{ O{} m }{%
+  \restoreKV[tkzDiagBatons]%
+  \setKV[tkzDiagBatons]{#1}%
+  \setsepchar[.]{,./}%
+  \readlist*\pflstbatdata{#2}%
+  \setsepchar{,}%
+  \readlist*\pflstbatlistcoul{\tkzDiagBatCouleurs}%
+  \xintFor* ##1 in {\xintSeq{1}{\pflstbatdatalen}} \do{%
+    \itemtomacro\pflstbatdata[##1,1]\tmpstx%
+    \itemtomacro\pflstbatdata[##1,2]\tmpsty%
+    \itemcycltomacro\pflstbatlistcoul[##1]\tkzDiagBatCoulCour%
+    \xdef\tmpstnx{\xintfloateval{(\tmpstx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    \xdef\tmpstny{\xintfloateval{(\tmpsty-\pflstymin)/\pflstampy*\pflsthauteur}}%
+    \IfStrEq{\tkzDiagBatStyle}{batons}%
+      {\draw[pflbarresprobas,\tkzDiagBatCoulCour] (\tmpstnx,\pflstoy) -- (\tmpstnx,\tmpstny) ;}%
+      {%
+        \xdef\tmpstdemi{\xintfloateval{\tkzDiagBatLargeur/2*\pflstlargeur/\pflstampx}}%
+        \draw[pfltrait,\tkzDiagBatCoulCour,fill=\tkzDiagBatCoulCour,fill opacity=0.5]
+          ({\tmpstnx-\tmpstdemi},\pflstoy) rectangle++ ({2*\tmpstdemi},{\tmpstny-\pflstoy}) ;%
+      }%
+    \ifboolKV[tkzDiagBatons]{AffValeurs}%
+      {\node[above,\tkzDiagBatColVal,font=\tkzDiagBatPolice] at (\tmpstnx,\tmpstny)
+        {\ArrondirNum[\tkzDiagBatArrondi]{\tmpsty}} ;}%
+      {}%
+  }%
+}
+
+%====RÉGRESSION LINÉAIRE
+\NewDocumentCommand\TracerRegressionStats{ O{} m m }{%
+  \setsepchar{,}%
+  \readlist*\pflstregx{#2}%
+  \readlist*\pflstregy{#3}%
+  \xdef\pflstnreg{\pflstregxlen}%
+  \xdef\pflstxsom{0}\xdef\pflstysom{0}%
+  \xintFor* ##1 in {\xintSeq{1}{\pflstnreg}} \do{%
+    \itemtomacro\pflstregx[##1]\tmpx%
+    \itemtomacro\pflstregy[##1]\tmpy%
+    \xdef\pflstxsom{\xintfloateval{\pflstxsom+\tmpx}}%
+    \xdef\pflstysom{\xintfloateval{\pflstysom+\tmpy}}%
+  }%
+  \xdef\pflstxmoy{\xintfloateval{\pflstxsom/\pflstnreg}}%
+  \xdef\pflstymoy{\xintfloateval{\pflstysom/\pflstnreg}}%
+  \xdef\pflstxvar{0}\xdef\pflstxyvar{0}%
+  \xintFor* ##1 in {\xintSeq{1}{\pflstnreg}} \do{%
+    \itemtomacro\pflstregx[##1]\tmpx%
+    \itemtomacro\pflstregy[##1]\tmpy%
+    \xdef\pflstxvar{\xintfloateval{\pflstxvar+(\tmpx-\pflstxmoy)^2}}%
+    \xdef\pflstxyvar{\xintfloateval{\pflstxyvar+(\tmpx-\pflstxmoy)*(\tmpy-\pflstymoy)}}%
+  }%
+  \xdef\pflstrega{\xintfloateval{\pflstxyvar/\pflstxvar}}%
+  \xdef\pflstregb{\xintfloateval{\pflstymoy-\pflstrega*\pflstxmoy}}%
+  % tracé normalisé
+  \xdef\tmpstnya{\xintfloateval{(\pflstrega*\pflstxmin+\pflstregb-\pflstymin)/\pflstampy*\pflsthauteur}}%
+  \xdef\tmpstnyb{\xintfloateval{(\pflstrega*\pflstxmax+\pflstregb-\pflstymin)/\pflstampy*\pflsthauteur}}%
+  \draw[pflcourbe,#1] (0,\tmpstnya) -- (\pflstlargeur,\tmpstnyb) ;%
+}
+
+%====COURBE ECC
+\NewDocumentCommand\TracerECCStats{ O{} m m }{%
+  \restoreKV[tkzgECC]%
+  \setKV[tkzgECC]{#1}%
+  \IfSubStr{\tkzecc@coul@params}{/}%
+    {\StrCut{\tkzecc@coul@params}{/}{\tkzecc@coul@quart}{\tkzecc@coul@med}}%
+    {\def\tkzecc@coul@quart{\tkzecc@coul@params}\def\tkzecc@coul@med{\tkzecc@coul@params}}%
+  \setsepchar{,}%
+  \readlist*\DataClass{#2}%
+  \readlist*\DataEff{#3}%
+  \xdef\DonneesECC{0}%
+  \xintFor* ##1 in {\xintSeq{1}{\DataEfflen}} \do{%
+    \xdef\DonneesTmp{0}%
+    \xintFor* ##2 in {\xintSeq{1}{##1}} \do{%
+      \xdef\DonneesTmp{\xintfloateval{\DonneesTmp+\DataEff[##2]}}%
+    }%
+    \xdef\DonneesECC{\DonneesECC,\DonneesTmp}%
+  }%
+  \readlist*\DataECC\DonneesECC%
+  \itemtomacro\DataECC[-1]\DonneesEffMax%
+  % Q1/med/Q3
+  \xintFor* ##1 in {\xintSeq{1}{\DataEfflen}} \do{%
+    \xdef\isuiv{\xinteval{##1+1}}%
+    \xintifboolexpr{\DataECC[##1] < (0.25*\DonneesEffMax) 'and' \DataECC[\isuiv] >= (0.25*\DonneesEffMax)}%
+      {\xdef\pentetmpECC{(\DataECC[\isuiv]-\DataECC[##1])/(\DataClass[\isuiv]-\DataClass[##1])}%
+       \xdef\ValPremQuartile{\xintfloateval{(0.25*\DonneesEffMax+\pentetmpECC*\DataClass[##1]-\DataECC[##1])/(\pentetmpECC)}}}{}%
+    \xintifboolexpr{\DataECC[##1] < (0.50*\DonneesEffMax) 'and' \DataECC[\isuiv] >= (0.50*\DonneesEffMax)}%
+      {\xdef\pentetmpECC{(\DataECC[\isuiv]-\DataECC[##1])/(\DataClass[\isuiv]-\DataClass[##1])}%
+       \xdef\ValMed{\xintfloateval{(0.50*\DonneesEffMax+\pentetmpECC*\DataClass[##1]-\DataECC[##1])/(\pentetmpECC)}}}{}%
+    \xintifboolexpr{\DataECC[##1] < (0.75*\DonneesEffMax) 'and' \DataECC[\isuiv] >= (0.75*\DonneesEffMax)}%
+      {\xdef\pentetmpECC{(\DataECC[\isuiv]-\DataECC[##1])/(\DataClass[\isuiv]-\DataClass[##1])}%
+       \xdef\ValTroisQuartile{\xintfloateval{(0.75*\DonneesEffMax+\pentetmpECC*\DataClass[##1]-\DataECC[##1])/(\pentetmpECC)}}}{}%
+  }%
+  % courbe normalisée
+  \itemtomacro\DataClass[1]\tmpstx%
+  \itemtomacro\DataECC[1]\tmpsty%
+  \xdef\tmpstnx{\xintfloateval{(\tmpstx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+  \xdef\tmpstny{\xintfloateval{(\tmpsty-\pflstymin)/\pflstampy*\pflsthauteur}}%
+  \xdef\DonneesListeECCST{(\tmpstnx,\tmpstny)}%
+  \xintFor* ##1 in {\xintSeq{2}{\DataECClen}} \do{%
+    \itemtomacro\DataClass[##1]\tmpstx%
+    \itemtomacro\DataECC[##1]\tmpsty%
+    \xdef\tmpstnx{\xintfloateval{(\tmpstx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    \xdef\tmpstny{\xintfloateval{(\tmpsty-\pflstymin)/\pflstampy*\pflsthauteur}}%
+    \xdef\DonneesListeECCST{\DonneesListeECCST--(\tmpstnx,\tmpstny)}%
+  }%
+  \draw[pflcourbeecc,\tkzecc@coul@graph] \DonneesListeECCST ;%
+  \xintFor* ##1 in {\xintSeq{1}{\DataECClen}} \do{%
+    \itemtomacro\DataClass[##1]\tmpstx%
+    \itemtomacro\DataECC[##1]\tmpsty%
+    \xdef\tmpstnx{\xintfloateval{(\tmpstx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    \xdef\tmpstny{\xintfloateval{(\tmpsty-\pflstymin)/\pflstampy*\pflsthauteur}}%
+    \filldraw[\tkzecc@coul@graph] (\tmpstnx,\tmpstny) circle[pflpointnuage] ;%
+  }%
+  % traits paramètres
+  \ifboolKV[tkzgECC]{AffParams}%
+    {%
+      \xdef\pflstxmed{\xintfloateval{(\ValMed-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+      \xdef\pflstxqu{\xintfloateval{(\ValPremQuartile-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+      \xdef\pflstxqt{\xintfloateval{(\ValTroisQuartile-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+      \xdef\pflstymed{\xintfloateval{(0.50*\DonneesEffMax-\pflstymin)/\pflstampy*\pflsthauteur}}%
+      \xdef\pflstyqu{\xintfloateval{(0.25*\DonneesEffMax-\pflstymin)/\pflstampy*\pflsthauteur}}%
+      \xdef\pflstyqt{\xintfloateval{(0.75*\DonneesEffMax-\pflstymin)/\pflstampy*\pflsthauteur}}%
+      \ifboolKV[tkzgECC]{TraitsComplets}%
+        {%
+          \draw[pfltraitsparamecc,\tkzecc@coul@med] (0,\pflstymed) -- (\pflstlargeur,\pflstymed) ;%
+          \draw[pfltraitsparamecc,\tkzecc@coul@quart] (0,\pflstyqu) -- (\pflstlargeur,\pflstyqu) ;%
+          \draw[pfltraitsparamecc,\tkzecc@coul@quart] (0,\pflstyqt) -- (\pflstlargeur,\pflstyqt) ;%
+        }%
+        {%
+          \draw[pfltraitsparamecc,\tkzecc@coul@med] (0,\pflstymed) -- (\pflstxmed,\pflstymed) ;%
+          \draw[pfltraitsparamecc,\tkzecc@coul@quart] (0,\pflstyqu) -- (\pflstxqu,\pflstyqu) ;%
+          \draw[pfltraitsparamecc,\tkzecc@coul@quart] (0,\pflstyqt) -- (\pflstxqt,\pflstyqt) ;%
+        }%
+      \draw[pfltraitsparamecc,\tkzecc@coul@med] (\pflstxmed,\pflstymed) -- (\pflstxmed,\pflstoy) ;%
+      \draw[\tkzecc@coul@med,thick,fill=white] (\pflstxmed,\pflstymed) circle[pflpointnuage] ;%
+      \draw[pfltraitsparamecc,\tkzecc@coul@quart] (\pflstxqu,\pflstyqu) -- (\pflstxqu,\pflstoy) ;%
+      \draw[\tkzecc@coul@quart,thick,fill=white] (\pflstxqu,\pflstyqu) circle[pflpointnuage] ;%
+      \draw[pfltraitsparamecc,\tkzecc@coul@quart] (\pflstxqt,\pflstyqt) -- (\pflstxqt,\pflstoy) ;%
+      \draw[\tkzecc@coul@quart,thick,fill=white] (\pflstxqt,\pflstyqt) circle[pflpointnuage] ;%
+    }{}%
+}
+
+%====BOÎTE À MOUSTACHES
+\NewDocumentCommand\TracerBoiteMoustachesStats{ s O{} m }{%
+  \restoreKV[tkzBoiteMoustaches]%
+  \setKV[tkzBoiteMoustaches]{#2}%
+  \IfBooleanTF{#1}%
+    {%
+      \ifboolKV[tkzBoiteMoustaches]{Groupees}%
+        {\tkzgCalcParamStats*{#3}[\tkzBaMautomin][\tkzBaMautoquun][\tkzBaMautomed][\tkzBaMautoqutr][\tkzBaMautomax]}%
+        {\tkzgCalcParamStats{#3}[\tkzBaMautomin][\tkzBaMautoquun][\tkzBaMautomed][\tkzBaMautoqutr][\tkzBaMautomax]}%
+      \tkzg@bam@drawST{\tkzBaMautomin}{\tkzBaMautoquun}{\tkzBaMautomed}{\tkzBaMautoqutr}{\tkzBaMautomax}%
+    }%
+    {%
+      \setsepchar[.]{/}%
+      \readlist*\tkzBaMParams{#3}%
+      \itemtomacro\tkzBaMParams[1]\tkzBaMp@min%
+      \itemtomacro\tkzBaMParams[2]\tkzBaMp@qu%
+      \itemtomacro\tkzBaMParams[3]\tkzBaMp@med%
+      \itemtomacro\tkzBaMParams[4]\tkzBaMp@qt%
+      \itemtomacro\tkzBaMParams[5]\tkzBaMp@max%
+      \tkzg@bam@drawST{\tkzBaMp@min}{\tkzBaMp@qu}{\tkzBaMp@med}{\tkzBaMp@qt}{\tkzBaMp@max}%
+    }%
+}
+
+\NewDocumentCommand\tkzg@bam@drawST{ m m m m m }{%
+  \xdef\pflbamnxa{\xintfloateval{(#1-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+  \xdef\pflbamnxb{\xintfloateval{(#2-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+  \xdef\pflbamnxc{\xintfloateval{(#3-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+  \xdef\pflbamnxd{\xintfloateval{(#4-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+  \xdef\pflbamnxe{\xintfloateval{(#5-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+  \xdef\tkzBaMbas{\xintfloateval{\tkzBaMElevation-\tkzBaMHauteur/2}}%
+  \xdef\tkzBaMhaut{\xintfloateval{\tkzBaMElevation+\tkzBaMHauteur/2}}%
+  \draw[pfltrait,\tkzBaMCouleur,fill=\tkzBaMRemplissage]%
+    (\pflbamnxb,\tkzBaMbas) rectangle (\pflbamnxd,\tkzBaMhaut) ;%
+  \draw[pfltrait,\tkzBaMCouleur]%
+    (\pflbamnxa,\tkzBaMElevation) -- (\pflbamnxb,\tkzBaMElevation)%
+    (\pflbamnxd,\tkzBaMElevation) -- (\pflbamnxe,\tkzBaMElevation) ;%
+  \draw[pfltrait,\tkzBaMCouleur]%
+    (\pflbamnxa,\tkzBaMbas) -- (\pflbamnxa,\tkzBaMhaut)%
+    (\pflbamnxe,\tkzBaMbas) -- (\pflbamnxe,\tkzBaMhaut)%
+    (\pflbamnxc,\tkzBaMbas) -- (\pflbamnxc,\tkzBaMhaut) ;%
+  \ifboolKV[tkzBoiteMoustaches]{AffMoyenne}%
+    {%
+      \xdef\pflbamnxmoy{\xintfloateval{(\tkzBaMMoyenne-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+      \filldraw[\tkzBaMCouleur] (\pflbamnxmoy,\tkzBaMElevation) circle[pflpointmc] ;%
+    }{}%
+  \ifboolKV[tkzBoiteMoustaches]{Pointilles}%
+    {%
+      \draw[pfltraitantec,\tkzBaMCouleur]%
+        (\pflbamnxa,\tkzBaMbas)--(\pflbamnxa,\pflstoy)%
+        (\pflbamnxb,\tkzBaMbas)--(\pflbamnxb,\pflstoy)%
+        (\pflbamnxc,\tkzBaMbas)--(\pflbamnxc,\pflstoy)%
+        (\pflbamnxd,\tkzBaMbas)--(\pflbamnxd,\pflstoy)%
+        (\pflbamnxe,\tkzBaMbas)--(\pflbamnxe,\pflstoy) ;%
+    }{}%
+  \ifboolKV[tkzBoiteMoustaches]{Valeurs}%
+    {%
+      \foreach \tmpbamval/\tmpbamx in {#1/\pflbamnxa,#2/\pflbamnxb,#3/\pflbamnxc,#4/\pflbamnxd,#5/\pflbamnxe}{%
+        \node[below,font=\small] at (\tmpbamx,\pflstoy)
+          {\ArrondirNum[\tkzBaMArrondi]{\tmpbamval}} ;%
+      }%
+    }{}%
+}
+
+\endinput

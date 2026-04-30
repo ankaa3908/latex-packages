@@ -765,7 +765,9 @@ Les épaisseurs des traits pour ce type de grille sont données (et modifiables)
 
 \pagebreak
 
-\subsection{Ajout de valeurs manuellement}\label{ajoutvals}
+\subsection{Paramétrage manuel des axes}
+
+\subsubsection{Ajout de valeurs manuellement}\label{ajoutvals}
 
 Il est également possible d'utiliser une commande spécifique pour placer des valeurs sur les axes, indépendamment d'un système \textit{automatisé} de formatage.
 
@@ -800,6 +802,30 @@ Les arguments obligatoires correspondent aux abscisses (en langage\TikZ) et aux 
   \RajouterValeursAxeY
     {-1,0.175,0.3,sqrt(3)/2}
     {\num{-1},\num{0.175},$\nicefrac{3}{10}$,$\frac{\sqrt{3}}{2}$}
+\end{GraphiqueTikz}
+\end{tcblisting}
+
+\subsubsection{Ajout de labels manuellement}\label{ajoutlabels}
+
+Il est également possible d'utiliser une commande spécifique pour placer des labels sur les axes, dans le cadre de statistiques qualitatives notamment.
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,colframe=lightgray,colback=lightgray!5,listing only}
+%dans l'environnement GraphiqueTikz
+\RajouterLabelsAxeX[clés]{positions}{labels}
+\RajouterLabelsAxeY[clés]{positions}{labels}
+
+% ----- [clé spécifique]
+% Rotation := angle pour les labels
+\end{tcblisting}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,colframe=lightgray,colback=lightgray!5}
+\begin{GraphiqueTikz}%
+    [x=1.2cm,y=0.4cm,Xmin=0,Xmax=7,Xgrille=1,
+    Ymin=0,Ymax=15,Ygrille=5,Ygrilles=1]
+  \TracerAxesGrilles[Elargir=2.5mm,Police=\small]{}{0,5,...,15}
+  \RajouterLabelsAxeX[Rotation=45]%
+    {1,2,3,4,5,6}%
+    {Maths,Anglais,Français,Allemand,SVT,EPS}
 \end{GraphiqueTikz}
 \end{tcblisting}
 
@@ -1937,6 +1963,7 @@ L'idée (en test) est d'obtenir une commande pour représenter graphiquement une
 Le premier argument, \textit{optionnel} et entre \MontreCode{[...]}, contient les \MontreCode{Clés} suivantes :
 
 \begin{itemize}
+  \item \MontreCode{Swap=TF} pour colorier la partie non-solution (\MontreCode{false} par défaut) ;
   \item \MontreCode{Opacite=...} (\MontreCode{0.25} par défaut) ;
   \item \MontreCode{Couleur=...} (\MontreCode{black} par défaut) ;
   \item \MontreCode{Style=...} (\MontreCode{hachures} par défaut) ;
@@ -1944,36 +1971,41 @@ Le premier argument, \textit{optionnel} et entre \MontreCode{[...]}, contient le
 \end{itemize}
 
 \begin{tcblisting}{listing engine=minted,minted language=latex,colframe=lightgray,colback=lightgray!5}
-\begin{GraphiqueTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphiqueTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
   \TracerAxesGrilles[Police=\tiny]{auto}{auto}
   \InegaliteLineaire[Couleur=blue]{-3x+2}{>0}
 \end{GraphiqueTikz}
 ~~
-\begin{GraphiqueTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphiqueTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
   \TracerAxesGrilles[Police=\tiny]{auto}{auto}
   \InegaliteLineaire[Couleur=pink]{-x+y+2}{<=0}
 \end{GraphiqueTikz}
 ~~
-\begin{GraphiqueTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphiqueTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
   \TracerAxesGrilles[Police=\tiny]{auto}{auto}
   \InegaliteLineaire[Couleur=teal]{-x+y-4}{>0}
 \end{GraphiqueTikz}
 \end{tcblisting}
 
 \begin{tcblisting}{listing engine=minted,minted language=latex,colframe=lightgray,colback=lightgray!5}
-\begin{GraphiqueTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphiqueTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
   \TracerAxesGrilles[Police=\tiny]{auto}{auto}
   \InegaliteLineaire[Couleur=blue]{-4*y+5}{<=0}
 \end{GraphiqueTikz}
 ~~
-\begin{GraphiqueTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphiqueTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
   \TracerAxesGrilles[Police=\tiny]{auto}{auto}
   \InegaliteLineaire[Couleur=pink,Hachures={north east lines}]{-x-2y+2}{<=0}
 \end{GraphiqueTikz}
 ~~
-\begin{GraphiqueTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphiqueTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
   \TracerAxesGrilles[Police=\tiny]{auto}{auto}
   \InegaliteLineaire[Style=remplissage,Couleur=teal]{-x-y-4}{>0}
+\end{GraphiqueTikz}
+
+\begin{GraphiqueTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
+  \TracerAxesGrilles[Police=\tiny]{auto}{auto}
+  \InegaliteLineaire[Swap,Style=remplissage,Couleur=teal]{-x-y-4}{>0}
 \end{GraphiqueTikz}
 \end{tcblisting}
 
@@ -4874,8 +4906,10 @@ Cette commande nécessite le chargement préalable de
   \lstcmd{environnement~~}{\begin{GraphiqueTikz}...\end{GraphiqueTikz}}{creaenvt}
   \lstcmd{axes et grilles}{\TracerAxesGrille}{creaaxesgr}
   \lstcmd{ax/gril pol~~~~}{\TracerAxesGrillePol}{courbespolaires}
-  \lstcmd{aj val axes X~~}{\RajouterValeursAxeX}{ajoutvals}
-  \lstcmd{aj val axes Y~~}{\RajouterValeursAxeY}{ajoutvals}
+  \lstcmd{aj val axe X~~~}{\RajouterValeursAxeX}{ajoutvals}
+  \lstcmd{aj val axe Y~~~}{\RajouterValeursAxeY}{ajoutvals}
+  \lstcmd{aj labels axe X}{\RajouterLabelsAxeX}{ajoutlabels}
+  \lstcmd{aj labels axe Y}{\RajouterLabelsAxeY}{ajoutlabels}
   \lstcmd{semilog loglog~}{}{loglog}
 \end{description}
 
@@ -5117,6 +5151,7 @@ Les solutions de $f(x)=66$ sont d'environ \ArrondirNum*[0]{\xMonItscA} \&\ \Arro
 
 {\footnotesize \begin{quote}
 \begin{verbatim}
+0.31a : Environnement alt pour des valeurs non normalisées + bugfixes InegaliteLin + Labels pour axes
 0.30f : Ajouts en statistiques (barres/bâtons/histogrammes/moustaches/camembert)
 0.30e : Meilleure gestion de la taille du graphique
 -----   Améliorations dans les valeurs interdites
