@@ -46,11 +46,11 @@
 }
 \newcommand*{\hlabel}[1]{\phantomsection\label{#1}}
 
-\title{Pennstander fonts (\textit{experimental}) \\User’s Guide for LaTeX (v0.3a)}
-\author{Julius Ross \&\ Cédric Pierquet \\ \texttt{cpierquet@outlook.fr}}
+\date{04/05/2026}
+\newcommand*{\version}{0.4}
 
-\date{06/01/2026}
-\newcommand*{\version}{0.3a}
+\title{Pennstander fonts (\textit{experimental}) \\User’s Guide for LaTeX (v\version)}
+\author{Julius Ross \&\ Cédric Pierquet \\ \texttt{cpierquet@outlook.fr}}
 
 \begin{document}
 \maketitle
@@ -68,7 +68,7 @@ Original font is from Tyler Finck, see this website for more information:
 
 \smallskip
 
-This package is based on \texttt{v0.3} version of fonts.
+This package is based on \texttt{v\version} version of fonts.
 
 The text and the math fonts are licensed under the SIL Open Font License, Version 1.1.
 
@@ -170,7 +170,7 @@ Options can be given within the package:
 
 \begin{itemize}
 	\item \opt{Weight=...}
-	
+
 	\textcolor{gray}{\footnotesize \opt{Thin/ExtraLight/Light/Regular/Medium/SemiBold/Bold/ExtraBold/Black}};
 	\item or individual \opt{WeightT=...,WeightM=...}
 	\item the boolean \opt{opsz} for loading pennstander with variable \texttt{VF.ttf} version;
@@ -178,7 +178,7 @@ Options can be given within the package:
 	\item the boolean \opt{no-math} for not loading pennstander as math font;
 	\item the boolean \opt{no-macros} for not loading internal macros;
 	\item the boolean \opt{onlyconfig} for just loading \opt{.fontspec} files (def. \opt{false});
-	
+
 	\textcolor{gray}{\footnotesize with activated, \opt{no-text=true}, \opt{no-math=true} and \opt{no-macros=true}}
 	\item the boolean \opt{altfour} for alternate version of 4;
 	\item the boolean \opt{frenchseven} for alternate version of 7 (with bar);
@@ -187,11 +187,11 @@ Options can be given within the package:
 	\item \opt{StylisticSet=...} or \opt{StylisticSetT=...,StylisticSetM=...};
 	\item \opt{RawFeature=...} or \opt{RawFeatureT=...,RawFeatureM=...};
 	\item \opt{Scale=...} or \opt{ScaleT=...,ScaleM=...}.
-	
+
 	\textcolor{gray}{\footnotesize\opt{Scale=<value>}: global scaling factor applied to both text and math fonts}
-	
+
 	\textcolor{gray}{\footnotesize\opt{ScaleT=<value>}: scaling factor for text font only (numeric value)}
-	
+
 	\textcolor{gray}{\footnotesize\opt{ScaleM=<value>}: scaling factor for math font only (numeric value or MatchLowercase\ldots)}
 \end{itemize}
 
@@ -251,63 +251,74 @@ All macros are defined with \opt{[Scale=MatchLowercase]}.
 
 \subsection{For text font}
 
-Extra openfeatures for text font available are (screens are from fontdrop website):
+Extra openfeatures for text font available are (it is possible that not all options are compatible with fontspec):
 
 \begin{itemize}
-	\item \opt{aalt}: Access All Alternatives
-	\item \opt{ccmp}: Glyph Composition/Decomposition
-	\item \opt{locl}: Localized Forms
-	\item \opt{sups}: Superscript
-	\item \opt{numr}: Numerators
-	\item \opt{dnom}: Denominators
-	\item \opt{frac}: Fractions
-	\item \opt{ordn}: Ordinals
-	\item \opt{pnum}: Proportional Figures
-	\item \opt{tnum}: Tabular Figures
-	\item \opt{case}: Case-Sensitive Forms
-	\item \opt{dlig}: Discretionary Ligatures
-	\item \opt{liga}: Standard Ligatures
-	\item \opt{zero}: Slashed Zero
-	\item \opt{cpsp}: Capital Spacing
-	\item \opt{ss02}: Alternate A,M,N,Q,V,W,Z,v,z
-	\item \opt{ss03}: Alternate 4
-	\item \opt{ss04}: Alternate l,t
-	\item \opt{ss06}: Alternate ampersand
-	\item \opt{ss07}: Alternate 7
+  \item \opt{aalt}: Access All Alternatives
+  \item \opt{ccmp}: Glyph Composition/Decomposition
+  \item \opt{locl}: Localized Forms
+  \item \opt{sups}: Superscript
+  \item \opt{numr}: Numerators
+  \item \opt{dnom}: Denominators
+  \item \opt{frac}: Fractions
+  \item \opt{ordn}: Ordinals
+  \item \opt{pnum}: Proportional Figures
+  \item \opt{tnum}: Tabular Figures
+  \item \opt{case}: Case-Sensitive Forms
+  \item \opt{dlig}: Discretionary Ligatures
+  \item \opt{liga}: Standard Ligatures
+  \item \opt{zero}: Slashed Zero
+  \item \opt{cpsp}: Capital Spacing
+  \item \opt{ss01}: Alternate a,g,I
+  \item \opt{ss02}: Alternate A,M,N,Q,V,W,Z,v,z
+  \item \opt{ss03}: Alternate 4
+  \item \opt{ss04}: Alternate l,t
+  \item \opt{ss06}: Alternate ampersand
+  \item \opt{ss07}: Alternate 7
 \end{itemize}
 
-\includegraphics[width=0.625\linewidth]{pennstander_zero}
+%\includegraphics[width=0.625\linewidth]{pennstander_zero}
+%
+%\includegraphics[width=0.625\linewidth]{pennstander_dlig}
+%
+%\includegraphics[width=0.625\linewidth]{pennstander_ss02}
+%
+%\includegraphics[width=0.625\linewidth]{pennstander_ss03}
+%
+%\includegraphics[width=0.625\linewidth]{pennstander_ss04}
+%
+%\includegraphics[width=0.625\linewidth]{pennstander_ss06}
+%
+%\includegraphics[width=0.625\linewidth]{pennstander_ss07}
+%
+%\includegraphics[width=0.625\linewidth]{pennstander_aalt}
 
-\includegraphics[width=0.625\linewidth]{pennstander_dlig}
-
-\includegraphics[width=0.625\linewidth]{pennstander_ss02}
-
-\includegraphics[width=0.625\linewidth]{pennstander_ss03}
-
-\includegraphics[width=0.625\linewidth]{pennstander_ss04}
-
-\includegraphics[width=0.625\linewidth]{pennstander_ss06}
-
-\includegraphics[width=0.625\linewidth]{pennstander_ss07}
-
-\includegraphics[width=0.625\linewidth]{pennstander_aalt}
+\pagebreak
 
 \subsection{For math font}
 
-Extra openfeatures for math font available are:
+Extra openfeatures for math font available are (it is possible that not all options are compatible with fontspec):
 
 \begin{itemize}
-	\item \opt{aalt}: Access All Alternatives
-	\item \opt{dtls}: Dotless Forms
-	\item \opt{zero}: Slashed Zero
-	\item \opt{frac}: Fractions
-	\item \opt{ss01}: Alternate a,g,I,Iota
-	\item \opt{ss02}: Alternate A,M,N,Q,V,W,Z,v,z,Alpha,Mu,Rho,Zeta
-	\item \opt{ss03}: Alternate 4
-	\item \opt{ss04}: Alternate l,t
-	\item \opt{ss05}: Simplified Fraktur A,K,L,X,Y,Z,x,y
-	\item \opt{ss06}: Alternate ampersand
-	\item \opt{ss07}: Alternate 7
+  \item \opt{aalt}: Access All Alternatives
+  \item \opt{dtls}: Dotless Forms
+  \item \opt{zero}: Slashed Zero
+  \item \opt{frac}: Fractions
+  \item \opt{ss01}: Alternate a,g,I,Iota
+  \item \opt{ss02}: Alternate A,M,N,Q,V,W,Z,v,z,Alpha,Mu,Rho,Zeta
+  \item \opt{ss03}: Alternate 4
+  \item \opt{ss04}: Alternate l,t
+  \item \opt{ss05}: Simplified Fraktur A,K,L,X,Y,Z,x,y
+  \item \opt{ss07}: Alternate 7
+  \item \opt{ssty}: Math Script Style Alternatives
+  \item \opt{cv01}: Alternate a,g,I
+  \item \opt{cv10}: Alternate numerals
+  \item \opt{cv20}: Alternate Fences
+  \item \opt{cv21}: Alternate Fences
+  \item \opt{cv30}: Alternate Integrals (without serif)
+  \item \opt{cv31}: Alternate Integrals (serif)
+  \item \opt{cv32}: Alternate Integrals (all)
+  \item \opt{zero}: Alternate zero
 \end{itemize}
 
 \subsection{Unicode Private Use Area}
