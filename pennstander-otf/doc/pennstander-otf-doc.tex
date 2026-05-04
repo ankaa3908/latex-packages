@@ -10,6 +10,7 @@
 \usepackage{unicodefonttable}
 \usepackage{realscripts}
 \usepackage{graphicx}
+\usepackage{pdfpages}
 \renewcommand{\sffamily}{\rmfamily}
 \setmonofont{CascadiaMono}[Scale=MatchLowercase]
 \usepackage{microtype}
@@ -64,7 +65,7 @@ Pennstander is a set of OpenType text and math fonts developed by Julius Ross, s
 
 Original font is from Tyler Finck, see this website for more information:
 
-\url{https://etceteratype.co/grandstander}.
+\url{https://etceteratype.co/pages/grandstander}.
 
 \smallskip
 
@@ -390,5 +391,19 @@ $\mathcal{\abc\ABC}$
 $\mathfrak{\abc\ABC}$
 
 $\mathbb{\ABC\samplenumbers}$
+
+\subsection{Samples}
+
+The source files for these samples are available in the \href{github.com/juliusross1}{GitHub} repository and can be compiled with \texttt{ConTeXt} LMTX using \texttt{context filename.tex}.
+
+\smallskip
+
+Samples document can be loaded by:
+
+\begin{itemize}
+  \item \texttt{texdoc pennstander-otf-samples-text.pdf}
+  \item \texttt{texdoc pennstander-otf-samples-math.pdf}
+\end{itemize}
+
 
 \end{document}
