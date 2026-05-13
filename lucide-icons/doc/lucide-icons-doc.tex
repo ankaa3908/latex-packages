@@ -28,15 +28,15 @@
 }
 
 \NewDocumentCommand{\showcaselucideicons}{mm}{%name + macro + page
-	\Large\lucideicon{#1} & \itshape #1 & \ttfamily \textbackslash lucideicon\{#1\} & \sffamily #2 \\
+	\textcolor{violet}{\Large\lucideicon{#1}} & \itshape #1 & \ttfamily \textbackslash lucideicon\{#1\} & \sffamily #2 \\
 }
 
 \begin{document}
 
-\title{The \textsf{lucide-icons} package (0.1.2) -- 17/04/2026}
+\title{The \textsf{lucide-icons} package (0.1.3) -- 12/05/2026}
 \author{%
 	Cédric Pierquet\\%
-	\url{https://lucide.dev} (Source version 0.562.0)\\%
+	\url{https://lucide.dev} (Source version 1.14.0)\\%
 	\url{https://github.com/cpierquet/latex-packages/tree/main/lucide-icons} (\LaTeX{} package)
 }
 \date{cpierquet -- at -- outlook . fr}\maketitle
@@ -45,7 +45,7 @@ This package provides \LaTeX{} support for the \textsf{Lucide-Icons} project (\u
 
 \medskip
 
-\hspace*{5mm}\fbox{\begin{minipage}{0.75\linewidth}{\emph{A set of 1666 free ISC License high-quality SVG/PDF icons for you to use in your web projects.}}\end{minipage}}
+\hspace*{5mm}\fbox{\begin{minipage}{0.75\linewidth}{\emph{A set of 1703 free ISC License high-quality SVG/PDF icons for you to use in your web projects.}}\end{minipage}}
 
 \medskip
 
@@ -156,7 +156,9 @@ For bug reports and feature requests, report on the GitHub repository \url{https
 
 \section{List of icons}
 
-The \textsf{PDF} file is \texttt{lucide-icons-all}
+The \textsf{PDF} file is \texttt{lucide-icons-all}.
+
+Icons are colored in \textcolor{violet}{violet}.
 
 \input{lucideiconsbindings}
 
