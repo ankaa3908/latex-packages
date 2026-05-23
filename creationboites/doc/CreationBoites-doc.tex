@@ -39,8 +39,6 @@
 \usepackage[margin=1.5cm]{geometry}
 \setlength{\parindent}{0pt}
 
-\def\TPversion{0.20a}
-\def\TPdate{12/02/2026}
 \sethlcolor{lightgray!25}
 \NewDocumentCommand\MontreCode{ m }{%
 	\hl{\vphantom{\texttt{pf}}\texttt{#1}}%
@@ -69,7 +67,7 @@
 				\\
 				{\LARGE avec quelques éléments de personnalisation.} \\
 				\\
-				{\small \texttt{Version \TPversion{} -- \TPdate}}
+				{\small \texttt{Version \cbpackageversion{} -- \cbpackagedate}}
 		\end{tabular}
 		\end{center}
 	\end{tcolorbox}
@@ -671,9 +669,11 @@ Toute couleur (\MontreCode{xcolor} n'est pas chargé avec des options spécifiqu
 
 \pagebreak
 
-\section{Style alternatif}
+\section{Styles alternatifs}
 
-\subsection{Idées}
+\subsection{Style alternatif v1}
+
+\subsubsection{Idées}
 
 L'idée est de proposer un style alternatif, avec moins de \textit{fioritures}.
 
@@ -724,12 +724,12 @@ La boîte ainsi créée a la syntaxe suivante.
 %-- Les clés disponibles sont :
 % ComplementTitre = {}     (entre le label et le compteur)
 % SousTitre       = {}     (après le compteur, en italique)
-% Compteur        = true 
+% Compteur        = true
 % Pluriel         = false
 % SouligneLabel   = false  (il faut charger ulem dans ce cas !)
 \end{codehigh}
 
-\subsection{Exemples}
+\subsubsection{Exemples}
 
 \begin{demohigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
 \setKVdefault[cpaltboites]{SouligneLabel=true} %souligné par défaut
@@ -756,7 +756,7 @@ On essaye avec les couleurs stockées, comme celle de \textcolor{cbcoulbord}{la 
 \end{testcadre}
 \end{demohigh}
 
-\subsection{Définitions des paramètres}
+\subsubsection{Définitions des paramètres}
 
 Les boîtes \texttt{Alt} sont définies grâce aux définitions suivantes :
 
@@ -775,7 +775,337 @@ Les boîtes \texttt{Alt} sont définies grâce aux définitions suivantes :
 
 \pagebreak
 
+\subsection{Style alternatif v2}
+
+\subsubsection{Idées}
+
+L'idée est de proposer un style autre alternatif, inspiré d'un travail d'\textsf{Arnaud Blas}.
+
+Le style global est :
+
+\begin{itemize}
+  \item bordure arrondie suivant titre et boîte ;
+  \item personnalisation du titre.
+\end{itemize}
+
+Pour le moment, deux modèles d'utilisation du compteur sont disponibles :
+
+\begin{itemize}
+  \item une version avec compteur global ;
+  \item une version avec compteur réinitialisé par section.
+\end{itemize}
+
+{\footnotesize \faBomb}~Dans le cas où un autre comportement du compteur est attendu, il est tout à fait possible de récupérer le code source de la macro de création, et de l'adapter.
+
+\begin{codehigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+%version avec compteur 'global'
+\CreationBoiteAAlt%
+  [Couleur]%
+  {Nom}%
+  {Compteur}%
+  {Label singulier}
+  {Label pluriel}
+  [options tcbox]
+
+%version avec compteur 'lié' à 'section'
+\CreationBoiteAAltResetSection%
+  [Couleur]%
+  {Nom}%
+  {Compteur}%
+  {Label singulier}
+  {Label pluriel}
+  [options tcbox]
+\end{codehigh}
+
+La boîte ainsi créée a la syntaxe suivante.
+
+\begin{codehigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\begin{monenvt}[clés]
+  ...
+\end{monenvt}
+
+%-- Les clés disponibles sont :
+% ComplementTitre   = {}     (entre le label et le compteur)
+% SousTitre         = {}     (après le compteur, en italique)
+% Compteur          = true
+% Pluriel           = false
+% SouligneLabel     = false  (il faut charger ulem dans ce cas !)
+% EpaisseurSouligne = 1pt
+% Fond              = false (white si true)
+% Ombre             = false (uniquement en mode Fond)
+\end{codehigh}
+
+\subsubsection{Exemples}
+
+\setKVdefault[abaltboites]{SouligneLabel=true} %souligné par défaut
+\CreationBoiteAAlt%
+  [blue]{abdef}{abdef}{Définition}{Définitions}{$\blacktriangleright$\,}
+\CreationBoiteAAlt%
+  [red]{abprop}{abprop}{Propriété}{Propriétés}{$\blacktriangleright$\,}
+\CreationBoiteAAlt%
+  [orange]{abthm}{abthm}{Théorème}{Théorèmes}{$\blacktriangleright$\,}
+\CreationBoiteAAlt%
+  [teal]{abexo}{abexo}{Exercice}{Exercices}{$\blacktriangleright$\,}
+
+\begin{codehigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\setKVdefault[abaltboites]{SouligneLabel=true} %souligné par défaut
+\CreationBoiteAAlt%
+  [blue]{abdef}{abdef}{Définition}{Définitions}{$\blacktriangleright$\,}
+\CreationBoiteAAlt%
+  [red]{abprop}{abprop}{Propriété}{Propriétés}{$\blacktriangleright$\,}
+\CreationBoiteAAlt%
+  [orange]{abthm}{abthm}{Théorème}{Théorèmes}{$\blacktriangleright$\,}
+\CreationBoiteAAlt%
+  [teal]{abexo}{abexo}{Exercice}{Exercices}{$\blacktriangleright$\,}
+\end{codehigh}
+
+\begin{demohigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\begin{abdef}%
+    [Pluriel,Compteur=false,ComplementTitre={ introductives},%
+    SousTitre={ (importantes ?)}]
+\lipsum[1][1-3]
+
+Et on peut récupérer la couleur courante du \textsf{\textcolor{cbcoulbord}{bord}} (avec \MontreCode{cbcoulbord}) ou du \textsf{\textcolor{cbcoultitre}{titre}} (avec \MontreCode{cbcoultitre}).
+\end{abdef}
+
+\begin{abprop}
+\lipsum[1][1-3]
+\end{abprop}
+
+\begin{abthm}
+\lipsum[1][1-3]
+\end{abthm}
+\end{demohigh}
+
+\begin{demohigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10,style/demo=yellow!10]
+\begin{abexo}
+\lipsum[1][1-3]
+\end{abexo}
+
+\begin{abexo}[Fond]
+\lipsum[1][1-3]
+\end{abexo}
+
+\begin{abexo}[Fond,Ombre]
+  \lipsum[1][1-3]
+\end{abexo}
+\end{demohigh}
+
+\begin{demohigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\renewcommand\policetitreboite{\itshape\scshape}
+\begin{abprop}[Pluriel]
+On essaye avec les couleurs stockées, comme celle de \textcolor{cbcoulbord}{la bordure}.
+\end{abprop}
+\end{demohigh}
+
+\subsubsection{Définitions des paramètres}
+
+Les boîtes \texttt{AAlt} sont définies grâce aux définitions suivantes :
+
+\begin{codehigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\tcbset{abbaseboite/.style={%#1 = color
+    enhanced,empty,%
+    attach boxed title to top left={yshift=-2.5mm},
+    left=1mm,right=2mm,bottom=1mm,top=1.75mm,
+    boxed title style={empty,size=small,top=0pt,bottom=0pt},
+    varwidth boxed title=0.66\linewidth,
+    frame code={
+      \path (title.east|-frame.north) coordinate (aux);
+      \path[draw=#1,line width=1pt, rounded corners=3pt]
+      (frame.west) |- ([xshift=-2.5mm]title.north east) to[out=0, in=180] ([xshift=7.5mm]aux)-|([xshift=-1pt]frame.east)|-([yshift=1pt]frame.south)-|cycle;
+    },
+  }
+}
+\end{codehigh}
+
+\begin{codehigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\tcbset{abbaseboitefond/.style={%#1 = color
+    enhanced,empty,%
+    attach boxed title to top left={yshift=-2.5mm},
+    left=1mm,right=2mm,bottom=1mm,top=1.75mm,
+    boxed title style={empty,size=small,top=0pt,bottom=0pt},
+    varwidth boxed title=0.66\linewidth,
+    frame code={
+      \path (title.east|-frame.north) coordinate (aux);
+      \path[draw=#1,fill=white,line width=1pt, rounded corners=3pt, abbaseboiteombre]
+      (frame.west) |- ([xshift=-2.5mm]title.north east) to[out=0, in=180] ([xshift=7.5mm]aux)-|([xshift=-1pt]frame.east)|-([yshift=1pt]frame.south)-|cycle;
+    },
+  }
+}
+
+\newcommand\policetitreboite{\bfseries\sffamily}
+\end{codehigh}
+
+\pagebreak
+
+\subsection{Macro unique de génération}
+
+Une macro \textit{unique} existe, afin de créer la boîte en fonction :
+
+\begin{itemize}
+  \item du \textsf{style} ;
+  \item du \textsf{compteur} si possible.
+\end{itemize}
+
+\begin{codehigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\GenereBoite<clés>%
+  [Couleur]%
+  {Nom}%
+  {Compteur}%
+  {Label singulier}
+  {Label pluriel}
+  [options tcbox]
+
+% ===== <clés> :
+% style         = parmi cp/default/ab/ha/tx  (cp)
+% reset section = booléen pour le compteur   (false)
+\end{codehigh}
+
+\setKVdefault[cpaltboites]{SouligneLabel=true,Fond,Ombre} %souligné par défaut
+\GenereBoite<style=ab>%
+ [red]{genintro}{genintro}{Intro}{Intros}{$\blacktriangleright$\,}
+\GenereBoite<style=cp>%
+  [teal]{gencadre}{gencadre}{Cadre}{Cadres}{$\blacktriangleright$\,}
+\GenereBoite<style=default>%
+  [orange]{genprop}{genprop}{Propriété}{Propriété}{$\blacktriangleright$}
+
+\begin{codehigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\setKVdefault[cpaltboites]{SouligneLabel=true,Fond,Ombre} %souligné par défaut
+\GenereBoite<style=ab>%
+  [red]{genintro}{genintro}{Intro}{Intros}{$\blacktriangleright$\,}
+\GenereBoite<style=cp>%
+  [teal]{gencadre}{gencadre}{Cadre}{Cadres}{$\blacktriangleright$\,}
+\GenereBoite<style=default>%
+  [orange]{genprop}{genprop}{Propriété}{Propriété}{$\blacktriangleright$}
+\end{codehigh}
+
+\begin{demohigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\begin{genintro}
+\lipsum[1][1]
+\end{genintro}
+
+\begin{gencadre}
+\lipsum[2][1]
+\end{gencadre}
+
+\begin{genprop}
+\lipsum[3][1]
+\end{genprop}
+\end{demohigh}
+
+\pagebreak
+
+\subsection{Utilisation d'un compteur personnalisé}
+
+IL est également possible (c'est une fonctionnalité encore en version \textit{beta}) de spécifier un \textsf{compteur} existant et personnalisé (qui doit donc \textit{exister}) dans les boîtes, accessible via la clé \MontreCode{[CompteurPerso=...]}.
+
+\smallskip
+
+Le trousseau de clés pour les boîtes \textit{classiques} est \MontreCode{[Boites]}, alors que celui pour les autres est \MontreCode{[cpaltboites]}.
+
+\newcounter{moncompteurglobal}
+\GenereBoite<style=default>[orange]{TestA}{TestA}{Propriété}{Propriétés}{$\blacktriangleright$}
+\GenereBoite<style=default>[gray]{TestB}{TestB}{Définition}{Définitions}{$\blacktriangleright$}
+\GenereBoite<style=default>[teal]{TestC}{TestC}{Remarque}{Remarques}{$\blacktriangleright$}
+\setKVdefault[Boites]{CompteurPerso=moncompteurglobal}
+
+\begin{codehigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\newcounter{moncompteurglobal}
+\GenereBoite<style=default>%
+  [orange]{TestA}{TestA}{Propriété}{Propriétés}{$\blacktriangleright$}
+\GenereBoite<style=default>%
+  [gray]{TestB}{TestB}{Définition}{Définitions}{$\blacktriangleright$}
+\GenereBoite<style=default>%
+  [teal]{TestC}{TestC}{Remarque}{Remarques}{$\blacktriangleright$}
+\setKVdefault[Boites]{CompteurPerso=moncompteurglobal}
+\end{codehigh}
+
+\begin{demohigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\begin{TestA}
+\lipsum[1][3-4]
+\end{TestA}
+\begin{TestB}
+\lipsum[2][3-4]
+\end{TestB}
+\begin{TestC}
+\lipsum[2][3-4]
+\end{TestC}
+\begin{TestB}
+\lipsum[2][3-4]
+\end{TestB}
+\begin{TestC}[Pluriel,Logo={example-image-1x1},SousTitre={ - Fondamentales -}]
+\lipsum[3][1-7]
+\end{TestC}
+\end{demohigh}
+
+\pagebreak
+
+\section{Galerie}
+
+\setKVdefault[cpaltboites]{SouligneLabel=false} %souligné par défaut
+
+\subsection{Design : cp}
+
+\begin{demohigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\GenereBoite<style=cp>%
+  [red]{testA}{testA}{Label}{Labels}{$\blacktriangleright$\,}
+
+\begin{testA}
+\lipsum[1][1-5]
+\end{testA}
+\end{demohigh}
+
+\subsection{Design : ab}
+
+\begin{demohigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\GenereBoite<style=ab>%
+  [red]{testB}{testB}{Label}{Labels}{$\blacktriangleright$\,}
+
+\begin{testB}
+\lipsum[1][1-5]
+\end{testB}
+\end{demohigh}
+
+\subsection{Design : ha}
+
+\begin{demohigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\GenereBoite<style=ha>%
+  [red]{testC}{testC}{Label}{Labels}{$\blacktriangleright$\,}
+
+\begin{testC}
+\lipsum[1][1-5]
+\end{testC}
+\end{demohigh}
+
+\subsection{Design : tx}
+
+\begin{demohigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\GenereBoite<style=tx>%
+  [red]{testD}{testD}{Label}{Labels}{$\blacktriangleright$\,}
+
+\begin{testD}
+\lipsum[1][1-5]
+\end{testD}
+\end{demohigh}
+
+\subsection{Design : default}
+
+\begin{demohigh}[language=latex/latex2,style/main=cyan!10,style/code=cyan!10]
+\GenereBoite<style=default>%
+  [red]{testE}{testE}{Label}{Labels}{$\blacktriangleright$\,}
+
+\begin{testE}
+\lipsum[1][1-5]
+\end{testE}
+\end{demohigh}
+
+\pagebreak
+
 \section{Historique}
+
+\verb|v0.20c|~:~~~~Possibilité d'utiliser un compteur personnalisé
+
+\verb|v0.20b|~:~~~~Ajout d'autres styles alternatifs + macro unifiée de création
 
 \verb|v0.20a|~:~~~~Ajout d'un mode de sauvegarde des couleurs à l'intérieur des boîtes
 
