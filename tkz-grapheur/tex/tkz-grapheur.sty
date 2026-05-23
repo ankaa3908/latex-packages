@@ -1,0 +1,296 @@
+% Author     : C. Pierquet (with help of JF.Burnol)
+% licence    : Released under the LaTeX Project Public License v1.3c or later, see http://www.latex-project.org/lppl.txt
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tkz-grapheur}[2026/04/29 0.31a Des outils en TikZ pour travailler comme avec un grapheur]
+\def\tkzgrapheurversion{0.31a}
+\def\tkzgrapheurdateversion{29/04/2026}
+\def\tkzgrapheurdatefrversion{29 avril 2026}
+
+%====HISTORIQUE
+% v 0.31a  Environnement alternatif pour des valeurs non normalisées + bugfixes InegaliteLin + Labels pour axes
+% v 0.30f  Correction d'un bug avec les courbes implicites + représentations stats
+% v 0.30e  Possibilité de paramétrer la fenêtre via Hauteur ou Largeur + XYratio
+% -------  Améliorations dans les valeurs interdites
+% -------  Courbe de niveaux (expérimental)
+% v 0.30d  Ajout de commandes pour gérer les listes de solutions/antécédents
+% -------  Modification mineure des styles de Theme (choix des épaisseurs)
+% -------  Famille de courbes (expérimental)
+% -------  Tableau de valeurs (expérimental)
+% -------  Graphiques en semi-log ou log-log (expérimental)
+% -------  Définition globales de fonctions (hors environnement ou via clé [DefGlobale])
+% -------  Nuage de points via lecture CSV (expérimental)
+% -------  Courbe implicite (lua) (très expérimental)
+% v 0.30c  Refonte du fonctionnement avec séparation commandes [en/fr]
+% -------  Transformations, Taylor (expérimental)
+% -------  Ajout de lois de probabilités (continues + discrètes)
+% -------  Outils numériques
+% v 0.30b  Nouvelle commande pour dérivée/primitive (expérimental)
+% -------  Nuage suites
+% -------  Courbes paramétrées, polaires
+% -------  Voisinages (expérimental)
+% -------  Valeurs interdites (expérimental)
+% -------  Coniques (expérimental)
+% v 0.30a  Création des nœuds (fenêtre + axes)
+% v 0.2.9  Clés [Theme/Milli] pour des couleurs prédéfinies de grilles (à définir dans l'environnement)
+% v 0.2.8  Clé [Fleche] pour les axes
+% v 0.2.7  Gestion de la taille du graphique
+% v 0.2.6  Inégalité linéraire (test)
+% v 0.2.5  Interpolation de Lagrange + améliorations 
+% v 0.2.4  Clé [StyleTrace] pour dotted/dashed par exemple
+% v 0.2.3  Bug with length
+% v 0.2.2  Bugfix
+% v 0.2.1  Option pour compat mode et pgfplots
+% v 0.2.0  Petites commandes en lien avec pgfplots + modification mineure splinecubique (calculs Alt)
+% v 0.1.9  Correction d'un bug avec la détermination des unités...
+% v 0.1.8  Ajout des courbes d'ECC/FCC + Toile récurrence + Points discontinuité + Histobinom
+% v 0.1.7  Méthodes intégrales avec des splines
+% v 0.1.6  Asymptote verticale + Monte Carlo + Méthode intégrales (rectangles, etc)
+% v 0.1.5  Correction d'un bug avec les valeurs manuelles + Nœud pour une image + [en] version !
+% v 0.1.4  Ajout des placements de textes
+% v 0.1.3  Régressions, avec xintreg (désactivable)
+% v 0.1.2  Max/Min + Droites
+% v 0.1.1  Densité loi normale + khi deux + Améliorations diverses
+% v 0.1.0  Version initiale [fr]
+
+%====OPTIONS
+\newif\if@loadsiunitx \@loadsiunitxtrue
+\DeclareOption{nonsiunitx}{\@loadsiunitxfalse}%
+\DeclareOption{nosiunitx}{\@loadsiunitxfalse}%
+
+\newif\if@loadtikzbabel \@loadtikzbabeltrue
+\DeclareOption{nontikzbabel}{\@loadtikzbabelfalse}%
+\DeclareOption{notikzbabel}{\@loadtikzbabelfalse}%
+
+\newif\if@loadxintreg \@loadxintregtrue
+\DeclareOption{nonxintreg}{\@loadxintregfalse}%
+\DeclareOption{noxintreg}{\@loadxintregfalse}%
+
+\newif\if@loadpgfplots \@loadpgfplotstrue
+\DeclareOption{nonpgfplots}{\@loadpgfplotsfalse}%
+\DeclareOption{nopgfplots}{\@loadpgfplotsfalse}%
+
+\newif\if@loadcompatgfplots \@loadcompatgfplotsfalse
+\DeclareOption{compatgfplots}{\@loadcompatgfplotstrue}%
+
+\newif\if@lngenglish \@lngenglishfalse
+\DeclareOption{english}{\@lngenglishtrue}%
+
+\DeclareOption*{}
+\ProcessOptions\relax
+
+%====BASE
+\RequirePackage{tikz}
+\RequirePackage{ifthen}
+\if@loadpgfplots
+  \RequirePackage{pgfplots}
+  \usepgfplotslibrary{fillbetween}
+  \if@loadcompatgfplots
+    \pgfplotsset{compat=1.18}
+  \fi
+\fi
+\usetikzlibrary{calc,intersections,patterns,patterns.meta,bbox}
+\RequirePackage{simplekv}
+\RequirePackage{xintexpr}
+\RequirePackage{xstring}
+\RequirePackage{listofitems}
+\if@loadxintreg
+  \RequirePackage{xint-regression}
+\fi
+
+%====SIUNITX + [en]
+\if@loadsiunitx
+  \RequirePackage{siunitx}
+  \if@lngenglish
+    \sisetup{mode=match,propagate-math-font=true,reset-math-version=false,reset-text-family=false,reset-text-series=false,reset-text-shape=false,text-family-to-math=true,text-series-to-math=true}
+  \else
+    \sisetup{locale=FR,output-decimal-marker={,},mode=match,propagate-math-font=true,reset-math-version=false,reset-text-family=false,reset-text-series=false,reset-text-shape=false,text-family-to-math=true,text-series-to-math=true}%
+  \fi
+\fi
+
+%====TIKZ.BABEL
+\if@loadtikzbabel
+  \usetikzlibrary{babel}
+\fi
+
+%====EPAISSEURS GRILLE <THEME>
+\newlength\pflthickgridp
+\newlength\pflthickgridi
+\newlength\pflthickgrids
+\setlength\pflthickgridp{0.65pt}
+\setlength\pflthickgridi{0.5pt}
+\setlength\pflthickgrids{0.35pt}
+
+%====STYLES DE BASE (PARTAGÉS - FR)
+\tikzset{pflnoeud/.style={}}
+\tikzset{pflpoint/.style={line width=0.95pt}}
+\tikzset{pflpointmc/.style={radius=0.875pt}}
+\tikzset{pflpointc/.style={radius=1.75pt}}
+\tikzset{pflpointnuage/.style={radius=1.75pt}}
+\tikzset{pflcadre/.style={line width=0.8pt,gray}}
+\tikzset{pflcourbe/.style={line width=1.05pt}}
+\tikzset{pflcourbediscont/.style={line width=1.1pt}}
+\tikzset{pflpointggb/.style={line width=0.4pt}}
+\tikzset{pfltrait/.style={line width=0.8pt}}
+\tikzset{pfltraitpointille/.style={pfltrait,dashed}}
+\tikzset{pfltraitcamembert/.style={line width=0.7pt}}
+\tikzset{pfllegendetitre/.style={above}}
+\tikzset{pfllegendelabels/.style={font=\small}}
+\tikzset{pflbarresprobas/.style={line width=1.5pt}}
+\tikzset{pfllabeleffectifs/.style={font=\small,inner sep=1mm}}
+\tikzset{pfllegendelabelsqualix/.style={font=\small,below}}
+\tikzset{pfllegendelabelsqualiy/.style={font=\small,left}}
+\tikzset{pflflecheg/.style={<-,>=latex}}
+\tikzset{pflfleched/.style={->,>=latex}}
+\tikzset{pflflechegd/.style={<->,>=latex}}
+\tikzset{pfltraitvoisinage/.style={line width=0.75pt}}
+\tikzset{pfltraitvoisinageasympt/.style={densely dashed,line width=0.75pt}}
+\tikzset{pfltraitantec/.style={line width=0.9pt,densely dashed}}
+\tikzset{pfltraitimg/.style={line width=0.9pt,densely dashed,->,>=latex}}
+\tikzset{pflgrillep/.style={thin,lightgray}}
+\tikzset{pflgrillei/.style={line width=0.3pt,lightgray}}
+\tikzset{pflgrilles/.style={very thin,lightgray}}
+\tikzset{pflaxes/.style={line width=0.8pt,->,>=latex}}
+\tikzset{pflaxessansfleche/.style={line width=0.8pt}}
+\tikzset{pfltraitsparamecc/.style={line width=0.9pt,densely dashed}}
+\tikzset{pflcourbeecc/.style={line width=1.05pt}}
+\tikzset{pfltraitrec/.style={line width=0.8pt}}
+\tikzset{pfltraitrecpointill/.style={pfltraitrec,densely dashed}}
+\tikzset{
+  Xmin/.store in=\pflxmin,Xmin/.default=-3,Xmin=-3,
+  Xmax/.store in=\pflxmax,Xmax/.default=3,Xmax=3,
+  Ymin/.store in=\pflymin,Ymin/.default=-3,Ymin=-3,
+  Ymax/.store in=\pflymax,Ymax/.default=3,Ymax=3,
+  Origx/.store in=\pflOx,Origx/.default=0,Origx=0,
+  Origy/.store in=\pflOy,Origy/.default=0,Origy=0,
+  Xgrille/.store in=\pflgrillex,Xgrille/.default=1,Xgrille=1,
+  Xgrillei/.store in=\pflgrillexi,Xgrillei/.default=1,Xgrillei=1,
+  Xgrilles/.store in=\pflgrillexs,Xgrilles/.default=0.5,Xgrilles=0.5,
+  Ygrille/.store in=\pflgrilley,Ygrille/.default=1,Ygrille=1,
+  Ygrillei/.store in=\pflgrilleyi,Ygrillei/.default=1,Ygrillei=1,
+  Ygrilles/.store in=\pflgrilleys,Ygrilles/.default=0.5,Ygrilles=0.5,
+  Rmax/.store in=\pflpolrayonmax,Rmax/.default=3,Rmax=3,
+  Rgrille/.store in=\pflpolgrid,Rgrille/.default=1,Rgrille=1,
+  Rgrilles/.store in=\pflpolgrids,Rgrilles/.default=0.5,Rgrilles=0.5,
+  Tgrille/.store in=\pflgrillet,Tgrille/.default=45,Tgrille=45,
+  Tgrilles/.store in=\pflgrillets,Tgrilles/.default=15,Tgrilles=15,
+}
+\tikzset{%
+  pics/pflptcroix/.style args={#1/#2}{
+    code={
+      \draw[pflpoint,rotate=#2] (-#1,0) -- (#1,0);
+      \draw[pflpoint,rotate=#2] (0,-#1) -- (0, #1);
+    }
+    },
+  pics/pflptcroix/.default={2pt/45}
+}
+\tikzset{%
+  pics/pflptcarre/.style args={#1/#2}{
+    code={
+      \filldraw[draw=none,pflpoint,rotate=#2] (-#1,-#1) rectangle (#1,#1) ;
+    }
+  },
+  pics/pflptcarre/.default={2pt/0}
+}
+
+%====STYLES DE BASE (EN)
+\tikzset{tkzgrphnode/.style={}}
+\tikzset{tkzgrphpoint/.style={line width=0.95pt}}
+\tikzset{tkzgrphpointc/.style={radius=1.75pt}}
+\tikzset{tkzgrphpointmc/.style={radius=0.875pt}}
+\tikzset{tkzgrphscatter/.style={radius=1.75pt}}
+\tikzset{tkzgrphframe/.style={line width=0.8pt,gray}}
+\tikzset{tkzgrphcurve/.style={line width=1.05pt}}
+\tikzset{tkzgrphline/.style={line width=0.8pt}}
+\tikzset{tkzgrphlinedashed/.style={tkzgrphline,dashed}}
+\tikzset{tkzgrpharrowl/.style={<-,>=latex}}
+\tikzset{tkzgrpharrowr/.style={->,>=latex}}
+\tikzset{tkzgrpharrowlr/.style={<->,>=latex}}
+\tikzset{tkzgrphcounterimage/.style={line width=0.9pt,densely dashed}}
+\tikzset{tkzgrphrange/.style={line width=0.9pt,densely dashed,->,>=latex}}
+\tikzset{tkzgrphgridp/.style={thin,lightgray}}
+\tikzset{tkzgrphgrids/.style={very thin,lightgray}}
+\tikzset{tkzgrphgridi/.style={line width=0.3pt,lightgray}}
+\tikzset{tkzgrphaxes/.style={line width=0.8pt,->,>=latex}}
+\tikzset{tkzgrphaxeswoarrows/.style={line width=0.8pt}}
+\tikzset{
+  Xgrid/.store in=\pflgrillex,Xgrid/.default=1,Xgrid=1,
+  Xgrids/.store in=\pflgrillexs,Xgrids/.default=0.5,Xgrids=0.5,
+  Ygrid/.store in=\pflgrilley,Ygrid/.default=1,Ygrid=1,
+  Ygrids/.store in=\pflgrilleys,Ygrids/.default=0.5,Ygrids=0.5,
+  Rgrid/.store in=\pflpolgrid,Rgrid/.default=1,Rgrid=1,
+  Rgrids/.store in=\pflpolgrids,Rgrids/.default=0.5,Rgrids=0.5,
+  Tgrid/.store in=\pflgrillet,Tgrid/.default=45,Tgrid=45,
+  Tgrids/.store in=\pflgrillets,Tgrids/.default=15,Tgrids=15,
+}
+\tikzset{%
+  pics/tkzgraphcross/.style args={#1/#2}{
+    code={
+      \draw[tkzgrphpoint,rotate=#2] (-#1,0) -- (#1,0);
+      \draw[tkzgrphpoint,rotate=#2] (0,-#1) -- (0, #1);
+    }
+    },
+  pics/tkzgraphcross/.default={2pt/45}
+}
+\tikzset{%
+  pics/tkzgraphsquare/.style args={#1/#2}{
+    code={
+      \filldraw[draw=none,tkzgrphpoint,rotate=#2] (-#1,-#1) rectangle (#1,#1) ;
+    }
+  },
+  pics/tkzgraphsquare/.default={2pt/0}
+}
+
+%====COULEURS
+\definecolor{pflgrillepdefault}{HTML}{f39c12}
+\definecolor{pflgrilleidefault}{HTML}{bdc3c7}
+\definecolor{pflgrillesdefault}{HTML}{e0e0e0}
+\definecolor{pflgrillepgray}{HTML}{707070}
+\definecolor{pflgrilleigray}{HTML}{bdc3c7}
+\definecolor{pflgrillesgray}{HTML}{f0f0f0}
+\definecolor{pflgrillepblue}{HTML}{1565c0}
+\definecolor{pflgrilleiblue}{HTML}{90caf9}
+\definecolor{pflgrillesblue}{HTML}{e3f2fd}
+\definecolor{pflgrillepwarm}{HTML}{d84315}
+\definecolor{pflgrilleiwarm}{HTML}{ffab91}
+\definecolor{pflgrilleswarm}{HTML}{fbe9e7}
+\definecolor{pflgrillepgreen}{HTML}{2e7d32}
+\definecolor{pflgrilleigreen}{HTML}{a5d6a7}
+\definecolor{pflgrillesgreen}{HTML}{e8f5e9}
+\definecolor{pflgrillepcontrast}{HTML}{000000}
+\definecolor{pflgrilleicontrast}{HTML}{999999}
+\definecolor{pflgrillescontrast}{HTML}{cccccc}
+\definecolor{pflgrillepseyes}{HTML}{E6B8E6}
+\definecolor{pflgrilleiseyes}{HTML}{D7E2EE}
+\definecolor{pflgrillesseyes}{HTML}{D7E2EE}
+
+%====Longueurs utiles
+\newlength\pflglobalwidth
+\newlength\pflglobalheight
+\newlength\pflthickgrad
+\setlength\pflthickgrad{3pt}
+
+\newlength\pflthickgradu
+\setlength\pflthickgradu{3pt}
+\newlength\pflthickgradd
+\setlength\pflthickgradd{3pt}
+
+%====INPUT macros
+\input{tkz-grapheur-macros.tex}
+
+%====INPUT fr
+\input{tkz-grapheur-fr.tex}
+
+%====INPUT en
+\input{tkz-grapheur-en.tex}
+
+%====INPUT calculs
+\input{tkz-grapheur-calc.tex}
+
+%====INPUT stats
+\input{tkz-grapheur-altversion.tex}
+
+%====INPUT lua
+\input{tkz-grapheur-lua.tex}
+
+\endinput
