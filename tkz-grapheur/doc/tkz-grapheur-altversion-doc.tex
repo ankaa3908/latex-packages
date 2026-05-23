@@ -1,0 +1,625 @@
+% !TeX TXS-program:compile = txs:///arara
+% arara: pdflatex: {shell: yes, synctex: no, interaction: batchmode}
+% arara: pdflatex: {shell: yes, synctex: no, interaction: batchmode} if found('log', '(undefined references|Please rerun|Rerun to get)')
+
+\documentclass[11pt,a4paper]{ltxdoc}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{tkz-grapheur}
+\usetikzlibrary{fit,backgrounds}
+\pgfplotsset{compat=newest}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{fontawesome5}
+\usepackage{tcolorbox}
+\usepackage{minted2}
+\tcbuselibrary{skins,minted}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\lfoot{\sffamily\small [tkz-grapheur-altversion]}
+\rfoot{\sffamily\small - \thepage{} -}
+\providecommand\tikzlogo{Ti\textit{k}Z}
+\let\TikZ\tikzlogo
+\urlstyle{same}
+\hypersetup{pdfborder=0 0 0}
+\usepackage[margin=2cm]{geometry}
+\setlength{\parindent}{0pt}
+\usepackage{soul}
+\sethlcolor{lightgray!25}
+\NewDocumentCommand\MontreCode{ m }{%
+	\hl{\vphantom{\texttt{pf}}\texttt{#1}}%
+}
+\usepackage[french]{babel}
+\sisetup{group-minimum-digits=4}
+\renewcommand{\footnoterule}{\vfill\kern -3pt \hrule width 0.4\columnwidth \kern 2.6pt}
+
+\begin{document}
+
+\pagestyle{fancy}
+\thispagestyle{empty}
+
+\begin{center}
+	\begin{minipage}{0.88\linewidth}
+	\begin{tcolorbox}[colframe=orange!80!black,colback=orange!10]
+		\begin{center}
+			\begin{tabular}{c}
+				{\huge\texttt{tkz-grapheur-altversion (v\tkzgrapheurversion)}}\vspace{10pt}\\
+				{\LARGE Version alternative de l'environnement graphique,}\\
+				\\
+				{\LARGE basée sur \textsf{\TikZ}, \textsf{xint} et la normalisation interne.}\\
+				\\
+				{\small Chargé automatiquement avec \texttt{tkz-grapheur}}
+		\end{tabular}
+		\end{center}
+	\end{tcolorbox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{tabular}{c}
+	\texttt{Cédric Pierquet}\\
+	{\ttfamily c pierquet -- at -- outlook . fr}\\
+	\texttt{\url{https://github.com/cpierquet/latex-packages/tree/main/tkz-grapheur}} \\
+\end{tabular}
+\end{center}
+
+\hrule\vfill
+
+\begin{tcolorbox}[colframe=lightgray,colback=lightgray!5,halign=center]
+\begin{tkzGrph}%
+	<Xmin=2990,Xmax=3020,Xgrille=5,Xgrilles=1,
+	 Ymin=0,Ymax=5000000,Ygrille=1000000,Ygrilles=100000,
+	 Origx=2990,Largeur=12cm,Hauteur=6cm,Theme=bleu>
+	\tkzGrphDrawGridAxis[enlarge=2.5mm,font=\small,labels=false]{}{}
+	\tkzGrphDefineCurve[name=cf]<f>{2000*(x-2990)^2+500000}
+	\tkzGrphDefineSpline[alt,name=sp]%
+		{2990/300000/0.5 § 3000/2000000/0 § 3010/250000/0 § 3020/4500000/0.8}
+	\tkzGrphDrawIntg[colors=orange!60]{sp}[cf]{2995}{3015}
+	\tkzGrphDrawExistingCurves{cf/red,sp/blue}
+	\tkzGrphFindItsc[show,lines,reslist=LISTRES,color=olive]{cf}{sp}
+  \tkzGrphDrawGridAxis[enlarge=2.5mm,font=\small,grid=false]%
+    {2990,2995,3000,3005,3010,3015,3020}%
+    {0,1000000,2000000,3000000,4000000,5000000}
+\end{tkzGrph}
+
+Solutions := \LISTRES
+\end{tcolorbox}
+
+\vfill\hfill{\footnotesize\textit{\ttfamily À mon papa.}}\vspace*{5mm}
+
+\pagebreak
+
+\tableofcontents
+\vspace*{5mm}\hrule\vspace*{5mm}
+\pagebreak
+
+%=============================================================
+\section{Introduction et philosophie}
+%=============================================================
+
+\subsection{Problématique}
+
+L'environnement \MontreCode{GraphiqueTikz} de \MontreCode{tkz-grapheur} travaille directement en coordonnées \TikZ\ — des valeurs extrêmes sur les axes (années, populations, distances\ldots) génèrent des erreurs \MontreCode{dimension too large}.
+
+\smallskip
+
+L'environnement alternatif \MontreCode{tkzGrph} résout ce problème par une \textbf{normalisation interne} : \TikZ\ travaille toujours dans $[0,L] \times [0,H]$ (en cm), quelle que soit l'amplitude réelle.
+
+\subsection{Principe de la normalisation}
+
+Pour une fenêtre $[\text{Xmin}, \text{Xmax}] \times [\text{Ymin}, \text{Ymax}]$ et des dimensions $L \times H$ :
+
+\[
+x_{\text{norm}} = \frac{x - x_{\min}}{x_{\max} - x_{\min}} \times L
+\qquad
+y_{\text{norm}} = \frac{y - y_{\min}}{y_{\max} - y_{\min}} \times H
+\]
+
+\TikZ\ ne voit jamais que des coordonnées dans $[0,L] \times [0,H]$.
+
+\subsection{Philosophie : tout est un \texttt{path}}
+
+\textbf{Toutes les courbes sont des \MontreCode{name path} nommés} — fonction xint, interpolation ou spline. Cela permet :
+
+\begin{itemize}
+	\item de \textbf{réutiliser} un tracé avec des styles différents via \MontreCode{\textbackslash tkzGrphDrawExistingCurve(s)} ;
+	\item de calculer des \textbf{intersections} entre n'importe quelles courbes ;
+	\item de calculer des \textbf{intégrales} entre n'importe quelles courbes ;
+	\item d'\textbf{unifier} la syntaxe indépendamment du type de courbe.
+\end{itemize}
+
+\subsection{Rétrocompatibilité}
+
+L'environnement \MontreCode{tkzGrph} accepte les mêmes noms de clés que \MontreCode{GraphiqueTikz} (\MontreCode{Xmin}, \MontreCode{Xgrille}\ldots) ainsi que leurs alias anglais (\MontreCode{width}, \MontreCode{xgrid}\ldots).
+
+\pagebreak
+
+%=============================================================
+\section{Environnement \texttt{tkzGrph}}
+%=============================================================
+
+\subsection{Syntaxe}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+\begin{tkzGrph}[options tikz]<clés>
+  ...
+\end{tkzGrph}
+\end{tcblisting}
+
+\subsection{Clés disponibles}
+
+\begin{itemize}
+	\item \MontreCode{Xmin}/\MontreCode{Xmax} : bornes de l'axe $Ox$, \MontreCode{0}/\MontreCode{10} par défaut ;
+	\item \MontreCode{Ymin}/\MontreCode{Ymax} : bornes de l'axe $Oy$, \MontreCode{0}/\MontreCode{10} par défaut ;
+	\item \MontreCode{Largeur=...} / \MontreCode{width=...} : largeur (dimension pure), \MontreCode{8cm} par défaut ;
+	\item \MontreCode{Hauteur=...} / \MontreCode{height=...} : hauteur (dimension pure), \MontreCode{6cm} par défaut ;
+	\item \MontreCode{Origx=...} / \MontreCode{Origy=...} : position de l'origine, \MontreCode{\{0\}} par défaut ;
+	\item \MontreCode{Xgrille=...} / \MontreCode{xgrid=...} : pas de grille principale en $x$, \MontreCode{1} par défaut ;
+	\item \MontreCode{Xgrilles=...} / \MontreCode{xgrids=...} : pas de grille secondaire en $x$, \MontreCode{0.5} par défaut ;
+	\item \MontreCode{Xgrillei=...} / \MontreCode{xgridi=...} : pas de grille intermédiaire en $x$ ;
+	\item \MontreCode{Ygrille=...}, \MontreCode{Ygrilles=...}, \MontreCode{Ygrillei=...} : idem en $y$ ;
+	\item \MontreCode{Theme=...} / \MontreCode{theme=...} : thème de couleurs (\MontreCode{standard}, \MontreCode{gris}, \MontreCode{bleu}, \MontreCode{vert}, \MontreCode{chaud}, \MontreCode{contraste}) ;
+	\item \MontreCode{NomFigure=...} / \MontreCode{figurename=...} : préfixe des nœuds pour plusieurs figures ;
+	\item \MontreCode{TailleGrad=...} / \MontreCode{gradsize=...} : taille des graduations (\texttt{longueur} ou \texttt{dessus/dessous}) ;
+  \item \MontreCode{AffCadre} / \MontreCode{showframe} : affiche un cadre ;
+	\item \MontreCode{Milli} / \MontreCode{milli} : grille millimétrée.
+\end{itemize}
+
+{\footnotesize\faBomb}~\MontreCode{Largeur} et \MontreCode{Hauteur} attendent des \textbf{dimensions pures} (\MontreCode{8cm}, \MontreCode{120mm}\ldots).
+
+\subsection{Nœuds créés}
+
+\begin{itemize}
+	\item \MontreCode{grph-ne}, \MontreCode{grph-nw}, \MontreCode{grph-se}, \MontreCode{grph-sw} : coins de la fenêtre ;
+	\item \MontreCode{grph-n}, \MontreCode{grph-s}, \MontreCode{grph-e}, \MontreCode{grph-w}, \MontreCode{grph-c} : milieux des bords et centre ;
+	\item \MontreCode{grph-axox-w}, \MontreCode{grph-axox-e}, \MontreCode{grph-axoy-s}, \MontreCode{grph-axoy-n} : bords des axes ;
+	\item \MontreCode{grph-orig} : origine du repère.
+\end{itemize}
+
+\pagebreak
+
+%=============================================================
+\subsection{Axes et grilles}
+%=============================================================
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+\tkzGrphDrawGridAxis[clés]{liste valeurs X}{liste valeurs Y}
+% alias FR :
+\tkzGrphTracerAxesGrille[clés]{liste valeurs X}{liste valeurs Y}
+\end{tcblisting}
+
+Les listes sont des \textbf{valeurs réelles} — la conversion est automatique.
+
+\smallskip
+
+Les \MontreCode{[clés]} disponibles sont :
+
+\begin{itemize}
+	\item \MontreCode{Grille} / \MontreCode{grid} : booléen, \MontreCode{true} par défaut ;
+	\item \MontreCode{GrilleIntermediaire} / \MontreCode{intermediategrid} : booléen ;
+	\item \MontreCode{Grads} / \MontreCode{labels} : booléen, \MontreCode{true} par défaut ;
+	\item \MontreCode{AxeOy} / \MontreCode{yaxis} : booléen, \MontreCode{true} par défaut ;
+	\item \MontreCode{Fleches} / \MontreCode{arrows} : booléen, \MontreCode{true} par défaut ;
+	\item \MontreCode{Elargir} / \MontreCode{enlarge} : élargissement des axes ;
+	\item \MontreCode{Police} / \MontreCode{font} : police des labels ;
+	\item \MontreCode{Format} / \MontreCode{format} : format des labels (\MontreCode{num}, \MontreCode{annee}, \MontreCode{frac}\ldots) ;
+	\item \MontreCode{Derriere} / \MontreCode{behind} : grille en arrière-plan ;
+	\item \MontreCode{Devant} / \MontreCode{front} : axes en avant-plan (sans grille).
+\end{itemize}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5}
+\begin{tkzGrph}%
+    <Xmin=1990,Xmax=2020,Ymin=0,Ymax=5000000,
+    Largeur=10cm,hauteur=5cm,Xgrille=5,Xgrilles=1,
+    Ygrille=1000000,Ygrilles=500000,Origx=1990>
+  \tkzGrphTracerAxesGrille[Elargir=2.5mm,Police=\small,Format=annee/num]%
+    {1990,1995,2000,2005,2010,2015,2020}%
+    {0,1000000,2000000,3000000,4000000,5000000}
+\end{tkzGrph}
+\end{tcblisting}
+
+\pagebreak
+
+%=============================================================
+\section{Définir et tracer des courbes}
+%=============================================================
+
+\subsection{Courbe de fonction : \texttt{\textbackslash tkzGrphDefineCurve}}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+\tkzGrphDefineCurve[clés]<nom fct>{expression xint}
+% alias FR :
+\tkzGrphDefinirCourbe[clés]<nom fct>{expression xint}
+\end{tcblisting}
+
+Les \MontreCode{[clés]} disponibles sont :
+
+\begin{itemize}
+	\item \MontreCode{Couleur} / \MontreCode{color} : couleur du tracé, \MontreCode{black} par défaut ;
+	\item \MontreCode{Nom} / \MontreCode{name} : nom du \MontreCode{path} créé ;
+	\item \MontreCode{Debut} / \MontreCode{start} : abscisse de départ (réelle), \MontreCode{Xmin} par défaut ;
+	\item \MontreCode{Fin} / \MontreCode{end} : abscisse de fin (réelle), \MontreCode{Xmax} par défaut ;
+	\item \MontreCode{Pas} / \MontreCode{step} : pas du tracé, calculé automatiquement par défaut ;
+	\item \MontreCode{Trace} / \MontreCode{draw} : booléen, \MontreCode{true} par défaut.
+\end{itemize}
+
+\subsection{Interpolation lisse : \texttt{\textbackslash tkzGrphDefineInterpoCurve}}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+\tkzGrphDefineInterpoCurve[clés]{x/y § x/y § ...}
+% alias FR :
+\tkzGrphDefinirCourbeInterpo[clés]{x/y § x/y § ...}
+\end{tcblisting}
+
+Séparateur \MontreCode{§} entre les points, \MontreCode{/} entre les coordonnées. Clé spécifique : \MontreCode{tension} (défaut \MontreCode{0.5}).
+
+\subsection{Spline de Hermite : \texttt{\textbackslash tkzGrphDefineSpline}}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+\tkzGrphDefineSpline[clés]{x/y/f'(x) § x/y/f'(x) § ...}
+% alias FR :
+\tkzGrphDefinirCourbeSpline[clés]{x/y/f'(x) § x/y/f'(x) § ...}
+\end{tcblisting}
+
+Remarques :
+
+\begin{itemize}
+  \item Pour chaque point : abscisse / ordonnée / dérivée (toutes en valeurs réelles).
+  \item La dérivée est normalisée automatiquement.
+  \item Clé spécifique (Hermite) : \MontreCode{Alt} (mode alternatif Bézier, conseillé pour les courbes oscillantes).
+\end{itemize}
+
+\subsection{Tracer des courbes existantes}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+% tracer UN path existant avec un style
+\tkzGrphDrawExistingCurve[options draw]{nom path}
+
+% tracer PLUSIEURS paths en une fois : nom/couleur,...
+\tkzGrphDrawExistingCurves[options draw]{nom/couleur, nom/couleur, ...}
+% alias FR :
+\tkzGrphTracerCourbe / \tkzGrphTracerCourbes
+\end{tcblisting}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5}
+\begin{tkzGrph}%
+    <Xmin=2990,Xmax=3020,Ymin=0,Ymax=5000000,
+    Largeur=10cm,hauteur=5cm,Xgrille=5,Xgrilles=1,
+    Ygrille=1000000,Ygrilles=500000,Origx=2990,%
+    TailleGrad=0pt/3pt>
+  \tkzGrphTracerAxesGrille[Elargir=2.5mm]%
+     {2990,2995,3000,3005,3010,3015,3020}%
+     {0,1000000,2000000,3000000,4000000,5000000}
+  \tkzGrphDefinirCourbe[Nom=cf]<f>{2000*(x-2990)^2+500000}
+  \tkzGrphDefinirCourbeInterpo[Tension=1,Nom=interpo]%
+    {2990/4500000 § 3005/500000 § 3014/4250000}
+  \tkzGrphDefinirCourbeSpline[Alt,Nom=sp]%
+    {2990/300000/0.5 § 3000/2000000/0 § 3010/250000/0 § 3020/4500000/0.8}
+  % tracer avec des couleurs différentes
+  \tkzGrphTracerCourbes{cf/red,interpo/blue,sp/orange}
+\end{tkzGrph}
+\end{tcblisting}
+
+\pagebreak
+
+\section{Compléments}
+
+%=============================================================
+\subsection{Récupération de coordonnées réelles}
+%=============================================================
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+\tkzGrphGetX{(nœud)}[\mavaleur]    % abscisse réelle
+\tkzGrphGetY{(nœud)}[\mavaleur]    % ordonnée réelle
+\tkzGrphGetXY{(nœud)}[\monx][\mony]
+% alias FR :
+\tkzGrphRecupX / \tkzGrphRecupY / \tkzGrphRecupXY
+\end{tcblisting}
+
+Dénormalise les coordonnées d'un nœud TikZ existant vers les vraies valeurs.
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5}
+\begin{tkzGrph}%
+    <Xmin=2990,Xmax=3020,Xgrille=5,Xgrilles=1,
+    Ymin=0,Ymax=5000000,Ygrille=1000000,Ygrilles=500000,
+    Largeur=10cm,Hauteur=5cm,Origx=2990>
+  \tkzGrphDrawGridAxis[enlarge=2.5mm,font=\small]%
+    {2990,2995,3000,3005,3010,3015,3020}%
+    {0,1000000,2000000,3000000,4000000,5000000}
+  \tkzGrphDefineCurve[name=cf]<f>{2000*(x-2990)^2+500000}
+  \tkzGrphDefineSpline[alt,name=sp]%
+    {2990/300000/0.5 § 3000/2000000/0 § 3010/250000/0 § 3020/4500000/0.8}
+  \tkzGrphDrawExistingCurves{cf/red,sp/blue}
+  \tkzGrphFindItsc[show,name=K]{cf}{sp}
+  % récupérer et afficher les coordonnées réelles
+  \tkzGrphGetXY{(K-1)}[\xun][\yun]
+  \node[right,font=\small,rotate=90] at (K-1)
+    {$(\ArrondirNum[1]{\xun}\,;\,\ArrondirNum[0]{\yun})$} ;
+\end{tkzGrph}
+\end{tcblisting}
+
+\pagebreak
+
+%=============================================================
+\subsection{Marquage de points : \texttt{\textbackslash tkzGrphMarkPts}}
+%=============================================================
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+% version normale : avec label
+\tkzGrphMarkPts[clés]<police>{liste de nœuds TikZ}
+% version étoilée : sans label
+\tkzGrphMarkPts*[clés]{liste de nœuds TikZ}
+% alias FR :
+\tkzGrphMarquerPts
+\end{tcblisting}
+
+Les nœuds sont donnés en coordonnées normalisées ou via des nœuds TikZ existants. Clés : \MontreCode{Couleur}/\MontreCode{color}, \MontreCode{Style}/\MontreCode{style} (\MontreCode{o}, \MontreCode{x}, \MontreCode{+}, \MontreCode{ggb}\ldots).
+
+\pagebreak
+
+\section{Analyse(s) et exploitation(s)}
+
+%=============================================================
+\subsection{Intégrales : \texttt{\textbackslash tkzGrphDrawIntg}}
+%=============================================================
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+% sous une courbe (axe Ox)
+\tkzGrphDrawIntg[clés]{nom path}{borne A}{borne B}
+% entre deux courbes
+\tkzGrphDrawIntg[clés]{nom path 1}[nom path 2]{borne A}{borne B}
+% alias FR :
+\tkzGrphIntegrale[clés]{...}
+\end{tcblisting}
+
+Les bornes sont des \textbf{valeurs réelles} ou des \textbf{nœuds TikZ} (\MontreCode{(ITSC-1)}). Le paramètre optionnel \MontreCode{[nom path 2]} active le mode \textit{entre deux courbes}.
+
+\smallskip
+
+{\footnotesize\faBomb}~Nécessite la librairie \TikZ\ \MontreCode{spath3} (\MontreCode{\textbackslash usetikzlibrary\{spath3\}}).
+
+\smallskip
+
+Les \MontreCode{[clés]} disponibles sont :
+
+\begin{itemize}
+	\item \MontreCode{Couleurs} / \MontreCode{colors} : couleur(s) (\MontreCode{bord/fond} ou unique), \MontreCode{gray} par défaut ;
+	\item \MontreCode{Style} / \MontreCode{style} : \MontreCode{fill} (défaut) ou \MontreCode{hachures} ;
+	\item \MontreCode{Hachures} / \MontreCode{hatch} : pattern TikZ, \MontreCode{north west lines} par défaut ;
+	\item \MontreCode{Opacite} / \MontreCode{opacity} : opacité du fond, \MontreCode{0.5} par défaut ;
+	\item \MontreCode{Bord} / \MontreCode{border} : booléen, \MontreCode{true} par défaut, traits verticaux aux bornes ;
+	\item \MontreCode{Bornes} / \MontreCode{bound} : \MontreCode{abs} (défaut) ou \MontreCode{noeuds}.
+\end{itemize}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5}
+\begin{tkzGrph}%
+    <Xmin=2990,Xmax=3020,Xgrille=5,Xgrilles=1,
+    Ymin=0,Ymax=5000000,Ygrille=1000000,Ygrilles=500000,
+    Largeur=10cm,Hauteur=5cm,Origx=2990>
+  \tkzGrphDrawGridAxis[enlarge=2.5mm,font=\small]%
+    {2990,2995,3000,3005,3010,3015,3020}%
+    {0,1000000,2000000,3000000,4000000,5000000}
+  \tkzGrphDefineCurve[draw=false,name=cf]<f>{2000*(x-2990)^2+500000}
+  \tkzGrphDefineSpline[alt,draw=false,name=sp]%
+    {2990/300000/0.5 § 3005/2500000/0 § 3020/4000000/0.8}
+  % sous une courbe
+  \tkzGrphDrawIntg[colors=cyan/cyan!30]{cf}{2995}{3010}
+  % entre deux courbes
+  \tkzGrphDrawIntg[colors=yellow,style=hachures]{sp}[cf]{3000}{3015}
+  \tkzGrphDrawExistingCurves{cf/red,sp/blue}
+\end{tkzGrph}
+\end{tcblisting}
+
+\pagebreak
+
+%=============================================================
+\subsection{Intersections : \texttt{\textbackslash tkzGrphFindItsc}}
+%=============================================================
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+\tkzGrphFindItsc[clés]{nom path 1}{nom path 2}<nb>
+% alias FR :
+\tkzGrphIntersections[clés]{nom path 1}{nom path 2}<nb>
+\end{tcblisting}
+
+Les nœuds sont nommés \MontreCode{S-1}, \MontreCode{S-2}\ldots (ou le préfixe choisi via \MontreCode{Nom}/\MontreCode{name}).
+
+\smallskip
+
+Les \MontreCode{[clés]} disponibles sont :
+
+\begin{itemize}
+	\item \MontreCode{Nom} / \MontreCode{name} : préfixe des nœuds, \MontreCode{S} par défaut ;
+	\item \MontreCode{Couleur} / \MontreCode{color} : couleur des points et traits ;
+	\item \MontreCode{Aff} / \MontreCode{show} : booléen, \MontreCode{true} par défaut ;
+	\item \MontreCode{Traits} / \MontreCode{lines} : booléen, traits vers les axes ;
+	\item \MontreCode{ListeRes} / \MontreCode{reslist} : nom d'une macro pour la liste des abscisses réelles.
+\end{itemize}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5}
+\begin{tkzGrph}<Xmin=2990,Xmax=3020,Ymin=0,Ymax=5000000,
+               Largeur=10cm,Hauteur=5cm,Origx=2990>
+  \tkzGrphDrawGridAxis[enlarge=2.5mm,font=\small]%
+    {2990,2995,3000,3005,3010,3015,3020}%
+    {0,1000000,2000000,3000000,4000000,5000000}
+  \tkzGrphDefineCurve[name=cf]<f>{2000*(x-2990)^2+500000}
+  \tkzGrphDefineSpline[alt,name=sp]%
+    {2990/300000/0.5 § 3000/2000000/0 § 3010/250000/0 § 3020/4500000/0.8}
+  \tkzGrphDrawExistingCurves{cf/red,sp/blue}
+  \tkzGrphFindItsc[show,lines,reslist=LISTRES,color=olive]{cf}{sp}
+\end{tkzGrph}
+
+Solutions : \LISTRES
+\end{tcblisting}
+
+\pagebreak
+
+%=============================================================
+\subsection{Images et antécédents}
+%=============================================================
+
+\subsubsection{Image : \texttt{\textbackslash tkzGrphFindY}}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+\tkzGrphFindY[clés]{nom path}{x réel}<nom nœud>
+% alias FR :
+\tkzGrphTrouverY[clés]{nom path}{x réel}<nom nœud>
+\end{tcblisting}
+
+Intersection avec la droite verticale $x = x_{\text{réel}}$. Le nœud \MontreCode{<nom nœud>} est réutilisable ensuite.
+
+\subsubsection{Images : \texttt{\textbackslash tkzGrphFindListY}}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+\tkzGrphFindListY[clés]{nom path}{x1,x2,...}
+% alias FR :
+\tkzGrphTrouverListeY[clés]{nom path}{x1,x2,...}
+\end{tcblisting}
+
+\subsubsection{Antécédents : \texttt{\textbackslash tkzGrphFindX}}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+\tkzGrphFindX[clés]{nom path}{y réel}<nb>
+% alias FR :
+\tkzGrphTrouverX[clés]{nom path}{y réel}<nb>
+\end{tcblisting}
+
+\MontreCode{<nb>} reçoit le nombre de solutions. Clé \MontreCode{reslist}/\MontreCode{ListeRes} pour stocker la liste des abscisses.
+
+\smallskip
+
+Les \MontreCode{[clés]} communes à \MontreCode{\textbackslash tkzGrphFindY} et \MontreCode{\textbackslash tkzGrphFindX} :
+
+\begin{itemize}
+	\item \MontreCode{Couleur} / \MontreCode{color} : couleur du point et des traits ;
+	\item \MontreCode{Style} / \MontreCode{style} : style du point (\MontreCode{o}, \MontreCode{x}, \MontreCode{ggb}\ldots) ;
+	\item \MontreCode{Aff} / \MontreCode{show} : booléen, \MontreCode{true} par défaut ;
+	\item \MontreCode{Traits} / \MontreCode{lines} : booléen, traits vers les axes ;
+	\item \MontreCode{AffDroite} / \MontreCode{showline} : booléen, affiche la droite horizontale/verticale.
+\end{itemize}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5}
+\begin{tkzGrph}%
+    <Xmin=2990,Xmax=3020,Xgrille=5,Xgrilles=1,
+    Ymin=0,Ymax=5000000,Ygrille=1000000,Ygrilles=500000,
+    Largeur=10cm,Hauteur=5cm,Origx=2990>
+  \tkzGrphDrawGridAxis[enlarge=2.5mm,font=\small]%
+    {2990,2995,3000,3005,3010,3015,3020}%
+    {0,1000000,2000000,3000000,4000000,5000000}
+  \tkzGrphDefineCurve[trace,name=cf,color=red]<f>{2000*(x-2990)^2+500000}
+  % image en x=3000
+  \tkzGrphFindY[show,lines,color=teal]{cf}{3000}
+  % images multiples
+  \tkzGrphFindListY[show,color=orange]{cf}{2993,3005,3015}
+  % antécédents de y=2000000
+  \tkzGrphFindX%
+    [show,lines,showline,color=violet,reslist=ANTS]{cf}{2000000}
+\end{tkzGrph}
+
+Antécédents : \ANTS
+\end{tcblisting}
+
+%==================================================================
+\subsection{Extremums : \texttt{\textbackslash tkzGrphFindMin/Max}}
+%==================================================================
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+\tkzGrphFindMin[clés]{nom path}[nœud]
+\tkzGrphFindMax[clés]{nom path}[nœud]
+\end{tcblisting}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5}
+\begin{tkzGrph}%
+  <xmin=2990,Xmax=3020,Xgrille=5,Xgrilles=1,%
+  Ymin=-2000000,Ymax=5000000,Ygrille=1000000,Ygrilles=100000,Origx=2990,%
+  Largeur=10cm,Hauteur=70mm,Theme=seyes,TailleGrad=0pt/1mm>
+  \tkzGrphDrawGridAxis[enlarge=2.5mm,font=\small]%
+  {2990,2995,3000,3005,3010,3015,3020}%
+  {-2000000,-1000000,0,1000000,2000000,3000000,4000000,5000000}
+  \tkzGrphDefineCurve[name=cf,trace,forbiddenvalues={3000}]%
+    <f>{-1250000 + 100000000/(x-3000)^4}
+  \tkzGrphDefineInterpoCurve[tension=1,name=interpo]%
+    {2990/4500000 § 3005/500000 § 3018/4250000}
+  \tkzGrphDefineSpline[alt,name=spline]%
+    { 2990/300000/0.5 § 3000/2000000/0 § 3010/250000/0 § 3020/4500000/0.8 }
+  \tkzGrphDrawExistingCurves{interpo/blue,spline/orange,cf/violet}
+  %  \tkzGrphFindItsc[show,lines,reslist=LISTRES,Couleur=olive]{cf}{spline}
+  %max/min
+  \tkzGrphFindMin{interpo}
+  \tkzGrphFindMax[start=2990,end=3010,color=teal,style=+]{spline}
+  \tkzGrphGetXY{(grph-max)}[\mylocalxmax][\mylocalymax]
+  \draw[teal] (grph-max) node[right,rotate=90,scale=0.75] {(\ArrondirNum[0]{\mylocalxmax};\ArrondirNum[0]<exponent-mode=fixed>{\mylocalymax})} ;
+\end{tkzGrph}
+\end{tcblisting}
+
+%=============================================================
+\section{Nuage et régression : statistiques}
+%=============================================================
+
+\subsection{Nuage de points : \texttt{\textbackslash tkzGrphScatterPlot}}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+\tkzGrphScatterPlot[clés]{liste X}{liste Y}
+% alias FR :
+\tkzGrphNuage[clés]{liste X}{liste Y}
+\end{tcblisting}
+
+\subsection{Droite de régression : \texttt{\textbackslash tkzGrphDrawRegLin}}
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5,listing only}
+\tkzGrphDrawRegLin[clés tikz]{liste X}{liste Y}
+% alias FR :
+\tkzGrphRegLin[clés tikz]{liste X}{liste Y}
+\end{tcblisting}
+
+Calcule et trace la droite de régression par la méthode des moindres carrés. Les coefficients sont stockés dans \MontreCode{\textbackslash pflstrega} ($a$) et \MontreCode{\textbackslash pflstregb} ($b$).
+
+\begin{tcblisting}{listing engine=minted,minted language=latex,
+  colframe=lightgray,colback=lightgray!5}
+\begin{tkzGrph}
+    <Xmin=1990,Xmax=2020,Ymin=0,Ymax=3000000,
+    Largeur=10cm,Hauteur=5cm,Xgrille=5,Xgrilles=1,%
+    Ygrille=500000,Origx=1990>
+  \tkzGrphDrawGridAxis[enlarge=2.5mm,font=\small]%
+    {1990,1995,2000,2005,2010,2015,2020}%
+    {0,500000,1000000,1500000,2000000,2500000,3000000}
+  \tkzGrphScatterPlot[color=red]%
+    {1992,1996,2001,2005,2009,2014,2018}%
+    {800000,1100000,1400000,1700000,2000000,2400000,2700000}
+  \tkzGrphDrawRegLin[blue,thick]%
+    {1992,1996,2001,2005,2009,2014,2018}%
+    {800000,1100000,1400000,1700000,2000000,2400000,2700000}
+  %labels
+  \tkzGrphPlaceTexte[Position=right]{(grph-axox-ee)}{Année}
+  \tkzGrphPlaceTexte[Position=above]{(grph-axoy-nn)}{C.A.}
+\end{tkzGrph}
+
+Droite : $y = \ArrondirNum[1]{\pflstrega} x \ArrondirNum[0]<exponent-mode=fixed>{\pflstregb}$
+\end{tcblisting}
+
+\end{document}

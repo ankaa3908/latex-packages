@@ -1,0 +1,1591 @@
+% tkz-grapheur-altversion.tex
+% Copyright 2026 Cédric Pierquet
+% Environnement avec grandes valeurs, ou version alternative
+% Principe : normalisation interne, TikZ travaille dans [0,Largeur]x[0,Hauteur]
+% En phase(s) de test(s)
+
+%====LIB
+\usetikzlibrary{spath3}
+
+%====LENGTHS
+\newlength\tmptkzgstwidth
+\newlength\tmptkzgstheight
+
+\defKV[GraphiqueTikzStats]{%
+  % axes
+  Xmin=\def\pflstxmintmp{#1},%
+  xmin=\def\pflstxmintmp{#1},%
+  Xmax=\def\pflstxmaxtmp{#1},%
+  xmax=\def\pflstxmaxtmp{#1},%
+  Ymin=\def\pflstymintmp{#1},%
+  ymin=\def\pflstymintmp{#1},%
+  Ymax=\def\pflstymaxtmp{#1},%
+  ymax=\def\pflstymaxtmp{#1},%
+  % dimensions pures
+  Largeur=\setlength\tmptkzgstwidth{#1},%
+  width=\setlength\tmptkzgstwidth{#1},%
+  Hauteur=\setlength\tmptkzgstheight{#1},%
+  height=\setlength\tmptkzgstheight{#1},%
+  % origine
+  Origx=\def\pflstOxtmp{#1},%
+  origx=\def\pflstOxtmp{#1},%
+  Origy=\def\pflstOytmp{#1},%
+  origy=\def\pflstOytmp{#1},%
+  % grille principale
+  Xgrille=\def\pflstgrillextmp{#1},%
+  xgrid=\def\pflstgrillextmp{#1},%
+  Ygrille=\def\pflstgrilleytmp{#1},%
+  ygrid=\def\pflstgrilleytmp{#1},%
+  % grille secondaire
+  Xgrilles=\def\pflstgrillexstmp{#1},%
+  xgrids=\def\pflstgrillexstmp{#1},%
+  Ygrilles=\def\pflstgrilleystmp{#1},%
+  ygrids=\def\pflstgrilleystmp{#1},%
+  % grille intermédiaire
+  Xgrillei=\def\pflstgrillexitmp{#1},%
+  xgridi=\def\pflstgrillexitmp{#1},%
+  Ygrillei=\def\pflstgrilleyitmp{#1},%
+  ygridi=\def\pflstgrilleyitmp{#1},%
+  % divers
+  Theme=\def\pflstgraphthem{#1},%
+  theme=\def\pflstgraphthem{#1},%
+  NomFigure=\def\pflstgraphnom{#1},%
+  figurename=\def\pflstgraphnom{#1},%
+  TailleGrad=\def\pfltmpthickgrad{#1},%\setlength\pflthickgrad{#1},%
+  gradsize=\def\pfltmpthickgrad{#1}%\setlength\pflthickgrad{#1}%
+}
+\setKVdefault[GraphiqueTikzStats]{%
+  AffCadre=false,%
+  showframe=false,%
+  TailleGrad=3pt,%
+  gradsize=3pt,%
+  Xmin=0,%
+  xmin=0,%
+  Xmax=10,%
+  xmax=10,%
+  Ymin=0,%
+  ymin=0,%
+  Ymax=10,%
+  ymax=10,%
+  Largeur=8cm,%
+  width=8cm,%
+  Hauteur=6cm,%
+  height=6cm,%
+  Origx={0},%
+  origx={0},%
+  Origy={0},%
+  origy={0},%
+  Theme={},%
+  theme={},%
+  Milli=false,%
+  milli=false,%
+  NomFigure={},%
+  figurename={},%
+  Xgrille={1},%
+  xgrid=1,%
+  Xgrillei={1},%
+  xgridi=1,%
+  Xgrilles={0.5},%
+  xgrids=0.5,%
+  Ygrille={1},%
+  ygrid=1,%
+  Ygrillei={1},%
+  ygridi=1,%
+  Ygrilles={0.5},%
+  ygrids=0.5,%
+}
+
+%====ENVIRONNEMENT
+\NewDocumentEnvironment{tkzGrph}{ O{} D<>{} }{%
+  \restoreKV[GraphiqueTikzStats]%
+  \setKV[GraphiqueTikzStats]{#2}%
+  %thick grads
+  \IfSubStr{\pfltmpthickgrad}{/}%
+    {%
+      \StrCut{\pfltmpthickgrad}{/}{\pfltmpthickgradu}{\pfltmpthickgradd}%
+      \setlength\pflthickgradu{\pfltmpthickgradu}%
+      \setlength\pflthickgradd{\pfltmpthickgradd}%
+    }%
+    {%
+      \setlength\pflthickgradu{\pfltmpthickgrad}%
+      \setlength\pflthickgradd{\pfltmpthickgrad}%
+    }%
+  %sync KV boolean
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStats]{showframe}{AffCadre}%
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStats]{milli}{Milli}%
+  %---- valeurs réelles stockées
+  \xdef\pflstxmin{\xintfloateval{\pflstxmintmp}}%
+  \xdef\pflstxmax{\xintfloateval{\pflstxmaxtmp}}%
+  \xdef\pflstymin{\xintfloateval{\pflstymintmp}}%
+  \xdef\pflstymax{\xintfloateval{\pflstymaxtmp}}%
+  \xdef\pflstgrillex{\xintfloateval{\pflstgrillextmp}}%
+  \xdef\pflstgrillexi{\xintfloateval{\pflstgrillexitmp}}%
+  \xdef\pflstgrillexs{\xintfloateval{\pflstgrillexstmp}}%
+  \xdef\pflstgrilley{\xintfloateval{\pflstgrilleytmp}}%
+  \xdef\pflstgrilleyi{\xintfloateval{\pflstgrilleyitmp}}%
+  \xdef\pflstgrilleys{\xintfloateval{\pflstgrilleystmp}}%
+  %---- amplitude réelle
+  \xdef\pflstampx{\xintfloateval{\pflstxmax-\pflstxmin}}%
+  \xdef\pflstampy{\xintfloateval{\pflstymax-\pflstymin}}%
+  %---- dimensions en cm (Largeur et Hauteur sont des dimensions pures : 8cm, 120mm...)
+  \xdef\pflstlargeur{\xintfloateval{\fpeval{\the\tmptkzgstwidth/1cm}}}%
+  \xdef\pflsthauteur{\xintfloateval{\fpeval{\the\tmptkzgstheight/1cm}}}%
+  %---- pas de grille normalisés (en cm dans [0,Largeur]x[0,Hauteur])
+  \xdef\pflstngrillex{\xintfloateval{\pflstgrillex/\pflstampx*\pflstlargeur}}%
+  \xdef\pflstngrillexs{\xintfloateval{\pflstgrillexs/\pflstampx*\pflstlargeur}}%
+  \xdef\pflstngrillexj{\xintfloateval{\pflstgrillexi/\pflstampx*\pflstlargeur}}%
+  \xdef\pflstngrillery{\xintfloateval{\pflstgrilley/\pflstampy*\pflsthauteur}}%
+  \xdef\pflstngrilleys{\xintfloateval{\pflstgrilleys/\pflstampy*\pflsthauteur}}%
+  \xdef\pflstngrilleys{\xintfloateval{\pflstgrilleys/\pflstampy*\pflsthauteur}}%
+  \xdef\pflstngrilleyj{\xintfloateval{\pflstgrilleyi/\pflstampy*\pflsthauteur}}%
+  %---- origine normalisée
+  \IfStrEq{\pflstOxtmp}{}%
+    {\xdef\pflstox{0}}%
+    {\xdef\pflstox{\xintfloateval{(\pflstOxtmp-\pflstxmin)/\pflstampx*\pflstlargeur}}}%
+  \IfStrEq{\pflstOytmp}{}%
+    {\xdef\pflstoy{0}}%
+    {\xdef\pflstoy{\xintfloateval{(\pflstOytmp-\pflstymin)/\pflstampy*\pflsthauteur}}}%
+  %---- ouverture tikzpicture (x=1cm, y=1cm : coordonnées en cm purs)
+  \begin{tikzpicture}[x=1cm,y=1cm,#1]%
+  %---- thèmes (identiques à GraphiqueTikz)
+  \IfStrEqCase{\pflstgraphthem}{%
+    {standard}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepdefault!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillesdefault}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleidefault}}}%
+    {gris}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepgray!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillesgray}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleigray}}}%
+    {gray}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepgray!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillesgray}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleigray}}}%
+    {bleu}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepblue!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillesblue}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleiblue}}}%
+    {blue}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepblue!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillesblue}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleiblue}}}%
+    {vert}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepgreen!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillesgreen}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleigreen}}}%
+    {nature}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepgreen!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillesgreen}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleigreen}}}%
+    {chaud}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepwarm!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrilleswarm}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleiwarm}}}%
+    {warm}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepwarm!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrilleswarm}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleiwarm}}}%
+    {contraste}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepcontrast!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillescontrast}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleicontrast}}}%
+    {contrast}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepcontrast!75}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillescontrast}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleicontrast}}}%
+    {seyes}{\tikzset{pflgrillep/.style={line width=\pflthickgridp,pflgrillepseyes}}\tikzset{pflgrilles/.style={line width=\pflthickgrids,pflgrillesseyes}}\tikzset{pflgrillei/.style={line width=\pflthickgridi,pflgrilleiseyes}}}%
+  }%
+  %---- nœuds fenêtre (coordonnées normalisées)
+  \IfStrEq{\pflstgraphnom}{}%
+    {%
+      \coordinate (grph-ne) at (\pflstlargeur,\pflsthauteur) ;%
+      \coordinate (grph-nw) at (0,\pflsthauteur) ;%
+      \coordinate (grph-se) at (\pflstlargeur,0) ;%
+      \coordinate (grph-sw) at (0,0) ;%
+      \coordinate (grph-n)  at ($(grph-ne)!0.5!(grph-nw)$) ;%
+      \coordinate (grph-e)  at ($(grph-ne)!0.5!(grph-se)$) ;%
+      \coordinate (grph-s)  at ($(grph-se)!0.5!(grph-sw)$) ;%
+      \coordinate (grph-w)  at ($(grph-sw)!0.5!(grph-nw)$) ;%
+      \coordinate (grph-c)  at ($(grph-sw)!0.5!(grph-ne)$) ;%
+      \coordinate (grph-axox-w) at ({0},{\pflstoy}) ;
+      \coordinate (grph-axox-e) at ({\pflstlargeur},{\pflstoy}) ;
+      \coordinate (grph-axoy-s) at ({\pflstox},{0}) ;
+      \coordinate (grph-axoy-n) at ({\pflstox},{\pflsthauteur}) ;
+      \coordinate (grph-orig) at (\pflstox,\pflstoy) ;%
+    }%
+    {%
+      \coordinate (\pflstgraphnom-grph-ne) at (\pflstlargeur,\pflsthauteur) ;%
+      \coordinate (\pflstgraphnom-grph-nw) at (0,\pflsthauteur) ;%
+      \coordinate (\pflstgraphnom-grph-se) at (\pflstlargeur,0) ;%
+      \coordinate (\pflstgraphnom-grph-sw) at (0,0) ;%
+      \coordinate (\pflstgraphnom-grph-n)  at ($(\pflstgraphnom-grph-ne)!0.5!(\pflstgraphnom-grph-nw)$) ;%
+      \coordinate (\pflstgraphnom-grph-e)  at ($(\pflstgraphnom-grph-ne)!0.5!(\pflstgraphnom-grph-se)$) ;%
+      \coordinate (\pflstgraphnom-grph-s)  at ($(\pflstgraphnom-grph-se)!0.5!(\pflstgraphnom-grph-sw)$) ;%
+      \coordinate (\pflstgraphnom-grph-w)  at ($(\pflstgraphnom-grph-sw)!0.5!(\pflstgraphnom-grph-nw)$) ;%
+      \coordinate (\pflstgraphnom-grph-c)  at ($(\pflstgraphnom-grph-sw)!0.5!(\pflstgraphnom-grph-ne)$) ;%
+      \coordinate (\pflstgraphnom-grph-axox-w) at ({0},{\pflstoy}) ;
+      \coordinate (\pflstgraphnom-grph-axox-e) at ({\pflstlargeur},{\pflstoy}) ;
+      \coordinate (\pflstgraphnom-grph-axoy-s) at ({\pflstox},{0}) ;
+      \coordinate (\pflstgraphnom-grph-axoy-n) at ({\pflstox},{\pflsthauteur}) ;
+      \coordinate (\pflstgraphnom-grph-orig) at (\pflstox,\pflstoy) ;%
+    }%
+  \ifboolKV[GraphiqueTikzStats]{AffCadre}%
+    {\draw[pflcadre] (0,0) rectangle (\pflstlargeur,\pflsthauteur) ;}{}%
+}{%
+  \end{tikzpicture}%
+}
+
+%====AXES ET GRILLES STATS — même structure que TracerAxesGrilles
+\defKV[GraphiqueTikzStatsAxes]{%
+  Format=\def\pflstformataxes{#1},format=\def\pflstformataxes{#1},%
+  Elargir=\def\pflstaxeselarg{#1},enlarge=\def\pflstaxeselarg{#1},%
+  Police=\def\pflstaxespol{#1},font=\def\pflstaxespol{#1},%
+  Rotation=\def\pfllanglelabel{#1},rotate=\def\pfllanglelabel{#1}%
+}
+\setKVdefault[GraphiqueTikzStatsAxes]{%
+  Grille=true,grid=true,%
+  GrilleIntermediaire=false,intermediategrid=false,%
+  Elargir=0,enlarge=0,%
+  Grads=true,labels=true,%
+  Origine=false,origin=false,%
+  Police={},font={},%
+  Format=num,format=num,%
+  Dernier=false,last=false,%
+  Derriere=false,behind=false,%
+  Devant=false,front=false,%
+  Fleches=true,arrows=true,%
+  AxeOy=true,yaxis=true,%
+  Rotation=0,rotate=0,%
+  Traits=true,thicks=true%
+}
+
+\NewDocumentCommand\tkzGrphDrawGridAxis{ s O{} m m }{%
+  % #1=étoile (saute origine)  #2=clés  #3=liste valeurs X (vraies)  #4=liste valeurs Y (vraies)
+  \restoreKV[GraphiqueTikzStatsAxes]%
+  \setKV[GraphiqueTikzStatsAxes]{#2}%
+  % sync KV
+  \tkzgrphSetKVboolTrue[GraphiqueTikzStatsAxes]{grid}{Grille}%
+  \tkzgrphSetKVboolTrue[GraphiqueTikzStatsAxes]{labels}{Grads}%
+  \tkzgrphSetKVboolTrue[GraphiqueTikzStatsAxes]{arrows}{Fleches}%
+  \tkzgrphSetKVboolTrue[GraphiqueTikzStatsAxes]{yaxis}{AxeOy}%
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStatsAxes]{behind}{Derriere}%
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStatsAxes]{front}{Devant}%
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStatsAxes]{last}{Dernier}%
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStatsAxes]{origin}{Origine}%
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStatsAxes]{intermediategrid}{GrilleIntermediaire}%
+  % format axes
+  \IfSubStr{\pflstformataxes}{/}%
+    {\StrCut{\pflstformataxes}{/}{\pflstformataxex}{\pflstformataxey}}%
+    {\xdef\pflstformataxex{\pflstformataxes}\xdef\pflstformataxey{\pflstformataxes}}%
+  \IfEq{\pflstgraphnom}{}%
+  {%
+    \coordinate (grph-axox-ee) at ([xshift=\pflstaxeselarg]\pflstlargeur,\pflstoy) ;
+    \coordinate (grph-axoy-nn) at ([yshift=\pflstaxeselarg]\pflstox,\pflsthauteur) ;
+  }%
+  {%
+    \coordinate (\pflstgraphnom-grph-axox-ee) at ([xshift=\pflstaxeselarg]\pflstlargeur,\pflstoy) ;
+    \coordinate (\pflstgraphnom-grph-axoy-nn) at ([yshift=\pflstaxeselarg]\pflstox,\pflsthauteur) ;
+  }%
+  % cas Derriere/Devant
+  \ifboolKV[GraphiqueTikzStatsAxes]{Derriere}{\setKV[GraphiqueTikzStatsAxes]{Grads=false}}{}%
+  \ifboolKV[GraphiqueTikzStatsAxes]{Devant}{\setKV[GraphiqueTikzStatsAxes]{Grille=false}}{}%
+  % grille (pas normalisés)
+  \ifboolKV[GraphiqueTikzStatsAxes]{Grille}%
+    {%
+      \ifboolKV[GraphiqueTikzStats]{Milli}%
+        {%
+          \draw[pflgrilles,xstep=\xintfloateval{0.1*\pflstngrillex},ystep=\xintfloateval{0.1*\pflstngrillery}]
+            (0,0) grid (\pflstlargeur,\pflsthauteur) ;%
+          \draw[pflgrillei,xstep=\xintfloateval{0.5*\pflstngrillex},ystep=\xintfloateval{0.5*\pflstngrillery}]
+            (0,0) grid (\pflstlargeur,\pflsthauteur) ;%
+        }%
+        {%
+          \draw[pflgrilles,xstep=\pflstngrillexs,ystep=\pflstngrilleys]
+            (0,0) grid (\pflstlargeur,\pflsthauteur) ;%
+        }%
+      \ifboolKV[GraphiqueTikzStatsAxes]{GrilleIntermediaire}%
+        {\draw[pflgrillei,xstep=\pflstngrillexj,ystep=\pflstngrilleyj]
+          (0,0) grid (\pflstlargeur,\pflsthauteur) ;}%
+        {}%
+      \draw[pflgrillep,xstep=\pflstngrillex,ystep=\pflstngrillery]
+        (0,0) grid (\pflstlargeur,\pflsthauteur) ;%
+      \ifboolKV[GraphiqueTikzStatsAxes]{Dernier}%
+        {%
+          \draw[pflgrillep] (0,\pflsthauteur)--(\pflstlargeur,\pflsthauteur) ;%
+          \draw[pflgrillep] (\pflstlargeur,0)--(\pflstlargeur,\pflsthauteur) ;%
+        }{}%
+    }{}%
+  % axes
+  \ifboolKV[GraphiqueTikzStatsAxes]{Fleches}%
+    {%
+      \draw[pflaxes] (0,\pflstoy) -- ([xshift=\pflstaxeselarg]\pflstlargeur,\pflstoy) ;%
+      \ifboolKV[GraphiqueTikzStatsAxes]{AxeOy}%
+        {\draw[pflaxes] (\pflstox,0) -- ([yshift=\pflstaxeselarg]\pflstox,\pflsthauteur) ;}{}%
+    }%
+    {%
+      \draw[pflaxessansfleche] (0,\pflstoy) -- ([xshift=\pflstaxeselarg]\pflstlargeur,\pflstoy) ;%
+      \ifboolKV[GraphiqueTikzStatsAxes]{AxeOy}%
+        {\draw[pflaxessansfleche] (\pflstox,0) -- ([yshift=\pflstaxeselarg]\pflstox,\pflsthauteur) ;}{}%
+    }%
+  % graduations X
+  \foreach \tmpstx in {#3}{%
+    \xdef\tmpstnx{\xintfloateval{(\tmpstx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    \draw[pfltrait] ([yshift=\pflthickgradu]\tmpstnx,{\pflstoy}) -- ([yshift=-\pflthickgradd]\tmpstnx,{\pflstoy}) ;%
+  }%
+  % graduations Y
+  \ifboolKV[GraphiqueTikzStatsAxes]{AxeOy}%
+    {%
+      \foreach \tmpsty in {#4}{%
+        \xdef\tmpstny{\xintfloateval{(\tmpsty-\pflstymin)/\pflstampy*\pflsthauteur}}%
+        \draw[pfltrait] ([xshift=\pflthickgradu]{\pflstox},\tmpstny) -- ([xshift=-\pflthickgradd]{\pflstox},\tmpstny) ;%
+      }%
+    }{}%
+  % labels
+  \ifboolKV[GraphiqueTikzStatsAxes]{Grads}%
+    {%
+      \ifboolKV[GraphiqueTikzStatsAxes]{Origine}%
+        {\node[pflnoeud,below left,font=\pflstaxespol] at (\pflstox,\pflstoy)
+          {\FormatterValeurAxex{\pflstformataxex}{\pflstxmin}} ;}{}%
+      \foreach \tmpstx in {#3}{%
+        \xdef\tmpstnx{\xintfloateval{(\tmpstx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+        \IfBooleanTF{#1}%
+          {\xdef\tmpisorigx{\xintfloateval{\tmpstnx == \pflstox}}%
+           \xintifboolexpr{\tmpisorigx == 1}{}%
+             {\node[pflnoeud,below,font=\pflstaxespol] at ([yshift=-\pflthickgradd]\tmpstnx,{\pflstoy})
+               {\FormatterValeurAxex{\pflstformataxex}{\tmpstx}} ;}}%
+          {\node[pflnoeud,below,font=\pflstaxespol] at ([yshift=-\pflthickgradd]\tmpstnx,{\pflstoy})
+            {\FormatterValeurAxex{\pflstformataxex}{\tmpstx}} ;}%
+      }%
+      \ifboolKV[GraphiqueTikzStatsAxes]{AxeOy}%
+        {%
+          \foreach \tmpsty in {#4}{%
+            \xdef\tmpstny{\xintfloateval{(\tmpsty-\pflstymin)/\pflstampy*\pflsthauteur}}%
+            \IfBooleanTF{#1}%
+              {\xdef\tmpisorigy{\xintfloateval{\tmpstny == \pflstoy}}%
+               \xintifboolexpr{\tmpisorigy == 1}{}%
+                 {\node[pflnoeud,left,font=\pflstaxespol] at ([xshift=-\pflthickgradd]{\pflstox},\tmpstny)
+                   {\FormatterValeurAxey{\pflstformataxey}{\tmpsty}} ;}}%
+              {\node[pflnoeud,left,font=\pflstaxespol] at ([xshift=-\pflthickgradd]{\pflstox},\tmpstny)
+                {\FormatterValeurAxey{\pflstformataxey}{\tmpsty}} ;}%
+          }%
+        }{}%
+    }{}%
+}
+\NewCommandCopy\tkzGrphTracerAxesGrille\tkzGrphDrawGridAxis
+\NewCommandCopy\tkzgaxisgrid\tkzGrphDrawGridAxis
+
+%====AJOUTER DES VALEURS/LABELS MANUELLEMENT (version normalisée)
+\NewDocumentCommand\tkzGrphAddValX{ O{} m m }{%
+  % #1=clés  #2=liste valeurs X réelles  #3=liste labels formatés
+  \restoreKV[GraphiqueTikzStatsAxes]%
+  \setKV[GraphiqueTikzStatsAxes]{#1}%
+  %sync
+  \tkzgrphSetKVboolTrue[GraphiqueTikzStatsAxes]{thicks}{Traits}%
+  % tirets
+  \ifboolKV[GraphiqueTikzStatsAxes]{Traits}%
+    {%
+      \foreach \tmpstx in {#2}{%
+        \xdef\tmpstnx{\xintfloateval{(\tmpstx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+        \draw[pfltrait] ([yshift=\pflthickgradu]\tmpstnx,\pflstoy) --++(0,{-\pflthickgradu-\pflthickgradd}) ;%
+      }%
+    }{}%
+  % labels
+  \setsepchar{,}%
+  \readlist*\LstValX{#2}%
+  \readlist*\LstValFmtX{#3}%
+  \foreach \i in {1,...,\LstValXlen}{%
+    \itemtomacro\LstValX[\i]\mavalx%
+    \itemtomacro\LstValFmtX[\i]\mavalfmtx%
+    \xdef\tmpstnx{\xintfloateval{(\mavalx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    \draw ([yshift={-\pflthickgradd}]\tmpstnx,\pflstoy) node[pflnoeud,below,font=\pflstaxespol] {\mavalfmtx} ;%
+  }%
+}
+\NewCommandCopy\tkzGrphAjouterValeursX\tkzGrphAddValX
+\NewCommandCopy\tkzgaddx\tkzGrphAddValX
+
+\NewDocumentCommand\tkzGrphAddValY{ O{} m m }{%
+  % #1=clés  #2=liste valeurs Y réelles  #3=liste labels formatés
+  \restoreKV[GraphiqueTikzAxes]%
+  \setKV[GraphiqueTikzAxes]{#1}%
+  %sync
+  \tkzgrphSetKVboolTrue[GraphiqueTikzStatsAxes]{thicks}{Traits}%
+  % tirets
+  \ifboolKV[GraphiqueTikzStatsAxes]{Traits}%
+    {%
+      \foreach \tmpsty in {#2}{%
+        \xdef\tmpstny{\xintfloateval{(\tmpsty-\pflstymin)/\pflstampy*\pflsthauteur}}%
+        \draw[pfltrait] ([xshift=\pflthickgradu]\pflstox,\tmpstny) --++({-\pflthickgradu-\pflthickgradd},0) ;%
+      }%
+    }{}%
+  % labels
+  \setsepchar{,}%
+  \readlist*\LstValY{#2}%
+  \readlist*\LstValFmtY{#3}%
+  \foreach \i in {1,...,\LstValYlen}{%
+    \itemtomacro\LstValY[\i]\mavaly%
+    \itemtomacro\LstValFmtY[\i]\mavalfmty%
+    \xdef\tmpstny{\xintfloateval{(\mavaly-\pflstymin)/\pflstampy*\pflsthauteur}}%
+    \draw ([xshift={-\pflthickgradd}]\pflstox,\tmpstny) node[pflnoeud,left,font=\pflstaxespol] {\mavalfmty} ;%
+  }%
+}
+\NewCommandCopy\tkzGrphAjouterValeursY\tkzGrphAddValY
+\NewCommandCopy\tkzgaddy\tkzGrphAddValY
+
+\NewDocumentCommand\tkzGrphAddLabelsX{ O{} m m }{%
+  % #1=clés  #2=liste valeurs X réelles  #3=liste labels qualitatifs
+  \restoreKV[GraphiqueTikzStatsAxes]%
+  \setKV[GraphiqueTikzStatsAxes]{#1}%
+  % tirets
+  \ifboolKV[GraphiqueTikzStatsAxes]{Traits}%
+    {%
+      \foreach \tmpstx in {#2}{%
+        \xdef\tmpstnx{\xintfloateval{(\tmpstx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+        \draw[pfltrait] ([yshift=\pflthickgradu]\tmpstnx,\pflstoy) --++(0,{-\pflthickgradu-\pflthickgradd}) ;%
+      }%
+    }{}%
+  % style rotation
+  \IfEq{\pfllanglelabel}{0}%
+    {\tikzset{pfllegendelabelsqualix/.style={font=\pflstaxespol,below}}}%
+    {%
+      \xintifboolexpr{\pfllanglelabel > 0}%
+        {\tikzset{pfllegendelabelsqualix/.style={font=\pflstaxespol,rotate=\pfllanglelabel,anchor=east}}}%
+        {\tikzset{pfllegendelabelsqualix/.style={font=\pflstaxespol,rotate=\pfllanglelabel,anchor=west}}}%
+    }%
+  % labels
+  \setsepchar{,}%
+  \readlist*\LstValX{#2}%
+  \readlist*\LstValFmtX{#3}%
+  \foreach \i in {1,...,\LstValXlen}{%
+    \itemtomacro\LstValX[\i]\mavalx%
+    \itemtomacro\LstValFmtX[\i]\mavalfmtx%
+    \xdef\tmpstnx{\xintfloateval{(\mavalx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    \draw ([yshift={-\pflthickgradd}]\tmpstnx,\pflstoy) node[pfllegendelabelsqualix,font=\pflstaxespol] {\mavalfmtx} ;%
+  }%
+}
+\NewCommandCopy\tkzGrphAjouterLabelsX\tkzGrphAddLabelsX
+\NewCommandCopy\tkzgaddqualix\tkzGrphAddLabelsX
+
+\NewDocumentCommand\tkzGrphAddLabelsY{ O{} m m }{%
+  % #1=clés  #2=liste valeurs Y réelles  #3=liste labels qualitatifs
+  \restoreKV[GraphiqueTikzStatsAxes]%
+  \setKV[GraphiqueTikzStatsAxes]{#1}%
+  % tirets
+  \ifboolKV[GraphiqueTikzStatsAxes]{Traits}%
+    {%
+      \foreach \tmpsty in {#2}{%
+        \xdef\tmpstny{\xintfloateval{(\tmpsty-\pflstymin)/\pflstampy*\pflsthauteur}}%
+        \draw[pfltrait] ([xshift=\pflthickgradu]\pflstox,\tmpstny) --++({-\pflthickgradu-\pflthickgradd},0) ;%
+      }%
+    }{}%
+  % style rotation
+  \IfEq{\pfllanglelabel}{0}%
+    {\tikzset{pfllegendelabelsqualiy/.style={font=\pflstaxespol,left}}}%
+    {\tikzset{pfllegendelabelsqualiy/.style={font=\pflstaxespol,left,rotate=\pfllanglelabel,anchor=east}}}%
+  % labels
+  \setsepchar{,}%
+  \readlist*\LstValY{#2}%
+  \readlist*\LstValFmtY{#3}%
+  \foreach \i in {1,...,\LstValYlen}{%
+    \itemtomacro\LstValY[\i]\mavaly%
+    \itemtomacro\LstValFmtY[\i]\mavalfmty%
+    \xdef\tmpstny{\xintfloateval{(\mavaly-\pflstymin)/\pflstampy*\pflsthauteur}}%
+    \draw ([xshift={-\pflthickgradd}]\pflstox,\tmpstny) node[pfllegendelabelsqualiy,font=\pflstaxespol] {\mavalfmty} ;%
+  }%
+}
+\NewCommandCopy\tkzGrphAjouterLabelsY\tkzGrphAddLabelsY
+\NewCommandCopy\tkzgaddqualiy\tkzGrphAddLabelsY
+
+%====DRAW EXISTING PATH
+\NewDocumentCommand\tkzGrphDrawExistingCurve{ O{} m }{%
+  \begin{scope}%
+    \clip (0,0) rectangle (\pflstlargeur,\pflsthauteur) ;%
+    \draw[spath/restore=#2,pflcourbe,#1] {} ;
+  \end{scope}
+}
+\NewCommandCopy\tkzGrphTracerCourbe\tkzGrphDrawExistingCurve
+\NewCommandCopy\tkzgdrawcurve\tkzGrphDrawExistingCurve
+
+\NewDocumentCommand\tkzGrphDrawExistingCurves{ O{} m }{%
+  \begin{scope}%
+    \clip (0,0) rectangle (\pflstlargeur,\pflsthauteur) ;%
+    \foreach \tmpname/\tmpcolor in {#2}{%
+      \draw[spath/restore=\tmpname,pflcourbe,#1,\tmpcolor] {} ;
+    }
+  \end{scope}
+}
+\NewCommandCopy\tkzGrphTracerCourbes\tkzGrphDrawExistingCurves
+\NewCommandCopy\tkzgdrawcurves\tkzGrphDrawExistingCurves
+
+%====COURBE DE FONCTION (via normalisation xintthecoords)
+\defKV[GraphiqueTikzStatsCourbe]{%
+  Pas=\def\pflststepcurve{#1},step=\def\pflststepcurve{#1},%
+  Nom=\def\pflstnamecurve{#1},name=\def\pflstnamecurve{#1},%
+  Couleur=\def\pflstcoulcurve{#1},color=\def\pflstcoulcurve{#1},%
+  StyleTrace=\def\pflststylecurve{#1},curvestyle=\def\pflststylecurve{#1},%
+  Debut=\def\pflststdebut{#1},start=\def\pflststdebut{#1},%
+  Fin=\def\pflststfin{#1},end=\def\pflststfin{#1},%
+  Tension=\def\pflststtension{#1},tension=\def\pflststtension{#1},%
+  Coeffs=\def\pflsplinecoeffs{#1},coeffs=\def\pflsplinecoeffs{#1},%
+  ValeursInterdites=\def\pflstvalinter{#1},forbiddenvalues=\def\pflstvalinter{#1},%
+  DeltaVI=\def\pfldeltavi{#1},deltafv=\def\pfldeltavi{#1}%
+}
+\setKVdefault[GraphiqueTikzStatsCourbe]{%
+  Couleur=black,color=black,%
+  Debut={},start={},%
+  Fin={},end={},%
+  Pas={},step={},%
+  Nom={cf},name={cf},%
+  Trace=false,trace=false,%
+  StyleTrace={},curvestyle={},%
+  Tension=0.5,tension=0.5,%
+  Alt=false,alt=false,%
+  Coeffs=3,coeffs=3,%
+  ValeursInterdites={},forbiddenvalues={},%
+  DeltaVI={auto},deltafv={auto}%
+}
+
+\NewDocumentCommand\tkzGrphDefineCurve{ O{} D<>{f} m }{%
+  % #1=clés  #2=nom fct  #3=expression xint en x (vraies valeurs)
+  \restoreKV[GraphiqueTikzStatsCourbe]%
+  \setKV[GraphiqueTikzStatsCourbe]{#1}%
+  % sync KV
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStatsCourbe]{trace}{Trace}%
+  % définition de la vraie fonction
+  \xintdeffloatfunc #2(x) := #3 ;%
+  % définition de la fonction normalisée :
+  % t ∈ [0,Largeur] → x_reel = t/Largeur*ampx+xmin → f(x_reel) → y_norm
+  \xintdeffloatfunc #2norm(t) :=
+    (#2(t/\pflstlargeur*\pflstampx+\pflstxmin)-\pflstymin)
+    /\pflstampy*\pflsthauteur ;%
+  % bornes normalisées (défaut : toute la fenêtre)
+  \IfStrEq{\pflststdebut}{}%
+    {\xdef\pflststdebutn{0}}%
+    {\xdef\pflststdebutn{\xintfloateval{(\pflststdebut-\pflstxmin)/\pflstampx*\pflstlargeur}}}%
+  \IfStrEq{\pflststfin}{}%
+    {\xdef\pflststfinn{\pflstlargeur}}%
+    {\xdef\pflststfinn{\xintfloateval{(\pflststfin-\pflstxmin)/\pflstampx*\pflstlargeur}}}%
+  % pas normalisé (100 points par défaut)
+  \IfStrEq{\pflststepcurve}{}%
+    {\xdef\pflststep{\xintfloateval{(\pflststfinn-\pflststdebutn)/100}}}%
+    {\xdef\pflststep{\xintfloateval{\pflststepcurve/\pflstampx*\pflstlargeur}}}%
+  % tracé avec clip dans la fenêtre normalisée
+  %bifurcation BI/noVI
+  \IfStrEq{\pflstvalinter}{}%
+    {%
+      \begin{scope}%
+        \clip (0,0) rectangle (\pflstlargeur,\pflsthauteur) ;%
+        \ifboolKV[GraphiqueTikzStatsCourbe]{Trace}%
+          {%
+            \path[draw,pflcourbe,\pflstcoulcurve,\pflststylecurve,name path global=\pflstnamecurve,spath/save global=\pflstnamecurve]
+              plot[smooth] coordinates {%
+                \xintthecoords\xintfloatexpr
+                  seq((t,#2norm(t)),
+                      t=\pflststdebutn..[\pflststep]..\pflststfinn,\pflststfinn)
+                \relax} ;%
+          }%
+          {%
+            \path[draw=none,pflcourbe,\pflstcoulcurve,\pflststylecurve,name path global=\pflstnamecurve,spath/save global=\pflstnamecurve]
+              plot[smooth] coordinates {%
+                \xintthecoords\xintfloatexpr
+                  seq((t,#2norm(t)),
+                      t=\pflststdebutn..[\pflststep]..\pflststfinn,\pflststfinn)
+                \relax} ;%
+          }%
+      \end{scope}%
+    }%
+    {%
+      \xdef\pflststyfinn{\xintfloateval{(\pflstymax-\pflstymin)/\pflstampy*\pflsthauteur}}
+      \xdef\pfloffsetV{\xintfloateval{(\pflststyfinn)/20}}%
+      \xdef\pflMinoffsetV{\xintfloateval{(0)-(\pfloffsetV)}}%
+      \xdef\pflMaxoffsetV{\xintfloateval{(\pflststyfinn)+(\pfloffsetV)}}%
+      \IfStrEq{\pfldeltavi}{auto}%
+       {%
+         \xdef\pfldeltavi{\xintfloateval{((\pflststfinn)-(\pflststdebutn))/250}}%
+       }%
+       {}%
+      \xdef\pflststep{\xintfloateval{(\pflststfinn-\pflststdebutn)/250}}%
+      %génération des branches, si VI
+      \xdef\pfllistebornes{\pflststdebutn}%
+      \foreach \i in \pflstvalinter {%
+        \xdef\pfllistebornes{\pfllistebornes,\xintfloateval{(\i-\pflstxmin)/\pflstampx*\pflstlargeur-(\pfldeltavi)},\xintfloateval{(\i-\pflstxmin)/\pflstampx*\pflstlargeur+(\pfldeltavi)}}%
+      }%
+      \xdef\pfllistebornes{\pfllistebornes,\pflststfinn}%
+      \setsepchar{,}%
+      \readlist*\tkzintlistebornes{\pfllistebornes}%
+      \xdef\tkzgrphnbbranches{\fpeval{\tkzintlisteborneslen/2}}%
+      \begin{scope}%
+        \clip (0,0) rectangle (\pflstlargeur,\pflsthauteur) ;%
+        \ifboolKV[GraphiqueTikzStatsCourbe]{Trace}%
+          {%
+            \path[draw,pflcourbe,\pflstcoulcurve,\pflststylecurve,name path global=\pflstnamecurve,spath/save global=\pflstnamecurve]
+            \foreach \ib [evaluate=\ib as \ibdeb using {int(2*\ib-1)},evaluate=\ib as \ibfin using {int(2*\ib)}] in {1,...,\tkzgrphnbbranches}{%
+              plot[smooth] coordinates {%
+                \xintthecoords\xintfloatexpr seq((t,min(max(#2norm(t),\pflMinoffsetV),\pflMaxoffsetV)), t={\tkzintlistebornes[\ibdeb]}..[\pflststep]..{\tkzintlistebornes[\ibfin]},{\tkzintlistebornes[\ibfin]}) \relax}
+             } ;%
+          }%
+          {%
+            \path[draw=none,pflcourbe,\pflstcoulcurve,\pflststylecurve,name path global=\pflstnamecurve,spath/save global=\pflstnamecurve]
+            \foreach \ib [evaluate=\ib as \ibdeb using {int(2*\ib-1)},evaluate=\ib as \ibfin using {int(2*\ib)}] in {1,...,\tkzgrphnbbranches}{%
+              plot[smooth] coordinates {%
+                \xintthecoords\xintfloatexpr seq((t,min(max(#2norm(t),\pflMinoffsetV),\pflMaxoffsetV)), t={\tkzintlistebornes[\ibdeb]}..[\pflststep]..{\tkzintlistebornes[\ibfin]},{\tkzintlistebornes[\ibfin]}) \relax}
+             } ;%
+          }%
+      \end{scope}
+    }%
+}
+\NewCommandCopy\tkzGrphDefinirCourbe\tkzGrphDefineCurve
+\NewCommandCopy\tkzgdefcurve\tkzGrphDefineCurve
+
+%====RÉCUPÉRATION DE COORDONNÉES (dénormalisation)
+\NewDocumentCommand\tkzGrphGetX{ m O{\monabs} }{%
+  % #1 = nœud TikZ  #2 = macro de stockage (défaut \monabs)
+  % récupère la coordonnée x normalisée puis dénormalise
+  \path #1 ;%
+  \pgfgetlastxy{\macrox}{\macroy}%
+  \xdef#2{\xintfloateval{%
+    (\ConvertirPtToCm{\macrox})/\pflstlargeur*\pflstampx+\pflstxmin}}%
+}
+\NewCommandCopy\tkzGrphRecupX\tkzGrphGetX
+\NewCommandCopy\tkzggetx\tkzGrphGetX
+
+\NewDocumentCommand\tkzGrphGetY{ m O{\monordo} }{%
+  % #1 = nœud TikZ  #2 = macro de stockage (défaut \monordo)
+  \path #1 ;%
+  \pgfgetlastxy{\macrox}{\macroy}%
+  \xdef#2{\xintfloateval{%
+    (\ConvertirPtToCm{\macroy})/\pflsthauteur*\pflstampy+\pflstymin}}%
+}
+\NewCommandCopy\tkzGrphRecupY\tkzGrphGetY
+\NewCommandCopy\tkzggety\tkzGrphGetY
+
+\NewDocumentCommand\tkzGrphGetXY{ m O{\monabs} O{\monordo} }{%
+  \tkzGrphGetX{#1}[#2]%
+  \tkzGrphGetY{#1}[#3]%
+}
+\NewCommandCopy\tkzGrphRecupXY\tkzGrphGetXY
+\NewCommandCopy\tkzggetxy\tkzGrphGetXY
+
+%====INTERPOLATION SIMPLE (spline smooth TikZ)
+\NewDocumentCommand\tkzGrphDefineInterpoCurve{ O{} m }{%
+  % #1 = clés (mêmes que GraphiqueTikzCourbe)
+  % #2 = liste x/y § x/y § ... (vraies valeurs)
+  \restoreKV[GraphiqueTikzStatsCourbe]%
+  \setKV[GraphiqueTikzStatsCourbe]{#1}%
+  % sync KV
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStatsCourbe]{trace}{Trace}%
+  % parsing à deux niveaux : § entre points, / entre x et y
+  \setsepchar[.]{§./}%
+  \readlist*\pflstinterpolist{#2}%
+  % construction de la liste normalisée (x_norm, y_norm)
+  \xdef\pflstinterponorm{}%
+  \xintFor* ##1 in {\xintSeq{1}{\pflstinterpolistlen}} \do{%
+    \itemtomacro\pflstinterpolist[##1,1]\tmpstx%
+    \itemtomacro\pflstinterpolist[##1,2]\tmpsty%
+    \xdef\tmpstnx{\xintfloateval{(\tmpstx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    \xdef\tmpstny{\xintfloateval{(\tmpsty-\pflstymin)/\pflstampy*\pflsthauteur}}%
+    \xdef\pflstinterponorm{\pflstinterponorm(\tmpstnx,\tmpstny)}%
+  }%
+  % tracé avec clip
+  \begin{scope}%
+    \clip (0,0) rectangle (\pflstlargeur,\pflsthauteur) ;%
+    \ifboolKV[GraphiqueTikzCourbe]{Trace}%
+      {%
+        \path[draw,pflcourbe,\pflststylecurve,\pflstcoulcurve,name path global=\pflstnamecurve,spath/save global=\pflstnamecurve]%
+          plot[smooth,tension=\pflststtension]%
+          coordinates {\pflstinterponorm} ;%
+      }%
+      {%
+        \path[draw=none,pflcourbe,\pflstcoulcurve,name path global=\pflstnamecurve,spath/save global=\pflstnamecurve]%
+          plot[smooth,tension=\pflststtension]%
+          coordinates {\pflstinterponorm} ;%
+      }%
+  \end{scope}%
+}
+\NewCommandCopy\tkzGrphDefinirCourbeInterpo\tkzGrphDefineInterpoCurve
+\NewCommandCopy\tkzgdefinterpo\tkzGrphDefineInterpoCurve
+
+%===INTERSECTION & ANTÉCÉDENTS
+\defKV[GraphiqueTikzStatsIntersect]{%
+  Nom=\def\pflstintercurves{#1},name=\def\pflstintercurves{#1},%
+  ListeRes=\def\pflstinterlistres{#1},reslist=\def\pflstinterlistres{#1},%
+  Couleur=\def\pflstintercol{#1},color=\def\pflstintercol{#1},%
+  Style=\def\pflstinterstyle{#1},style=\def\pflstinterstyle{#1}%
+}
+\setKVdefault[GraphiqueTikzStatsIntersect]{%
+  Nom=S,name=S,%
+  Aff=true,show=true,%
+  Couleur=black,color=black,%
+  AffDroite=false,showline=false,%
+  Traits=false,lines=false,%
+  Style=o,style=o,%
+  ListeRes={},reslist={}%
+}
+
+%===ANTECEDENTS
+\NewDocumentCommand\tkzGrphFindX{ O{} m m D<>{\myantec} }{%
+  \restoreKV[GraphiqueTikzStatsIntersect]%
+  \setKV[GraphiqueTikzStatsIntersect]{#1}%
+  % sync KV
+  \tkzgrphSetKVboolTrue[GraphiqueTikzStatsIntersect]{show}{Aff}%
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStatsIntersect]{showline}{AffDroite}%
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStatsIntersect]{lines}{Traits}%
+  %droite normalisée
+  \xdef\tmpstny{\xintfloateval{((#3)-\pflstymin)/\pflstampy*\pflsthauteur}}%
+  \begin{scope}
+    \clip ({0},{0}) rectangle (\pflstlargeur,\pflsthauteur) ;
+    \ifboolKV[GraphiqueTikzStatsIntersect]{AffDroite}%
+      {%
+        \path[draw,\pflstintercol,pfltraitantec,name path=tmpanteced] ({0},{\tmpstny})--({\pflstlargeur},{\tmpstny}) ;
+      }%
+      {%
+        \path[draw=none,pfltraitantec,name path=tmpanteced] ({0},{\tmpstny})--({\pflstlargeur},{\tmpstny}) ;
+      }%
+    \path[name intersections={of=#2 and tmpanteced,name=\pflstintercurves,total=\t}] \pgfextra{\xdef#4{\t}};
+    \IfStrEq{\pflstinterlistres}{}%
+      {}%
+      {%
+        \xdef\tkzgtmplistabsc{}%
+        \xintifboolexpr{#4 == 0}{}%
+        {%
+          \foreach \i in {1,...,#4}{%
+            \tkzGrphGetX{(\pflstintercurves-\i)}[\tmpabsi]%
+            \xintifboolexpr{\i == 1}%
+              {\xdef\tkzgtmplistabsc{\tmpabsi}}%
+              {\xdef\tkzgtmplistabsc{\tkzgtmplistabsc,\tmpabsi}}%
+          }%
+        }%
+        \expandafter\xdef\csname\pflstinterlistres\endcsname{\tkzgtmplistabsc}%
+      }%
+    \ifboolKV[GraphiqueTikzStatsIntersect]{Aff}%
+      {%
+        \xintifboolexpr{#4 == 0}{}%
+        {%
+          \foreach \i in {1,...,#4}{%
+            \ifboolKV[GraphiqueTikzStatsIntersect]{Traits}%
+              {%
+                \draw[pfltraitimg,\pflstintercol]let \p1 = (\pflstintercurves-\i) in (\pflstintercurves-\i) -- ({\x1},{\pflstoy}) ;
+              }%
+              {}%
+            \tkzGrphMarkPts*[Style=\pflstinterstyle,Couleur=\pflstintercol]{(\pflstintercurves-\i)}
+          }
+        }%
+      }%
+      {}%
+  \end{scope}
+}
+\NewCommandCopy\tkzGrphTrouverX\tkzGrphFindX
+\NewCommandCopy\tkzgfindx\tkzGrphFindX
+
+\NewDocumentCommand\tkzGrphFindItsc{ O{} m m D<>{\myt} }{%
+  \restoreKV[GraphiqueTikzStatsIntersect]%
+  \setKV[GraphiqueTikzStatsIntersect]{#1}%
+  % sync KV
+  \tkzgrphSetKVboolTrue[GraphiqueTikzStatsIntersect]{show}{Aff}%
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStatsIntersect]{showline}{AffDroite}%
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStatsIntersect]{lines}{Traits}%
+  \path[name intersections={of=#2 and #3,name=\pflstintercurves,total=\t}] \pgfextra{\xdef#4{\t}};
+  \ifboolKV[GraphiqueTikzStatsIntersect]{Aff}%
+    {%
+      \xintifboolexpr{#4 == 0}{}%
+        {%
+          \foreach \i in {1,...,#4}{%
+            \ifboolKV[GraphiqueTikzStatsIntersect]{Traits}%
+              {%
+                \draw[pfltraitimg,\pflstintercol]let \p1 = (\pflstintercurves-\i) in (\pflstintercurves-\i) -- ({\x1},{\pflstoy}) ;
+              }%
+              {}%
+            \tkzGrphMarkPts*[Style=\pflstinterstyle,Couleur=\pflstintercol]{(\pflstintercurves-\i)}
+            %\filldraw[{\useKV[GraphiqueTikzIntersect]{Couleur}}] (\pflintercurves-\i) circle[pflpointc] ;
+          }
+        }%
+    }%
+    {}%
+  \IfStrEq{\pflstinterlistres}{}%
+    {}%
+    {%
+      \xdef\tkzgtmplistabsc{}%
+      \xintifboolexpr{#4 == 0}{}%
+      {%
+        \foreach \i in {1,...,#4}{%
+          \tkzGrphGetX{(\pflstintercurves-\i)}[\tmpabsi]%
+          \xintifboolexpr{\i == 1}%
+            {\xdef\tkzgtmplistabsc{\tmpabsi}}%
+            {\xdef\tkzgtmplistabsc{\tkzgtmplistabsc,\tmpabsi}}%
+        }%
+      }%
+      \expandafter\xdef\csname\pflstinterlistres\endcsname{\tkzgtmplistabsc}%
+    }%
+}
+\NewCommandCopy\tkzGrphIntersections\tkzGrphFindItsc
+\NewCommandCopy\tkzgfinditsc\tkzGrphFindItsc
+
+%====IMAGES
+\defKV[tkzGrphFindY]{%
+  Nom=\def\pflstfindyname{#1},name=\def\pflstfindyname{#1},%
+  Couleur=\def\pflstfindycol{#1},color=\def\pflstfindycol{#1},%
+  Style=\def\pflstfindystyle{#1},style=\def\pflstfindystyle{#1}%
+}
+\setKVdefault[tkzGrphFindY]{%
+  Nom={},name={},%
+  Couleur=black,color=black,%
+  Style=o,style=o,%
+  Aff=true,show=true,%
+  Traits=false,lines=false%
+}
+
+\NewDocumentCommand\tkzGrphFindY{ O{} m m D<>{\myimg} }{%
+  \restoreKV[tkzGrphFindY]%
+  \setKV[tkzGrphFindY]{#1}%
+  % sync KV
+  \tkzgrphSetKVboolTrue[tkzGrphFindY]{show}{Aff}%
+  \tkzgrphSetKVboolFalse[tkzGrphFindY]{lines}{Traits}%
+  % droite verticale normalisée
+  \xdef\tmpstnx{\xintfloateval{((#3)-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+  \begin{scope}
+    \clip (0,0) rectangle (\pflstlargeur,\pflsthauteur) ;
+    \path[draw=none,pflcourbe,name path=tmpimage] ({\tmpstnx},{0}) -- ({\tmpstnx},{\pflsthauteur}) ;%
+    \path[name intersections={of=#2 and tmpimage,name=ZZZZ}] ;
+    \tkzGrphGetY{(ZZZZ-1)}[#4]%
+    \IfStrEq{\pflstfindyname}{}%
+      {}%
+      {%
+        \coordinate (\pflstintercurves) at (ZZZZ-1) ;
+      }%
+    %traits
+    \ifboolKV[tkzGrphFindY]{Traits}%
+      {%
+        \draw[\pflstfindycol,pfltraitimg] let \p1=(ZZZZ-1) in (\x1,\pflstoy) -- (ZZZZ-1) -- (\pflstox,\y1) ;%
+      }%
+      {}%
+    % affichage du point
+    \ifboolKV[tkzGrphFindY]{Aff}%
+      {%
+        \tkzGrphMarkPts*[Style=\pflstfindystyle,Couleur=\pflstfindycol] {(ZZZZ-1)}%
+      }{}%
+  \end{scope}%
+}
+\NewCommandCopy\tkzGrphTrouverY\tkzGrphFindY
+\NewCommandCopy\tkzgfindy\tkzGrphFindY
+
+\NewDocumentCommand\tkzGrphFindListY{ O{} m m }{%
+  % #1=clés  #2=nom path  #3=liste x réels (CSV)
+  \foreach \tmpstx in {#3}{%
+    \tkzGrphFindY[#1]{#2}{\tmpstx}%
+  }%
+}
+\NewCommandCopy\tkzGrphTrouverListeY\tkzGrphFindListY
+\NewCommandCopy\tkzgfindlisty\tkzGrphFindListY
+
+%====SPLINES CUBIQUES (Hermite normalisées)
+% facteur de normalisation des dérivées :
+% f'_norm = f'_reel * (Hauteur/ampy) / (Largeur/ampx)
+%         = f'_reel * Hauteur * ampx / (ampy * Largeur)
+
+%====TEXTES
+\defKV[GraphiqueTikzNodeAlt]{%
+  Couleur=\def\pflnodecol{#1},color=\def\pflnodecol{#1},%
+  Police=\def\pflnodefonte{#1},font=\def\pflnodefonte{#1},%
+  Position=\def\pfnodepos{#1},pos=\def\pfnodepos{#1},%
+  xshift=\def\pfnodeposxshift{#1},%
+  yshift=\def\pfnodeposyshift{#1}%
+}
+\setKVdefault[GraphiqueTikzNodeAlt]{%
+  Couleur=black,color=black,%
+  Police={\normalfont\normalsize},font={\normalfont\normalsize},%
+  Position={},pos={},%
+  xshift=0pt,yshift=0pt
+}
+
+\NewDocumentCommand\tkzGrphPlaceText{ O{} m m }{%
+  \restoreKV[GraphiqueTikzNodeAlt]%
+  \setKV[GraphiqueTikzNodeAlt]{#1}%
+  % test : si #2 contient une virgule → coordonnées réelles à normaliser, attention cependant :-/
+  % sinon → nœud TikZ existant, on l'utilise directement
+  \IfSubStr{#2}{,}%
+    {%
+      \StrBetween{#2}{(}{,}[\tmpstx]%
+      \StrBetween{#2}{,}{)}[\tmpsty]%
+      \xdef\tmpstnx{\xintfloateval{(\tmpstx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+      \xdef\tmpstny{\xintfloateval{(\tmpsty-\pflstymin)/\pflstampy*\pflsthauteur}}%
+      \typeout{tmpstnx = \tmpstnx === tmpstny = \tmpstny}
+      \draw (\tmpstnx,\tmpstny)
+        node[xshift=\pfnodeposxshift,yshift=\pfnodeposyshift,pflnoeud,font=\pflnodefonte,text=\pflnodecol,\pfnodepos] {#3} ;%
+    }%
+    {%
+      % nœud existant → passage direct
+      \draw #2
+        node[xshift=\pfnodeposxshift,yshift=\pfnodeposyshift,pflnoeud,font=\pflnodefonte,text=\pflnodecol,\pfnodepos] {#3} ;%
+    }%
+}
+\NewCommandCopy\tkzGrphPlaceTexte\tkzGrphPlaceText
+\NewCommandCopy\tkzgtxt\tkzGrphPlaceText
+
+\NewDocumentCommand\tkzGrphGenSpline{ s m m O{\monspline} }{%
+  % #1=étoile (mode Alt)  #2=liste x/y/f'§...  #3=coeffs  #4=macro chemin
+  % Clé : normalisation dans la boucle uniquement, via \xan/\yan/\xbn/\ybn
+  \setsepchar[.]{§./}%
+  \readlist*\SPLlistepoints{#2}%
+  \def\tmpsplinenumdeb{1}%
+  \def\tmpsplinenumfin{\SPLlistepointslen}%
+  \def\SPLnbsplines{\inteval{\tmpsplinenumfin-1}}%
+  % facteur de normalisation des dérivées (calculé une fois)
+  \xdef\pflstnormpente{\xintfloateval{\pflsthauteur*\pflstampx/(\pflstampy*\pflstlargeur)}}%
+  % initialisation de #4 (vide)
+  \xdef#4{}%
+  \foreach \i in {\tmpsplinenumdeb,...,\SPLnbsplines}{%
+    \pflextractcoeff{#3}{\i}%
+    \def\j{\inteval{\i+1}}%
+    % lecture des vraies valeurs
+    \itemtomacro\SPLlistepoints[\i,1]\xa%
+    \itemtomacro\SPLlistepoints[\i,2]\ya%
+    \itemtomacro\SPLlistepoints[\i,3]\fprimea%
+    \itemtomacro\SPLlistepoints[\j,1]\xb%
+    \itemtomacro\SPLlistepoints[\j,2]\yb%
+    \itemtomacro\SPLlistepoints[\j,3]\fprimeb%
+    % normalisation dans des macros séparées
+    \xdef\xan{\xintfloateval{(\xa-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    \xdef\yan{\xintfloateval{(\ya-\pflstymin)/\pflstampy*\pflsthauteur}}%
+    \xdef\xbn{\xintfloateval{(\xb-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    \xdef\ybn{\xintfloateval{(\yb-\pflstymin)/\pflstampy*\pflsthauteur}}%
+    \xdef\fpriman{\xintfloateval{(\fprimea)*\pflstnormpente}}%
+    \xdef\fprimbn{\xintfloateval{(\fprimeb)*\pflstnormpente}}%
+    % construction du chemin normalisé
+    \IfBooleanTF{#1}%
+      {%
+        % mode Alt
+        \ifnum\i=1
+          \xdef#4{(\xan,\yan) ..controls +({((\xbn)-(\xan))/\COEFFA},{(\fpriman)*((\xbn)-(\xan))/\COEFFA}) and +({-((\xbn)-(\xan))/\COEFFA},{-(\fprimbn)*((\xbn)-(\xan))/\COEFFA}).. (\xbn,\ybn)}%
+        \else
+          \xdef#4{#4 ..controls +({((\xbn)-(\xan))/\COEFFA},{(\fpriman)*((\xbn)-(\xan))/\COEFFA}) and +({-((\xbn)-(\xan))/\COEFFA},{-(\fprimbn)*((\xbn)-(\xan))/\COEFFA}).. (\xbn,\ybn)}%
+        \fi
+      }%
+      {%
+        % mode polaire
+        \ifnum\i=1
+          \xdef#4{(\xan,\yan) ..controls +({atan (\fpriman)}:{((\xbn)-(\xan))/\COEFFA}) and +({-180 + atan (\fprimbn)}:{((\xbn)-(\xan))/\COEFFA}).. (\xbn,\ybn)}%
+        \else
+          \xdef#4{#4 ..controls +({atan (\fpriman)}:{((\xbn)-(\xan))/\COEFFA}) and +({-180 + atan (\fprimbn)}:{((\xbn)-(\xan))/\COEFFB}).. (\xbn,\ybn)}%
+        \fi
+      }%
+  }%
+}
+
+\NewDocumentCommand\tkzGrphDefineSpline{ O{} m D<>{\monspline} }{%
+  \restoreKV[GraphiqueTikzStatsCourbe]%
+  \setKV[GraphiqueTikzStatsCourbe]{#1}%
+  % sync KV
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStatsCourbe]{alt}{Alt}%
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStatsCourbe]{trace}{Trace}%
+  \ifboolKV[GraphiqueTikzStatsCourbe]{Alt}%
+    {\tkzGrphGenSpline*{#2}{\pflsplinecoeffs}[#3]}%
+    {\tkzGrphGenSpline{#2}{\pflsplinecoeffs}[#3]}%
+  \begin{scope}%
+    \clip (0,0) rectangle (\pflstlargeur,\pflsthauteur) ;%
+    \ifboolKV[GraphiqueTikzStatsCourbe]{Trace}%
+      {%
+        \path[draw,pflcourbe,\pflststylecurve,\pflstcoulcurve,name path global=\pflstnamecurve,spath/save global=\pflstnamecurve] #3 ;
+      }%
+      {%
+        \path[draw=none,pflcourbe,\pflststylecurve,\pflstcoulcurve,name path global=\pflstnamecurve,spath/save global=\pflstnamecurve] #3 ;
+      }%
+  \end{scope}%
+}
+\NewCommandCopy\tkzGrphDefinirCourbeSpline\tkzGrphDefineSpline
+\NewCommandCopy\tkzgdefspline\tkzGrphDefineSpline
+
+%====MARQUAGE DE POINTS
+\defKV[GraphiqueTikzStatsMarkPoints]{%
+  Couleur=\def\pflstcouleurpoints{#1},color=\def\pflstcouleurpoints{#1},%
+  Style=\def\pflstylepoints{#1},style=\def\pflstylepoints{#1},%
+  Taillex=\def\pflststylesizex{#1},sizex=\def\pflststylesizex{#1},%
+  Taillec=\def\pflststylesizec{#1},sizec=\def\pflststylesizec{#1},%
+  Tailleo=\def\pflststylesizeo{#1},sizex=\def\pflststylesizeo{#1}%
+}
+\setKVdefault[GraphiqueTikzStatsMarkPoints]{%
+  Couleur=black,color=black,%
+  Taillec=2pt,sizec=2pt,%
+  Taillex=2pt,sizex=2pt,%
+  Tailleo=1.75pt,sizeo=1.75pt,%
+  Style=o,style=o,%
+  Traits=false,lines=false,%
+  ModeTransfo={}
+}
+\NewDocumentCommand\tkzGrphMarkPts{ s O{} D<>{\normalfont\normalsize} m }{%
+  %étoilée = sans label
+  %2=clés
+  %3=points
+  \restoreKV[GraphiqueTikzStatsMarkPoints]%
+  \setKV[GraphiqueTikzStatsMarkPoints]{#2}%
+  % sync KV
+  \tkzgrphSetKVboolFalse[GraphiqueTikzStatsMarkPoints]{lines}{Traits}%
+  \IfBooleanTF{#1}%
+    {%
+      \IfStrEq{\pflstylepoints}{x}%
+        {%
+          \foreach \Point in {#4} {%
+            \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+              {%
+                \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+              }%
+              {}%
+            \draw[\pflstcouleurpoints] \Point pic{pflptcroix=\pflststylesizex/45} ;
+          }%
+        }%
+        {}%
+      \IfStrEq{\pflstylepoints}{+}%
+        {%
+          \foreach \Point in {#4} {%
+            \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+              {%
+                \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+              }%
+              {}%
+            \draw[\pflstcouleurpoints] \Point pic{pflptcroix=\pflststylesizex/90} ;
+          }%
+        }%
+        {}%
+      \IfStrEq{\pflstylepoints}{c}%
+        {%
+          \foreach \Point in {#4} {%
+            \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+              {%
+                \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+              }%
+              {}%
+            \filldraw[draw=none,fill=\pflstcouleurpoints] \Point pic{pflptcarre=\pflststylesizec/0} ;
+          }%
+        }%
+        {}%
+      \IfStrEq{\pflstylepoints}{s}%
+        {%
+          \foreach \Point in {#4} {%
+            \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+              {%
+                \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+              }%
+              {}%
+            \filldraw[draw=none,fill=\pflstcouleurpoints] \Point pic{pflptcarre=\pflststylesizec/0} ;
+          }%
+        }%
+        {}%
+      \IfStrEq{\pflstylepoints}{d}%
+        {%
+          \foreach \Point in {#4} {%
+            \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+              {%
+                \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+              }%
+              {}%
+            \filldraw[draw=none,fill=\pflstcouleurpoints] \Point pic{pflptcarre=\pflststylesizeo/45} ;
+          }%
+        }%
+        {}%
+      \IfStrEq{\pflstylepoints}{o}%
+        {%
+          \IfSubStr{\pflstcouleurpoints}{/}%
+            {%
+              \StrCut{\pflstcouleurpoints}{/}{\pflstcouleurpointsA}{\pflstcouleurpointsB}%
+              \foreach \Point in {#4} {%
+                \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+                  {%
+                    \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+                  }%
+                  {}%
+                \filldraw[pfltrait,fill=\pflstcouleurpointsB,draw=\pflstcouleurpointsA] \Point circle[radius=\pflststylesizeo] ;
+              }%
+            }%
+            {%
+              \foreach \Point in {#4} {%
+                \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+                  {%
+                    \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+                  }%
+                  {}%
+                \filldraw[\pflstcouleurpoints] \Point circle[radius=\pflststylesizeo] ;
+              }%
+            }%
+        }%
+        {}%
+      \IfStrEq{\pflstylepoints}{ggb}%
+        {%
+          \IfSubStr{\pflstcouleurpoints}{/}%
+            {%
+              \StrCut{\pflstcouleurpoints}{/}{\pflstcouleurpointsA}{\pflstcouleurpointsB}%
+              \foreach \Point/\Label/\Pos in {#4} {%
+                \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+                  {%
+                    \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+                  }%
+                  {}%
+                \draw[pflpointggb,\pflstcouleurpointsA,fill=\pflstcouleurpointsB] \Point circle[radius=\pflststylesizeo] ;
+              }%
+            }%
+            {%
+              \foreach \Point/\Label/\Pos in {#4} {%
+                \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+                  {%
+                    \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+                  }%
+                  {}%
+                \filldraw[\pflstcouleurpoints] \Point circle[radius=\pflststylesizeo] ;
+              }%
+            }%
+        }%
+        {}%
+    }%
+    {%avec label
+      \IfStrEq{\pflstylepoints}{x}%
+        {%
+          \foreach \Point/\Label/\Pos in {#4} {%
+            \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+              {%
+                \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+              }%
+              {}%
+            \draw[\pflstcouleurpoints] \Point pic{pflptcroix=\pflststylesizex/45} node[pflnoeud,\Pos,font=#3] {\Label} ;
+          }%
+        }%
+        {}%
+      \IfStrEq{\pflstylepoints}{+}%
+        {%
+          \foreach \Point/\Label/\Pos in {#4} {%
+            \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+              {%
+                \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+              }%
+              {}%
+            \draw[\pflstcouleurpoints] \Point pic{pflptcroix=\pflststylesizex/90} node[pflnoeud,\Pos,font=#3] {\Label} ;
+          }%
+        }%
+        {}%
+      \IfStrEq{\pflstylepoints}{c}%
+        {%
+          \foreach \Point/\Label/\Pos in {#4} {%
+            \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+              {%
+                \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+              }%
+              {}%
+            \filldraw[draw=none,fill=\pflstcouleurpoints] \Point pic{pflptcarre=\pflststylesizec/0} node[pflnoeud,\Pos,\pflstcouleurpoints,font=#3] {\Label} ;
+          }%
+        }%
+        {}%
+      \IfStrEq{\pflstylepoints}{s}%
+        {%
+          \foreach \Point/\Label/\Pos in {#4} {%
+            \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+              {%
+                \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+              }%
+              {}%
+            \filldraw[draw=none,fill=\pflstcouleurpoints] \Point pic{pflptcarre=\pflststylesizec/0} node[pflnoeud,\Pos,\pflstcouleurpoints,font=#3] {\Label} ;
+          }%
+        }%
+        {}%
+      \IfStrEq{\pflstylepoints}{d}%
+        {%
+          \foreach \Point/\Label/\Pos in {#4} {%
+            \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+              {%
+                \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+              }%
+              {}%
+            \filldraw[draw=none,fill=\pflstcouleurpoints] \Point pic{pflptcarre=\pflststylesizeo/45} node[pflnoeud,\Pos,\pflstcouleurpoints,font=#3] {\Label} ;
+          }%
+        }%
+        {}%
+      \IfStrEq{\pflstylepoints}{o}%
+        {%
+          \IfSubStr{\pflstcouleurpoints}{/}%
+            {%
+              \StrCut{\pflstcouleurpoints}{/}{\pflstcouleurpointsA}{\pflstcouleurpointsB}%
+              \foreach \Point/\Label/\Pos in {#4} {%
+                \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+                  {%
+                    \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+                  }%
+                  {}%
+                \draw[pfltrait,\pflstcouleurpointsA,fill=\pflstcouleurpointsB] \Point circle[radius=\pflststylesizeo] node[pflnoeud,\Pos,font=#3] {\Label} ;
+              }%
+            }%
+            {%
+              \foreach \Point/\Label/\Pos in {#4} {%
+                \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+                  {%
+                    \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+                  }%
+                  {}%
+                \filldraw[\pflstcouleurpoints] \Point circle[radius=\pflststylesizeo] node[pflnoeud,\Pos,font=#3] {\Label} ;
+              }%
+            }%
+        }%
+        {}%
+      \IfStrEq{\pflstylepoints}{ggb}%
+        {%
+          \IfSubStr{\pflstcouleurpoints}{/}%
+            {%
+              \StrCut{\pflstcouleurpoints}{/}{\pflstcouleurpointsA}{\pflstcouleurpointsB}%
+              \foreach \Point/\Label/\Pos in {#4} {%
+                \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+                  {%
+                    \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+                  }%
+                  {}%
+                \draw[pflpointggb,\pflstcouleurpointsA,fill=\pflstcouleurpointsB] \Point circle[radius=\pflststylesizeo] node[pflnoeud,\Pos,font=#3] {\Label} ;
+              }%
+            }%
+            {%
+              \foreach \Point/\Label/\Pos in {#4} {%
+                \ifboolKV[GraphiqueTikzStatsMarkPoints]{Traits}%
+                  {%
+                    \draw[\pflstcouleurpoints,pfltraitantec] let \p1 = \Point in ({\x1},{\pflstoy}) |- ({\pflstox},{\y1}) ;
+                  }%
+                  {}%
+                \filldraw[\pflstcouleurpoints] \Point circle[radius=\pflststylesizeo] node[pflnoeud,\Pos,font=#3] {\Label} ;
+              }%
+            }%
+        }%
+        {}%
+    }%
+}
+\NewCommandCopy\tkzGrphMarquerPts\tkzGrphMarkPts
+\NewCommandCopy\tkzgmarkpts\tkzGrphMarkPts
+
+%====INTÉGRALES
+\defKV[GraphiqueTikzIntegrStats]{%
+  Couleurs=\def\pfldomtikzcolors{#1},colors=\def\pfldomtikzcolors{#1},%
+  Style=\def\pfldomtikzstyle{#1},style=\def\pfldomtikzstyle{#1},%
+  Opacite=\def\pfldomtikzopac{#1},opacity=\def\pfldomtikzopac{#1},%
+  Hachures=\def\pfldomtikzhatch{#1},hatch=\def\pfldomtikzhatch{#1},%
+  Bornes=\def\pflintbornes{#1},bound=\def\pflintbornes{#1},%
+  Jonction=\def\pfldomtikzjoin{#1},junction=\def\pfldomtikzjoin{#1},%
+  Tension=\def\pfldomtikztension{#1},tension=\def\pfldomtikztension{#1},%
+  TensionB=\def\pfldomtikztensionB{#1},tensionb=\def\pfldomtikztensionB{#1}%
+}
+\setKVdefault[GraphiqueTikzIntegrStats]{%
+  Couleurs=gray,colors=gray,%
+  Style=fill,style=fill,%
+  Opacite=0.5,opacity=0.5,%
+  Hachures={north west lines},hatch={north west lines},%
+  Jonction=bevel,junction=bevel,%
+  Bornes=abs,bound=abs,%
+  Bord=true,border=true,%
+  Tension=0.5,tension=0.5,%
+  TensionB=0.5,tensionb=0.5%
+}
+
+\NewDocumentCommand\tkzGrphDrawIntg{ O{} D<>{} m O{0} m m }{%
+  %1 = clés
+  %2 = options particulières tikz
+  %3 = fonction, en tikz
+  %4 = fonction n°2 éventuelle
+  %de #5 à #6
+  \restoreKV[GraphiqueTikzIntegrStats]% revenir au valeurs par défaut
+  \setKV[GraphiqueTikzIntegrStats]{#1}% lit les arguments optionnels
+  % sync KV
+  \tkzgrphSetKVboolTrue[GraphiqueTikzIntegrStats]{border}{Bord}%
+  %les couleurs
+  \IfSubStr{\pfldomtikzcolors}{/}%
+    {%
+      \StrCut{\pfldomtikzcolors}{/}{\pfldomtikzcolorbord}{\pfldomtikzcolorfond}
+    }%
+    {%
+      \xdef\pfldomtikzcolorbord{\pfldomtikzcolors}\xdef\pfldomtikzcolorfond{\pfldomtikzcolors}
+    }%
+  \ifboolKV[GraphiqueTikzIntegr]{Bord}%
+    {%
+      \tikzset{integralebordtikzstyle/.style={draw=\pfldomtikzcolorbord}}
+    }%
+    {%
+      \tikzset{integralebordtikzstyle/.style={draw=none}}
+    }%
+  \IfSubStr{,hatch,hachures,}{,\pfldomtikzstyle,}%
+    {%
+      \tikzset{integraletikzstyle/.style={pfltrait,pattern=\pfldomtikzhatch,pattern color=\pfldomtikzcolorfond,line join=\pfldomtikzjoin}}
+    }%
+    {}%
+  \IfSubStr{,fill,remplir,}{,\pfldomtikzstyle,}%
+    {%
+      \tikzset{integraletikzstyle/.style={pfltrait,fill=\pfldomtikzcolorfond,fill opacity=\pfldomtikzopac,line join=\pfldomtikzjoin}}
+    }%
+    {}%
+  %extraction des infos x/y
+  \IfStrEqCase{\pflintbornes}{%
+    {abs}%
+    {%
+      \xdef\absnoeudA{#5}%
+      \xdef\absnoeudB{#6}%
+      % normalisation
+      \xdef\absnoeudAn{\xintfloateval{(\absnoeudA-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+      \xdef\absnoeudBn{\xintfloateval{(\absnoeudB-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    }%
+    {noeuds}%
+    {%
+      \path #5;
+      \pgfgetlastxy{\macrox}{\macroy}%
+      \xdef\tmpstnxA{\xintfloateval{\ConvertirPtToCm{\macrox}}}%
+      \xdef\absnoeudA{\xintfloateval{\tmpstnxA/\pflstlargeur*\pflstampx+\pflstxmin}}%
+      \xdef\absnoeudAn{\tmpstnxA}%
+      \path #6;
+      \pgfgetlastxy{\macrox}{\macroy}%
+      \xdef\tmpstnxB{\xintfloateval{\ConvertirPtToCm{\macrox}}}%
+      \xdef\absnoeudB{\xintfloateval{\tmpstnxB/\pflstlargeur*\pflstampx+\pflstxmin}}%
+      \xdef\absnoeudBn{\tmpstnxB}%
+    }%
+    {nodes}%
+    {%
+      \path #5;
+      \pgfgetlastxy{\macrox}{\macroy}%
+      \xdef\tmpstnxA{\xintfloateval{\ConvertirPtToCm{\macrox}}}%
+      \xdef\absnoeudA{\xintfloateval{\tmpstnxA/\pflstlargeur*\pflstampx+\pflstxmin}}%
+      \xdef\absnoeudAn{\tmpstnxA}%
+      \path #6;
+      \pgfgetlastxy{\macrox}{\macroy}%
+      \xdef\tmpstnxB{\xintfloateval{\ConvertirPtToCm{\macrox}}}%
+      \xdef\absnoeudB{\xintfloateval{\tmpstnxB/\pflstlargeur*\pflstampx+\pflstxmin}}%
+      \xdef\absnoeudBn{\tmpstnxB}%
+    }%
+    {abs/noeud}%
+    {%
+      \xdef\absnoeudA{#5}%
+      \xdef\absnoeudAn{\xintfloateval{(\absnoeudA-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+      \path #6;
+      \pgfgetlastxy{\macrox}{\macroy}%
+      \xdef\tmpstnxB{\xintfloateval{\ConvertirPtToCm{\macrox}}}%
+      \xdef\absnoeudB{\xintfloateval{\tmpstnxB/\pflstlargeur*\pflstampx+\pflstxmin}}%
+      \xdef\absnoeudBn{\tmpstnxB}%
+    }%
+    {abs/node}%
+    {%
+      \xdef\absnoeudA{#5}%
+      \xdef\absnoeudAn{\xintfloateval{(\absnoeudA-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+      \path #6;
+      \pgfgetlastxy{\macrox}{\macroy}%
+      \xdef\tmpstnxB{\xintfloateval{\ConvertirPtToCm{\macrox}}}%
+      \xdef\absnoeudB{\xintfloateval{\tmpstnxB/\pflstlargeur*\pflstampx+\pflstxmin}}%
+      \xdef\absnoeudBn{\tmpstnxB}%
+    }%
+    {noeud/abs}%
+    {%
+      \path #5;
+      \pgfgetlastxy{\macrox}{\macroy}%
+      \xdef\tmpstnxA{\xintfloateval{\ConvertirPtToCm{\macrox}}}%
+      \xdef\absnoeudA{\xintfloateval{\tmpstnxA/\pflstlargeur*\pflstampx+\pflstxmin}}%
+      \xdef\absnoeudAn{\tmpstnxA}%
+      \xdef\absnoeudB{#6}%
+      \xdef\absnoeudBn{\xintfloateval{(\absnoeudB-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    }%
+    {node/abs}%
+    {%
+      \path #5;
+      \pgfgetlastxy{\macrox}{\macroy}%
+      \xdef\tmpstnxA{\xintfloateval{\ConvertirPtToCm{\macrox}}}%
+      \xdef\absnoeudA{\xintfloateval{\tmpstnxA/\pflstlargeur*\pflstampx+\pflstxmin}}%
+      \xdef\absnoeudAn{\tmpstnxA}%
+      \xdef\absnoeudB{#6}%
+      \xdef\absnoeudBn{\xintfloateval{(\absnoeudB-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    }%
+  }%
+  \IfEq{#4}{0}%aire sous courbe
+    {%
+      \path[draw=none,pflcourbe,name path=tmpintbornea] ({\absnoeudAn},{0})--({\absnoeudAn},{\pflsthauteur}) ;
+      \path[name intersections={of=#3 and tmpintbornea,name=YYY}] ;
+      \path[draw=none,pflcourbe,name path=tmpintborneb] ({\absnoeudBn},{0})--({\absnoeudBn},{\pflsthauteur}) ;
+      \path[name intersections={of=#3 and tmpintborneb,name=ZZZ}] ;
+      \begin{scope}
+        \clip ({\absnoeudAn},{0}) rectangle ({\absnoeudBn},{\pflsthauteur}) ;
+        \filldraw[integraletikzstyle,integralebordtikzstyle,#2] ({\absnoeudAn},{\pflstoy}) [spath/restore=#3] -- ({\absnoeudBn},{\pflstoy}) -- ({\absnoeudAn},{\pflstoy}) ;
+      \end{scope}
+      %traits
+      \draw[\pfldomtikzcolorbord,pfltrait] ({\absnoeudAn},{\pflstoy})-- (YYY-1) ;
+      \draw[\pfldomtikzcolorbord,pfltrait] ({\absnoeudBn},{\pflstoy})-- (ZZZ-1) ;
+    }%
+    {%aire entre deux courbes
+      \begin{scope}
+        \clip ({\absnoeudAn},0) rectangle ({\absnoeudBn},\pflsthauteur) ;
+        \clip ({\absnoeudAn},0) [spath/restore=#3] -- ({\absnoeudBn},{\pflstoy}) -- ({\absnoeudAn},{0}) ;
+        \clip ({\absnoeudAn},\pflsthauteur) [spath/restore=#4] -- (\pflstlargeur,\pflsthauteur) -- ({\absnoeudAn},\pflsthauteur) ;
+        \filldraw[integraletikzstyle,integralebordtikzstyle] ({\absnoeudAn},0) rectangle ({\absnoeudBn},\pflsthauteur) ;
+      \end{scope}
+      \begin{scope}
+        \clip ({\absnoeudAn},0) rectangle ({\absnoeudBn},\pflsthauteur) ;
+        \clip ({\absnoeudAn},\pflsthauteur) [spath/restore=#3] -- ({\absnoeudBn},{\pflsthauteur}) -- ({\absnoeudAn},{\pflsthauteur}) ;
+        \clip ({\absnoeudAn},0) [spath/restore=#4] -- (\pflstlargeur,0) -- ({\absnoeudAn},0) ;
+        \filldraw[integraletikzstyle,integralebordtikzstyle] ({\absnoeudAn},0) rectangle ({\absnoeudBn},\pflsthauteur) ;
+      \end{scope}
+      %traits
+      \path[draw=none,pflcourbe,name path=tmpintbornea] ({\absnoeudAn},{0})--({\absnoeudAn},{\pflsthauteur}) ;
+      \path[name intersections={of=#3 and tmpintbornea,name=YYYA}] ;
+      \path[name intersections={of=#4 and tmpintbornea,name=ZZZA}] ;
+      \path[draw=none,pflcourbe,name path=tmpintborneb] ({\absnoeudBn},{0})--({\absnoeudBn},{\pflsthauteur}) ;
+      \path[name intersections={of=#3 and tmpintborneb,name=YYYB}] ;
+      \path[name intersections={of=#4 and tmpintborneb,name=ZZZB}] ;
+      \draw[\pfldomtikzcolorbord,pfltrait] (YYYA-1)-- (ZZZA-1) ;
+      \draw[\pfldomtikzcolorbord,pfltrait] (YYYB-1)-- (ZZZB-1) ;
+    }%
+}
+\NewCommandCopy\tkzGrphIntegrale\tkzGrphDrawIntg
+\NewCommandCopy\tkzgintg\tkzGrphDrawIntg
+
+%====NUAGE DE POINTS
+\defKV[GraphiqueTikzStatsNuage]{%
+  Couleur=\def\pflstnuagecoul{#1},color=\def\pflstnuagecoul{#1},%
+  Taille=\def\pflstnuagetaille{#1},size=\def\pflstnuagetaille{#1},%
+  Style=\def\pflstnuagesize{#1},style=\def\pflstnuagesize{#1}%
+}
+\setKVdefault[GraphiqueTikzStatsNuage]{%
+  Couleur=black,color=black,%
+  Style=o,style=o,%
+  Taille=1.75pt,size=1.75pt%
+}
+
+\NewDocumentCommand\tkzGrphScatterPlot{ O{} m m }{%
+  % #1=clés  #2=liste X  #3=liste Y
+  \restoreKV[GraphiqueTikzStatsNuage]%
+  \setKV[GraphiqueTikzStatsNuage]{#1}%
+  \setsepchar{,}%
+  \readlist*\pflstnuagex{#2}%
+  \readlist*\pflstnuagey{#3}%
+  \xintFor* ##1 in {\xintSeq{1}{\pflstnuagexlen}} \do{%
+    \itemtomacro\pflstnuagex[##1]\tmpstx%
+    \itemtomacro\pflstnuagey[##1]\tmpsty%
+    \xdef\tmpstnx{\xintfloateval{(\tmpstx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    \xdef\tmpstny{\xintfloateval{(\tmpsty-\pflstymin)/\pflstampy*\pflsthauteur}}%
+    \filldraw[\pflstnuagecoul] (\tmpstnx,\tmpstny) circle[radius=\pflstnuagetaille] ;%
+  }%
+}
+\NewCommandCopy\tkzGrphNuage\tkzGrphScatterPlot
+\NewCommandCopy\tkzgscatterplt\tkzGrphScatterPlot
+
+% %====DIAGRAMME EN BÂTONS
+% \NewDocumentCommand\TracerDiagBatonsStats{ O{} m }{%
+  % \restoreKV[tkzDiagBatons]%
+  % \setKV[tkzDiagBatons]{#1}%
+  % \setsepchar[.]{,./}%
+  % \readlist*\pflstbatdata{#2}%
+  % \setsepchar{,}%
+  % \readlist*\pflstbatlistcoul{\tkzDiagBatCouleurs}%
+  % \xintFor* ##1 in {\xintSeq{1}{\pflstbatdatalen}} \do{%
+    % \itemtomacro\pflstbatdata[##1,1]\tmpstx%
+    % \itemtomacro\pflstbatdata[##1,2]\tmpsty%
+    % \itemcycltomacro\pflstbatlistcoul[##1]\tkzDiagBatCoulCour%
+    % \xdef\tmpstnx{\xintfloateval{(\tmpstx-\pflstxmin)/\pflstampx*\pflstlargeur}}%
+    % \xdef\tmpstny{\xintfloateval{(\tmpsty-\pflstymin)/\pflstampy*\pflsthauteur}}%
+    % \IfStrEq{\tkzDiagBatStyle}{batons}%
+      % {\draw[pflbarresprobas,\tkzDiagBatCoulCour] (\tmpstnx,\pflstoy) -- (\tmpstnx,\tmpstny) ;}%
+      % {%
+        % \xdef\tmpstdemi{\xintfloateval{\tkzDiagBatLargeur/2*\pflstlargeur/\pflstampx}}%
+        % \draw[pfltrait,\tkzDiagBatCoulCour,fill=\tkzDiagBatCoulCour,fill opacity=0.5]
+          % ({\tmpstnx-\tmpstdemi},\pflstoy) rectangle++ ({2*\tmpstdemi},{\tmpstny-\pflstoy}) ;%
+      % }%
+    % \ifboolKV[tkzDiagBatons]{AffValeurs}%
+      % {\node[above,\tkzDiagBatColVal,font=\tkzDiagBatPolice] at (\tmpstnx,\tmpstny)
+        % {\ArrondirNum[\tkzDiagBatArrondi]{\tmpsty}} ;}%
+      % {}%
+  % }%
+% }
+
+%====RÉGRESSION LINÉAIRE
+\NewDocumentCommand\tkzGrphDrawRegLin{ O{} m m }{%
+  \setsepchar{,}%
+  \readlist*\pflstregx{#2}%
+  \readlist*\pflstregy{#3}%
+  \xdef\pflstnreg{\pflstregxlen}%
+  \xdef\pflstxsom{0}\xdef\pflstysom{0}%
+  \xintFor* ##1 in {\xintSeq{1}{\pflstnreg}} \do{%
+    \itemtomacro\pflstregx[##1]\tmpx%
+    \itemtomacro\pflstregy[##1]\tmpy%
+    \xdef\pflstxsom{\xintfloateval{\pflstxsom+\tmpx}}%
+    \xdef\pflstysom{\xintfloateval{\pflstysom+\tmpy}}%
+  }%
+  \xdef\pflstxmoy{\xintfloateval{\pflstxsom/\pflstnreg}}%
+  \xdef\pflstymoy{\xintfloateval{\pflstysom/\pflstnreg}}%
+  \xdef\pflstxvar{0}\xdef\pflstxyvar{0}%
+  \xintFor* ##1 in {\xintSeq{1}{\pflstnreg}} \do{%
+    \itemtomacro\pflstregx[##1]\tmpx%
+    \itemtomacro\pflstregy[##1]\tmpy%
+    \xdef\pflstxvar{\xintfloateval{\pflstxvar+(\tmpx-\pflstxmoy)^2}}%
+    \xdef\pflstxyvar{\xintfloateval{\pflstxyvar+(\tmpx-\pflstxmoy)*(\tmpy-\pflstymoy)}}%
+  }%
+  \xdef\pflstrega{\xintfloateval{\pflstxyvar/\pflstxvar}}%
+  \xdef\pflstregb{\xintfloateval{\pflstymoy-\pflstrega*\pflstxmoy}}%
+  % tracé normalisé
+  \xdef\tmpstnya{\xintfloateval{(\pflstrega*\pflstxmin+\pflstregb-\pflstymin)/\pflstampy*\pflsthauteur}}%
+  \xdef\tmpstnyb{\xintfloateval{(\pflstrega*\pflstxmax+\pflstregb-\pflstymin)/\pflstampy*\pflsthauteur}}%
+  \draw[pflcourbe,#1] (0,\tmpstnya) -- (\pflstlargeur,\tmpstnyb) ;%
+}
+\NewCommandCopy\tkzGrphRegLin\tkzGrphDrawRegLin
+\NewCommandCopy\tkzgreglin\tkzGrphDrawRegLin
+
+%====TROUVER MAXIMUM / MINIMUM LOCAL OU GLOBAL
+%====TROUVER MAXIMUM / MINIMUM via échantillonnage spath
+\defKV[GraphiqueTikzStatsMinMax]{%
+  Debut=\def\pflstminmaxdebut{#1},start=\def\pflstminmaxdebut{#1},%
+  Fin=\def\pflstminmaxfin{#1},end=\def\pflstminmaxfin{#1},%
+  Pas=\def\pflstminmaxpas{#1},step=\def\pflstminmaxpas{#1},%
+  Couleur=\def\pflstminmaxcol{#1},color=\def\pflstminmaxcol{#1},%
+  Style=\def\pflstminmaxstyle{#1},style=\def\pflstminmaxstyle{#1}%
+}
+\setKVdefault[GraphiqueTikzStatsMinMax]{%
+  Debut={},start={},%
+  Fin={},end={},%
+  Pas=500,step=500,%
+  Aff=true,show=true,%
+  Couleur=black,color=black,%
+  Style=o,style=o
+}
+ 
+\NewDocumentCommand\tkzGrphFindMin{ O{} m O{grph-min} }{%
+  % #1=clés  #2=nom path  #3=nœud résultat
+  \restoreKV[GraphiqueTikzStatsMinMax]%
+  \setKV[GraphiqueTikzStatsMinMax]{#1}%
+  % sync KV
+  \tkzgrphSetKVboolTrue[GraphiqueTikzStatsMinMax]{show}{Aff}%
+  % bornes normalisées
+  \IfStrEq{\pflstminmaxdebut}{}%
+    {\xdef\tmpstnxa{0}}%
+    {\xdef\tmpstnxa{\xintfloateval{(\pflstminmaxdebut-\pflstxmin)/\pflstampx*\pflstlargeur}}}%
+  \IfStrEq{\pflstminmaxfin}{}%
+    {\xdef\tmpstnxb{\pflstlargeur}}%
+    {\xdef\tmpstnxb{\xintfloateval{(\pflstminmaxfin-\pflstxmin)/\pflstampx*\pflstlargeur}}}%
+  % pas d'échantillonnage t ∈ [0,1]
+  \xdef\pflstminmaxdt{\xintfloateval{1/\pflstminmaxpas}}%
+  % initialisation
+  \xdef\pflstminy{\pflsthauteur}%
+  \xdef\pflstminx{0}%
+  % échantillonnage via spath cs:
+  \xintFor* ##1 in {\xintSeq{0}{\pflstminmaxpas}} \do{%
+    \xdef\tmpt{\xintfloateval{##1*\pflstminmaxdt}}%
+    % coordonnée du point à t=\tmpt sur le path
+    \path (spath cs:#2 \tmpt) ;%
+    \pgfgetlastxy{\tmpspx}{\tmpspy}%
+    \xdef\tmpcurx{\xintfloateval{\ConvertirPtToCm{\tmpspx}}}%
+    \xdef\tmpcury{\xintfloateval{\ConvertirPtToCm{\tmpspy}}}%
+    % filtrer selon les bornes x
+    \xintifboolexpr{%
+      \tmpcurx >= \tmpstnxa 'and'
+      \tmpcurx <= \tmpstnxb 'and'
+      \tmpcury < \pflstminy}%
+      {%
+        \xdef\pflstminy{\tmpcury}%
+        \xdef\pflstminx{\tmpcurx}%
+      }{}%
+  }%
+  \coordinate (#3) at (\pflstminx,\pflstminy) ;%
+  \ifboolKV[GraphiqueTikzStatsMinMax]{Aff}%
+    {%
+      \tkzGrphMarkPts*[Style=\pflstminmaxstyle,Couleur=\pflstminmaxcol]{(#3)}
+    }%
+    {}%
+}
+\NewCommandCopy\tkzGrphTrouverMin\tkzGrphFindMin
+ 
+\NewDocumentCommand\tkzGrphFindMax{ O{} m O{grph-max} }{%
+  % #1=clés  #2=nom path  #3=nœud résultat
+  \restoreKV[GraphiqueTikzStatsMinMax]%
+  \setKV[GraphiqueTikzStatsMinMax]{#1}%
+  % sync KV
+  \tkzgrphSetKVboolTrue[GraphiqueTikzStatsMinMax]{show}{Aff}%
+  % bornes normalisées
+  \IfStrEq{\pflstminmaxdebut}{}%
+    {\xdef\tmpstnxa{0}}%
+    {\xdef\tmpstnxa{\xintfloateval{(\pflstminmaxdebut-\pflstxmin)/\pflstampx*\pflstlargeur}}}%
+  \IfStrEq{\pflstminmaxfin}{}%
+    {\xdef\tmpstnxb{\pflstlargeur}}%
+    {\xdef\tmpstnxb{\xintfloateval{(\pflstminmaxfin-\pflstxmin)/\pflstampx*\pflstlargeur}}}%
+  \xdef\pflstminmaxdt{\xintfloateval{1/\pflstminmaxpas}}%
+  % initialisation
+  \xdef\pflstmaxy{0}%
+  \xdef\pflstmaxx{0}%
+  \xintFor* ##1 in {\xintSeq{0}{\pflstminmaxpas}} \do{%
+    \xdef\tmpt{\xintfloateval{##1*\pflstminmaxdt}}%
+    \path (spath cs:#2 \tmpt) ;%
+    \pgfgetlastxy{\tmpspx}{\tmpspy}%
+    \xdef\tmpcurx{\xintfloateval{\ConvertirPtToCm{\tmpspx}}}%
+    \xdef\tmpcury{\xintfloateval{\ConvertirPtToCm{\tmpspy}}}%
+    \xintifboolexpr{%
+      \tmpcurx >= \tmpstnxa 'and'
+      \tmpcurx <= \tmpstnxb 'and'
+      \tmpcury > \pflstmaxy}%
+      {%
+        \xdef\pflstmaxy{\tmpcury}%
+        \xdef\pflstmaxx{\tmpcurx}%
+      }{}%
+  }%
+  \coordinate (#3) at (\pflstmaxx,\pflstmaxy) ;%
+  \ifboolKV[GraphiqueTikzStatsMinMax]{Aff}%
+    {%
+      \tkzGrphMarkPts*[Style=\pflstminmaxstyle,Couleur=\pflstminmaxcol]{(#3)}
+    }%
+    {}%
+}
+\NewCommandCopy\tkzGrphTrouverMax\tkzGrphFindMax
+
+\endinput
