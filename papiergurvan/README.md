@@ -1,57 +1,15 @@
-# PapierGurvan
+PapierGurvan is a package to work with Gurvan grid papers.
 
-> A LaTeX package to display Gurvan grids or full Gurvan pages, with the option to write on lines — Un package LaTeX pour afficher des grilles ou des pages Gurvan, avec possibilité d'écrire sur les lignes
+----------------------------------------------------------------------------
 
----
+PapierGurvan est un package pour travailler avec des papiers de type Gurvan.
 
-## Installation
+----------------------------------------------------------------------------
 
-The package is available on [CTAN](https://ctan.org/pkg/papiergurvan) and can be installed via your LaTeX distribution's package manager.
+Author of the package  : Cédric Pierquet
 
-### Via MiKTeX
+Author of the paper    : http://www.sos-ecriture.fr/2014/10/papier-gurvan.html
 
-- **Graphically**: open the *MiKTeX Console*, go to *Packages*, search for `PapierGurvan` and click *Install*.
-- **Command line**:
-  ```
-  mpm.exe --install PapierGurvan
-  ```
+email                  : cpierquet@outlook.fr
 
-### Via TeX Live / tlmgr
-
-```
-tlmgr install PapierGurvan
-```
-
-> On Linux, you may need to prefix with `sudo` depending on your installation.
-
-### Manual installation
-
-If you want the latest version directly from this repository:
-
-1. Download the [repository](https://github.com/cpierquet/latex-packages/tree/main/papiergurvan) (click *Code > Download ZIP*, or clone it).
-2. Place `PapierGurvan.sty` in a directory where LaTeX can find it, for example:
-   - **TeX Live / Linux**: `~/texmf/tex/latex/PapierGurvan/`
-   - **MiKTeX / Windows**: `C:\Users\<user>\AppData\Roaming\MiKTeX\tex\latex\PapierGurvan\`
-   - **macOS (MacTeX)**: `~/Library/texmf/tex/latex/PapierGurvan/`
-3. Refresh the filename database:
-   - TeX Live: `mktexlsr` or `texhash`
-   - MiKTeX: `initexmf --update-fndb`
-
----
-
-## Quick start
-
-```latex
-\usepackage{PapierGurvan}
-```
-
----
-
-## Author & License
-
-| | |
-|---|---|
-| **Author** | Cédric Pierquet |
-| **Email** | cpierquet@outlook.fr |
-| **License** | Released under the [LaTeX Project Public License v1.3c](http://www.latex-project.org/lppl.txt) or later |
-| **Author of paper** | http://www.sos-ecriture.fr/2014/10/papier-gurvan.html |
+Licence                : Released under the LaTeX Project Public License v1.3c or later, see http://www.latex-project.org/lppl.txt

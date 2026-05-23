@@ -1,55 +1,13 @@
-# ipsum
+ipsum is a package to work with multilingual 'dummy texts'.
 
-> A LaTeX package to work with multilingual Lorem Ipsum dummy texts — Un package LaTeX pour travailler avec des textes Lorem Ipsum multilingues
+----------------------------------------------------------------------------
 
----
+ipsum est un pakage pour afficher des paragraphes multilangues type "dummy".
 
-## Installation
+----------------------------------------------------------------------------
 
-The package is available on [CTAN](https://ctan.org/pkg/ipsum) and can be installed via your LaTeX distribution's package manager.
+Author : Cédric Pierquet
 
-### Via MiKTeX
+email : cpierquet@outlook.fr
 
-- **Graphically**: open the *MiKTeX Console*, go to *Packages*, search for `ipsum` and click *Install*.
-- **Command line**:
-  ```
-  mpm.exe --install ipsum
-  ```
-
-### Via TeX Live / tlmgr
-
-```
-tlmgr install ipsum
-```
-
-> On Linux, you may need to prefix with `sudo` depending on your installation.
-
-### Manual installation
-
-If you want the latest version directly from this repository:
-
-1. Download the [repository](https://github.com/cpierquet/latex-packages/tree/main/ipsum) (click *Code > Download ZIP*, or clone it).
-2. Place `ipsum.sty` in a directory where LaTeX can find it, for example:
-   - **TeX Live / Linux**: `~/texmf/tex/latex/ipsum/`
-   - **MiKTeX / Windows**: `C:\Users\<user>\AppData\Roaming\MiKTeX\tex\latex\ipsum\`
-   - **macOS (MacTeX)**: `~/Library/texmf/tex/latex/ipsum/`
-3. Refresh the filename database:
-   - TeX Live: `mktexlsr` or `texhash`
-   - MiKTeX: `initexmf --update-fndb`
-
----
-
-## Quick start
-
-```latex
-```
-
----
-
-## Author & License
-
-| | |
-|---|---|
-| **Author** | Cédric Pierquet |
-| **Email** | cpierquet@outlook.fr |
-| **License** | Released under the [LaTeX Project Public License v1.3c](http://www.latex-project.org/lppl.txt) or later |
+Licence : Released under the LaTeX Project Public License v1.3c or later, see http://www.latex-project.org/lppl.txt

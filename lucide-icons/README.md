@@ -1,6 +1,6 @@
 # lucide-icons
 
-> A LaTeX package to use Lucide icons (v0.475) via TikZ or commands — Un package LaTeX pour utiliser les icônes Lucide (v0.475) via TikZ ou des commandes.
+> A LaTeX package to use Lucide icons (v0.475) — Un package LaTeX pour utiliser les icônes Lucide (v1.14.0)
 
 ---
 
@@ -54,4 +54,4 @@ If you want the latest version directly from this repository:
 | **Author** | Cédric Pierquet |
 | **Email** | cpierquet@outlook.fr |
 | **License** | Released under the [LaTeX Project Public License v1.3c](http://www.latex-project.org/lppl.txt) or later |
-| **Source** | https://lucide.dev (v0.562.0) ISC License |
+| **Source** | https://lucide.dev (v1.14.0) ISC License |

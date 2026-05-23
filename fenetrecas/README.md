@@ -1,56 +1,13 @@
-# FenetreCas
+FenetreCas is a package with Xcas or Geogebra CAS Window-like.
 
-> A LaTeX package providing commands to display CAS-like windows (Xcas or GeoGebra) in TikZ — Un package LaTeX proposant des commandes pour afficher des fenêtres type Xcas ou GeoGebra en TikZ.
+----------------------------------------------------------------------
 
----
+FenetreCas est un package avec des fenêtres CAS type Geogebra ou Xcas.
 
-## Installation
+----------------------------------------------------------------------
 
-The package is available on [CTAN](https://ctan.org/pkg/fenetrecas) and can be installed via your LaTeX distribution's package manager.
+Author : Cédric Pierquet
 
-### Via MiKTeX
+email : cpierquet@outlook.fr
 
-- **Graphically**: open the *MiKTeX Console*, go to *Packages*, search for `FenetreCas` and click *Install*.
-- **Command line**:
-  ```
-  mpm.exe --install FenetreCas
-  ```
-
-### Via TeX Live / tlmgr
-
-```
-tlmgr install FenetreCas
-```
-
-> On Linux, you may need to prefix with `sudo` depending on your installation.
-
-### Manual installation
-
-If you want the latest version directly from this repository:
-
-1. Download the [repository](https://github.com/cpierquet/latex-packages/tree/main/fenetrecas) (click *Code > Download ZIP*, or clone it).
-2. Place `FenetreCas.sty` in a directory where LaTeX can find it, for example:
-   - **TeX Live / Linux**: `~/texmf/tex/latex/FenetreCas/`
-   - **MiKTeX / Windows**: `C:\Users\<user>\AppData\Roaming\MiKTeX\tex\latex\FenetreCas\`
-   - **macOS (MacTeX)**: `~/Library/texmf/tex/latex/FenetreCas/`
-3. Refresh the filename database:
-   - TeX Live: `mktexlsr` or `texhash`
-   - MiKTeX: `initexmf --update-fndb`
-
----
-
-## Quick start
-
-```latex
-\usepackage{FenetreCas}
-```
-
----
-
-## Author & License
-
-| | |
-|---|---|
-| **Author** | Cédric Pierquet |
-| **Email** | cpierquet@outlook.fr |
-| **License** | Released under the [LaTeX Project Public License v1.3c](http://www.latex-project.org/lppl.txt) or later |
+Licence : Released under the LaTeX Project Public License v1.3c or later, see http://www.latex-project.org/lppl.txt

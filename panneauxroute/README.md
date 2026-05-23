@@ -12,6 +12,8 @@ email........: cpierquet@outlook.fr
 
 Licence......: Released under the LaTeX Project Public License v1.3c or later, see http://www.latex-project.org/lppl.txt
 
-Source.......: https://equipementsdelaroute.cerema.fr/les-signaux-r212.html
+Sources......: https://www.geoinformations.developpement-durable.gouv.fr/panneaux-routiers-au-format-svg-et-png-par-a2688.html
 
-Licence img..: Licence etalab 2.0
+.............: http://sig974.free.fr/?p=1520
+
+Licence img..: CC BY-SA 3.0 

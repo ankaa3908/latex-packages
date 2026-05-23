@@ -33,7 +33,7 @@
 \usepackage[margin=2cm]{geometry}
 \setlength{\parindent}{0pt}
 \def\TPversion{\tkzgrapheurversion}
-\def\TPdate{31/03/2026}
+\def\TPdate{\tkzgrapheurdateversion}
 \usepackage{soul}
 \usepackage{codehigh}
 \usepackage{tabularray}
@@ -1479,6 +1479,7 @@ The last mandatory argument is the work point (abscissa version or node followin
 First argument, \textit{optional} and within \MontreCode{[...]}, gives following keys:
 
 \begin{itemize}
+  \item \MontreCode{swap=TF} for shading non-solution (\MontreCode{false} by default) ;
 	\item \MontreCode{opacity=...} (\MontreCode{0.25} by default) ;
 	\item \MontreCode{color=...} (\MontreCode{black} by default) ;
 	\item \MontreCode{style=...} (\MontreCode{hatch} by default) ;
@@ -1486,36 +1487,41 @@ First argument, \textit{optional} and within \MontreCode{[...]}, gives following
 \end{itemize}
 
 \begin{tcblisting}{listing engine=minted,minted language=latex,colframe=lightgray,colback=lightgray!5}
-\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
 	\DrawAxisGrids[Font=\tiny]{auto}{auto}
 	\LinearInequality[color=blue]{-3x+2}{>0}
 \end{GraphTikz}
 ~~
-\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
 	\DrawAxisGrids[Font=\tiny]{auto}{auto}
 	\LinearInequality[color=pink]{-x+y+2}{<=0}
 \end{GraphTikz}
 ~~
-\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
 	\DrawAxisGrids[Font=\tiny]{auto}{auto}
 	\LinearInequality[color=teal]{-x+y-4}{>0}
 \end{GraphTikz}
 \end{tcblisting}
 
 \begin{tcblisting}{listing engine=minted,minted language=latex,colframe=lightgray,colback=lightgray!5}
-\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
 	\DrawAxisGrids[Font=\tiny]{auto}{auto}
 	\LinearInequality[color=blue]{-4*y+5}{<=0}
 \end{GraphTikz}
 ~~
-\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
 	\DrawAxisGrids[Font=\tiny]{auto}{auto}
 	\LinearInequality[color=pink,hatch={north east lines}]{-x-2y+2}{<=0}
 \end{GraphTikz}
 ~~
-\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-5,Xmax=5,Ymin=-5,Ymax=5]
+\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
 	\DrawAxisGrids[Font=\tiny]{auto}{auto}
 	\LinearInequality[style=fill,color=teal]{-x-y-4}{>0}
+\end{GraphTikz}
+
+\begin{GraphTikz}[x=0.4cm,y=0.4cm,Xmin=-4,Xmax=6,Ymin=-3,Ymax=7]
+  \DrawAxisGrids[Font=\tiny]{auto}{auto}
+  \LinearInequality[swap,style=fill,color=teal]{-x-y-4}{>0}
 \end{GraphTikz}
 \end{tcblisting}
 
@@ -1916,6 +1922,7 @@ Solutions of  $f(x)=66$ are \RoundNb[0]{\xMonItscA} \&\ \RoundNb[0]{\xMonItscB} 
 
 \begin{quote}
 \begin{verbatim}
+0.30f: Bugfix + new commands (stats in [fr] version)
 0.30e: New commands (experimental in [fr] version)
 0.30d: New commands (experimental in [fr] version)
 0.30c: New version of code, with [en/fr] separate versions + macros for calculate
@@ -1926,7 +1933,7 @@ Solutions of  $f(x)=66$ are \RoundNb[0]{\xMonItscA} \&\ \RoundNb[0]{\xMonItscB} 
 0.2.7: Ability to specify dimensions for environment (test)
 0.2.6: Linear inequality (work in progress)
 0.2.5: Lagrange interpolation ([french] for the moment) + enhancements
-0.2.4: Bugfiw with [fr] version
+0.2.4: Bugfix with [fr] version
 0.2.3: Bugfix with a length
 0.2.2: Bugfixes
 0.2.0: [Alt] key for Hermite spline + few pgfplots macros

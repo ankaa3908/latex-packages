@@ -1,58 +1,17 @@
-# quizztex
+QuizzTex is a package to create quizzes with 'Who Wants to Be a Millionaire ?' design for example.
 
-> A LaTeX package to create quizzes in the style of TV shows ("Who Wants to Be a Millionaire?") — Un package LaTeX pour créer des quiz dans le style d'émissions TV (« Qui veut gagner des millions ? »)
+----------------------------------------------------------------------------------------------------------------
 
----
+QuizzTex est un package pour présenter des quizzes à la manière de 'Qui veut gagner des Millions ?' par exemple.
 
-## Installation
+----------------------------------------------------------------------------------------------------------------
 
-The package is available on [CTAN](https://ctan.org/pkg/quizztex) and can be installed via your LaTeX distribution's package manager.
+Author.......: Cédric Pierquet
 
-### Via MiKTeX
+email........: cpierquet@outlook.fr
 
-- **Graphically**: open the *MiKTeX Console*, go to *Packages*, search for `quizztex` and click *Install*.
-- **Command line**:
-  ```
-  mpm.exe --install quizztex
-  ```
+Licence......: Released under the LaTeX Project Public License v1.3c or later, see http://www.latex-project.org/lppl.txt
 
-### Via TeX Live / tlmgr
+               'Who Wants to Be a Millionaire ?' is a Trademark from Sony Pictures Television.
 
-```
-tlmgr install quizztex
-```
-
-> On Linux, you may need to prefix with `sudo` depending on your installation.
-
-### Manual installation
-
-If you want the latest version directly from this repository:
-
-1. Download the [repository](https://github.com/cpierquet/latex-packages/tree/main/quizztex) (click *Code > Download ZIP*, or clone it).
-2. Place `quizztex.sty` in a directory where LaTeX can find it, for example:
-   - **TeX Live / Linux**: `~/texmf/tex/latex/quizztex/`
-   - **MiKTeX / Windows**: `C:\Users\<user>\AppData\Roaming\MiKTeX\tex\latex\quizztex\`
-   - **macOS (MacTeX)**: `~/Library/texmf/tex/latex/quizztex/`
-3. Refresh the filename database:
-   - TeX Live: `mktexlsr` or `texhash`
-   - MiKTeX: `initexmf --update-fndb`
-
----
-
-## Quick start
-
-```latex
-\usepackage{quizztex}
-```
-
----
-
-## Author & License
-
-| | |
-|---|---|
-| **Author** | Cédric Pierquet |
-| **Email** | cpierquet@outlook.fr |
-| **License** | Released under the [LaTeX Project Public License v1.3c](http://www.latex-project.org/lppl.txt) or later |
-| | 'Who Wants to Be a Millionaire ?' is a Trademark from Sony Pictures Television. |
-| | 'Tout le monde veut prendre sa place' is a Tradematk from Air Productions |
+			   'Tout le monde veut prendre sa place' is a Tradematk from Air Productions
