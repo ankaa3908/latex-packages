@@ -1,8 +1,0 @@
-\defaultfontfeatures[jetbrainscode-extralight]
-   {Extension=.otf,
-    UprightFont=JetBrainsMono-ExtraLight,
-    ItalicFont=JetBrainsMono-ExtraLightItalic,
-    BoldFont=JetBrainsMono-Medium,
-    BoldItalicFont=JetBrainsMono-MediumItalic,
-    Contextuals=Alternate
-}

@@ -1,8 +1,0 @@
-\defaultfontfeatures[jetbrainsmono-thin]
-   {Extension=.otf,
-    UprightFont=JetBrainsMono-Thin,
-    ItalicFont=JetBrainsMono-ThinItalic,
-    BoldFont=JetBrainsMono-Regular,
-    BoldItalicFont=JetBrainsMono-Italic,
-    Contextuals=AlternateOff
-}

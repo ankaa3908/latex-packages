@@ -1,8 +1,0 @@
-\defaultfontfeatures[MonaspaceXenon-Regular]
-{
-  Extension=.otf,
-  UprightFont=MonaspaceXenon-Regular,
-  ItalicFont=MonaspaceXenon-Italic,
-  BoldFont=MonaspaceXenon-SemiBold,
-  BoldItalicFont=MonaspaceXenon-SemiBoldItalic
-}

@@ -1,8 +1,0 @@
-\defaultfontfeatures[MonaspaceRadon-ExtraLight]
-{
-  Extension=.otf,
-  UprightFont=MonaspaceRadon-ExtraLight,
-  ItalicFont=MonaspaceRadon-ExtraLightItalic,
-  BoldFont=MonaspaceRadon-Regular,
-  BoldItalicFont=MonaspaceRadon-Italic
-}

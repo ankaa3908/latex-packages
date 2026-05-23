@@ -1,8 +1,0 @@
-\defaultfontfeatures[CascadiaMono-SemiLight]
-   {Extension=.otf,
-    UprightFont=CascadiaCode-SemiLight,
-    ItalicFont=CascadiaCode-SemiLightItalic,
-    BoldFont=CascadiaCode-SemiBold,
-    BoldItalicFont=CascadiaCode-SemiBoldItalic,
-    Contextuals=AlternateOff
-}

@@ -1,1 +1,0 @@
-"C:\Program Files (x86)\Systweak PDF Editor\qpdf\x64\qpdf.exe" %1.pdf %1-ok.pdf

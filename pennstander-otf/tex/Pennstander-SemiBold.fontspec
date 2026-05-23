@@ -1,9 +1,0 @@
-\defaultfontfeatures[Pennstander-SemiBold]
-{
-  Extension           = .otf,
-  UprightFont         = Pennstander-SemiBold,
-  ItalicFont          = Pennstander-ItalicSemiBold,
-  BoldFont            = Pennstander-ExtraBold,
-  BoldItalicFont      = Pennstander-ItalicExtraBold,
-  Ligatures           = {Common,TeX}
-}

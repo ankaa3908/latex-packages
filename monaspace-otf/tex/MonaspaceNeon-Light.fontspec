@@ -1,8 +1,0 @@
-\defaultfontfeatures[MonaspaceNeon-Light]
-{
-  Extension=.otf,
-  UprightFont=MonaspaceNeon-Light,
-  ItalicFont=MonaspaceNeon-LightItalic,
-  BoldFont=MonaspaceNeon-Medium,
-  BoldItalicFont=MonaspaceNeon-MediumItalic
-}
