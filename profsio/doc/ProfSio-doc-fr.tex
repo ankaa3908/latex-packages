@@ -5,8 +5,8 @@
 
 \documentclass[french,a4paper,11pt]{article}
 \usepackage[margin=2cm,includefoot]{geometry}
-\def\TPversion{0.3.5}
-\def\TPdate{24 septembre 2025}
+\def\TPversion{0.3.6}
+\def\TPdate{23 mai 2026}
 %\usepackage[utf8]{inputenc}
 %\usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb}
@@ -130,9 +130,9 @@
 				\\
 				{\LARGE Des outils pour les Maths en BTS SIO.} \\
 			\end{tabular}
-			
+
 			\bigskip
-			
+
 			{\small \texttt{Version \TPversion{} -- \TPdate}}
 		\end{center}
 	\end{tcolorbox}
@@ -255,6 +255,8 @@
 \newpage
 
 \section{Historique}
+
+\verb|v0.3.5|~:~~~~Mise en conformité pour les grilles de CCF (E3) + Correction de bugs mineurs
 
 \verb|v0.3.5|~:~~~~Ajout de clés pour la résolution de systèmes 3*3
 
@@ -581,12 +583,12 @@ En ce qui concerne la création de l'environnement, les \Cle{clés} sont :
 	\item \Cle{Epaisseur} := épaisseur des traits (bordures et arcs) ; \hfill~défaut : \Cle{0.75pt}
 	\item \Cle{Police} := police globale ; \hfill~défaut : \Cle{\textbackslash footnotesize\textbackslash sffamily}
 	\item \Cle{CouleurDates} := couleur des dates, sous la forme \Cle{Couleur} ou \Cle{Couleur\_t/Couleur\_T} ;
-	
+
 	\hfill~défaut : \Cle{teal/red}
 	\item \Cle{CouleurBords} := couleur des bordures ; \hfill~défaut : \Cle{black}
 	\item \Cle{NoirBlanc} := booléen pour tout passer en Noir \&{} Blanc ; \hfill~défaut : \Cle{false}
 	\item \Cle{Grille} := pour afficher une grille d'aide (\Cle{\{xmax,ymax\}}), entre (0;\,0) et (xmax;\,ymax).
-	
+
 	\hfill~défaut : \Cle{vide}
 \end{itemize}
 
@@ -674,16 +676,16 @@ La commande propose les \Cle{clés} suivantes :
 \begin{itemize}
 	\item \Cle{Coude} := booléen pour affiche l'arc sous forme d'un coude ; \hfill~défaut : \Cle{false}
 	\item \Cle{SensCoude} := permet de préciser le type de coude, parmi \Cle{HV / VH / VHV} ;
-	
+
 	\hfill~défaut : \Cle{HV}
 	\item \Cle{HauteurCoude} := dans le cas \Cle{SensCoude=VHV}, permet de préciser le 1\ier{} décalage V ;
-	
+
 	\hfill~défaut : \Cle{10pt}
 	\item \Cle{DecalHorizDeb} := décalage horizontal du début de l'arc pour la tâche de départ ;
 	\item \Cle{DecalVertDeb} := décalage vertical du début de l'arc pour la tâche de départ ;
 	\item \Cle{DecalHorizDeb} := décalage horizontal de la fin de l'arc pour la tâche d'arrivée ;
 	\item \Cle{DecalVertFin} := décalage vertical de la fin de l'arc pour la tâche d'arrivée.
-	
+
 	\hfill~défaut : \Cle{0pt}
 \end{itemize}
 
@@ -869,7 +871,7 @@ En ce qui concerne la création de l'environnement, les \Cle{clés} sont :
 	\item \Cle{Epaisseur} := épaisseur des tracés ; \hfill~défaut : \Cle{0.75pt}
 	\item \Cle{CouleurCases} := couleur de remplissage des cases ; \hfill~défaut : \Cle{lightgray}
 	\item \Cle{CouleurLegende} := couleur de la légende, via \Cle{Couleur} ou \Cle{CouleurA/CouleurB/CouleurC} ;
-	
+
 	\hfill~défaut : \Cle{black}
 	\item \Cle{StyleAlternatif} := booléen pour changer de style ; \hfill~défaut : \Cle{false}
 	\item \Cle{AideAlt} := booléen pour (dés)activer le label \textit{binaire} des cases ; \hfill~défaut : \Cle{true}
@@ -1009,7 +1011,7 @@ L'argument obligatoire, et entre \texttt{\{...\}}, correspondent à l'expression
 \end{DemoCode}
 
 \begin{DemoCode}[]
-On obtient le tableau de Karnaugh suivant : 
+On obtient le tableau de Karnaugh suivant :
 \begin{TableKarnaugh}
 		[Variables=k/l/m,Unite=1.25cm,CouleurCases=cyan!25,Couleur=darkgray,
 		PosVarLaterale=Droite,CouleurLegende=black/blue/red]
@@ -1104,16 +1106,16 @@ Les clés disponibles sont :
 
 \begin{itemize}
 	\item \Cle{Couleurs} := couleurs pour chacune des trois variables booléennes ;
-	
+
 	\hfill~défaut : \Cle{black/black/black}
 	\item \Cle{CouleurPlus} := couleur pour les signes + ;\hfill~défaut : \Cle{black}
 	\item \Cle{Variables} := variables utilisées ; \hfill~défaut : \Cle{a/b/c}
 	\item \Cle{Swap} := booléen pour échanger les variables du \textit{bas} ; \hfill~défaut : \Cle{false}
 	\item \Cle{Contraire} := booléen pour travailler sur le contraire de l'expression booléenne ;
-	
+
 	\hfill~défault : \Cle{false}
 	\item \Cle{Espace} := booléen pour rajouter un petit espace (1.5~mu) dans les produits ;
-	
+
 	\hfill~défaut : \Cle{true}
 	\item \Cle{StyleAlternatif} := booléen pour changer de style. \hfill~défaut : \Cle{false}
 \end{itemize}
@@ -1170,7 +1172,7 @@ correspond à \SimplificationKarnaugh%
 \subsection{Commande et fonctionnement global}
 
 \begin{cautionblock}
-L'idée est de proposer une commande pour afficher et/ou simplifier une expression booléenne à trois variables connaissant son expression sous forme de \textit{mintermes} simples, donnés : 
+L'idée est de proposer une commande pour afficher et/ou simplifier une expression booléenne à trois variables connaissant son expression sous forme de \textit{mintermes} simples, donnés :
 %
 \begin{itemize}
 	\item entre parenthèses, et avec les variables dans le même ordre que celui donné en paramètre;
@@ -1209,7 +1211,7 @@ Les clés disponibles sont :
 	\item \Cle{Contraire} := booléen pour travailler sur le contraire ; \hfill~défaut : \Cle{false}
 	\item \Cle{Couleurs} et \Cle{CouleurPlus} := couleurs(s) de la sortie ;  \hfill~défaut : \Cle{black}
 	\item \Cle{Espace} := booléen pour rajouter un petit espace (1.5~mu) dans les produits.
-	
+
 	\hfill~défaut : \Cle{true}
 \end{itemize}
 
@@ -1323,20 +1325,20 @@ En ce qui concerne la création de l'environnement, les \Cle{clés} sont :
 	\item \Cle{Police} := police des sommets ; \hfill{}défaut : \Cle{\textbackslash bfseries\textbackslash Large\textbackslash sffamily},%
 	\item \Cle{Poids} := police des éventuels poids ; \hfill{}défaut : \Cle{\textbackslash sffamily},%
 	\item \Cle{CouleurSommets} := couleur(s) sous la forme \Cle{Couleur} ou \Cle{CouleurBord/CouleurTexte} des sommets ;
-	
+
 	\hfill{}défaut : \Cle{black}
 	\item \Cle{CouleurFleches} := couleur des arêtes (et des poids) ; \hfill{}défaut : \Cle{black},%
 	\item \Cle{TypeSommets} := type de forme des sommets ; \hfill{}défaut : \Cle{circle}
 	\item \Cle{Epaisseur} := épaisseur(s) sous la forme \Cle{Epaisseur} ou \Cle{EpaisseurSommet/EpaisseurArête} des traits ;
-	
+
 	\hfill{}défaut : \Cle{thick}
 	\item \Cle{Unite} := unité globale de la figure ; \hfill{}défaut : \Cle{1cm}
 	\item \Cle{CouleurFT} := couleur des arêtes de la fermeture transitive (accessible ensuite via \Cle{FT}) ; \hfill{}défaut : \Cle{black}
 	\item \Cle{Grille} := pour afficher une grille d'aide (\Cle{\{xmax,ymax\}}), entre (0;\,0) et (xmax;\,ymax) ;
-	
+
 	\hfill~défaut : \Cle{vide}
 	\item \Cle{DimensionSommets} := dimension(s) minimale(s) des formes des sommets, sous la forme \Cle{Globale} ou \Cle{Largeur/Hauteur} ;
-	
+
 	\hfill{}défaut : \Cle{1cm}
 	\item \Cle{PositionFleches} := position, parmi \Cle{Milieu/Fin} pour les flèches ; \hfill{}défaut : \Cle{Fin}
 	\item \Cle{EchelleFleches} := échelle de la flèche ; \hfill{}défaut : \Cle{1}
@@ -1828,12 +1830,12 @@ Les \Cle{clés} disponibles sont :
 	\item \Cle{NomApplis} := nom des applications ; \hfill{}défaut : \Cle{\$f\$/\$g\$}
 	\item \Cle{CouleurE} := couleur de l'ensemble de départ ; \hfill{}défaut : \Cle{blue}
 	\item \Cle{CouleurApplis} := couleurs des applications, \Cle{Couleur} ou \Cle{Couleur\_f/Couleur\_g} ;
-	
+
 	\hfill{}défaut : \Cle{violet}
 	\item \Cle{CouleurF} := couleur de l'ensemble du milieu ; \hfill{}défaut : \Cle{red}
 	\item \Cle{CouleurG} := couleur de l'ensemble d'arrivée ; \hfill{}défaut : \Cle{gray}
-	\item \Cle{CouleursFleches} := couleurs des flèches, \Cle{Couleur} ou \Cle{Couleur\_f/Couleur\_g} ; 
-	
+	\item \Cle{CouleursFleches} := couleurs des flèches, \Cle{Couleur} ou \Cle{Couleur\_f/Couleur\_g} ;
+
 	\hfill{}défaut : \Cle{teal}
 	\item \Cle{TypeFleche} := type de la flèche  ; \hfill{}défaut : \Cle{Latex}
 	\item \Cle{Offset} := décalage entre les flèches et les éléments (points) ; \hfill{}défaut : \Cle{2pt}
@@ -1842,7 +1844,7 @@ Les \Cle{clés} disponibles sont :
 	\item \Cle{NoirBlanc} := booléen pour forcer l'affichage en N\&{}B ; \hfill{}défaut : \Cle{false}
 	\item \Cle{Labels} := booléen pour afficher les noms des ensembles ; \hfill{}défaut : \Cle{true}
 	\item \Cle{Ensembles} := nom des ensembles  ;
-	
+
 	\hfill{}défaut : \Cle{\$\textbackslash mathcal\{E\}\$/\$\textbackslash  mathcal\{F\}\$/\$\textbackslash  mathcal\{G\}\$}
 	\item \Cle{PosLabels} := position des labels, parmi \Cle{haut/bas}. \hfill{}défaut : \Cle{bas}
 \end{itemize}
@@ -1937,11 +1939,11 @@ En ce qui concerne la création du tableau, les \Cle{clés} sont :
 	\item \Cle{Vide} := booléen pour laisser le tableau non rempli ; \hfill~défaut : \Cle{false}
 	\item \Cle{HauteurVide} := hauteur des lignes si \Cle{Vide=true} ; \hfill~défaut : \Cle{vide}
 	\item \Cle{LargeursColonnes} := largeur des colonnes, \Cle{auto} ou \Cle{largeurG} ou \Cle{LargeurVar/LargeurCalc} ;
-	
+
 	\hfill~défaut : \Cle{auto}
 	\item \Cle{CouleurEnonce} := couleur de fond de la première ligne ; \hfill~défaut : \Cle{vide}
 	\item \Cle{CodeAvant} := code \texttt{CodeBefore} (et avant l'éventuel coloriage de la première ligne) pour \motcletex!nicetabular! ;
-	
+
 	\hfill~défaut : \Cle{vide}
 	\item \Cle{CodeApres} := code \texttt{CodeAfter} pour \motcletex!nicetabular!. \hfill~défaut : \Cle{vide}
 \end{itemize}
@@ -2279,7 +2281,7 @@ Les matrices sont à donner en langage \motcletex!pmatrix! ou \motcletex!nicemat
 \end{DemoCode}
 
 \begin{DemoCode}[]
-On a, par produit matriciel le calcul 
+On a, par produit matriciel le calcul
 \PresentProdMat*<baseline>
 	{1&1&1\\1&1&1\\1&1&1}
 	{1&1&1\\1&1&1\\1&1&1}
@@ -2297,7 +2299,7 @@ L'idée est de proposer des commandes pour générer \textit{facilement} les fic
 
 \smallskip
 
-Il s'agit des annexes 7-1 (recto), 7-2 (recto verso) et 7-3 (recto verso).
+Il s'agit des annexes V-1 (recto), V-2 (recto verso) et V-3 (recto verso) qui étaient anciennement nommées 7-X.
 
 \smallskip
 
@@ -2317,29 +2319,29 @@ Le code source de base des exemples est donné ci-dessous.
 \usepackage{babel}
 \end{DemoCode}
 
-\subsection{Annexe 7-1}
+\subsection{Annexe V-1}
 
 \begin{DemoCode}[listing only]
-\GrilleCCFSIO[Type={7-1},Session=...,PoliceManuscrite=...]
+\GrilleCCFSIO[Type={V-1},Session=...,PoliceManuscrite=...]
 	{NOM Prénom}
 	{date}
 	{intitulé court}
 \end{DemoCode}
 
-\subsection{Annexe 7-2}
+\subsection{Annexe V-2}
 
 \begin{DemoCode}[listing only]
-\GrilleCCFSIO[Type={7-2},Session=...,PoliceManuscrite=...]
+\GrilleCCFSIO[Type={V-2},Session=...,PoliceManuscrite=...]
 	{NOM Prénom}
 	{date}
 	{intitulé court}
 	<compétenceA / compétenceB / compétence C / compétence D>
 \end{DemoCode}
 
-\subsection{Annexe 7-3}
+\subsection{Annexe V-3}
 
 \begin{DemoCode}[listing only]
-\GrilleCCFSIO[Type={7-3},Session=...,PoliceManuscrite=...]
+\GrilleCCFSIO[Type={V-3},Session=...,PoliceManuscrite=...]
 	{NOM Prénom}
 	{date}
 	{identification du sujet proposé}
@@ -2349,18 +2351,18 @@ Le code source de base des exemples est donné ci-dessous.
 
 \thispagestyle{empty}
 
-\includepdf[frame,pages=-,width=\textwidth]{ProfSio-doc-annexe71.pdf}
+\includepdf[frame,pages=-,width=\textwidth]{ProfSio-doc-annexeV1.pdf}
 
 \newpage
 
 \thispagestyle{empty}
 
-\includepdf[frame,pages=-,width=\textwidth]{ProfSio-doc-annexe72.pdf}
+\includepdf[frame,pages=-,width=\textwidth]{ProfSio-doc-annexeV2.pdf}
 
 \newpage
 
 \thispagestyle{empty}
 
-\includepdf[frame,pages=-,width=\textwidth]{ProfSio-doc-annexe73.pdf}
+\includepdf[frame,pages=-,width=\textwidth]{ProfSio-doc-annexeV3.pdf}
 
 \end{document}
