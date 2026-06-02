@@ -34,8 +34,6 @@
 \hypersetup{pdfborder=0 0 0}
 \usepackage[margin=2cm]{geometry}
 \setlength{\parindent}{0pt}
-\def\TPversion{0.1.8}
-\def\TPdate{29/04/2026}
 \usepackage{tcolorbox}
 \tcbuselibrary{breakable,skins,hooks,listingsutf8}
 
@@ -53,7 +51,7 @@
 	keywordstyle={\color{violet}},%
 	classoffset=2,%
 	alsoletter={-},%
-	morekeywords={\tkzbrush,\tkzink,\tkzpixl,\tkzpixletter,\tkzpixlquote,\tkzcomicbubble,\tkzunderline,\tkzsurround,\tkzfittextinarrow,\tkzcircledtxt,\tkzletterblock,\tkzunderlinepen,\phantomulinewithpen},%
+	morekeywords={\tkzbrush,\tkzink,\tkzpixl,\tkzpixletter,\tkzpixlquote,\tkzcomicbubble,\tkzunderline,\tkzsurround,\tkzfittextinarrow,\tkzcircledtxt,\tkzletterblock,\tkzunderlinepen,\phantomulinewithpen,\tkzpencircle,\calligraphypencircle,\calligraphy},%
 	keywordstyle={\color{green!50!black}},%
 	classoffset=3,%
 	morekeywords={},%
@@ -83,10 +81,10 @@
 		keywordstyle={\color{violet}},%
 		classoffset=2,%
 		alsoletter={-},%
-		morekeywords={\tkzbrush,\tkzink,\tkzpixl,\tkzpixletter,\tkzpixlquote,\tkzbicolor,\tkzcomicbubble,\tkzunderline,\tkzsurround,\tkzfittextinarrow,\tkzcircledtxt,\tkzletterblock,\tkzunderlinepen,\phantomulinewithpen},%
+		morekeywords={\tkzbrush,\tkzink,\tkzpixl,\tkzpixletter,\tkzpixlquote,\tkzbicolor,\tkzcomicbubble,\tkzunderline,\tkzsurround,\tkzfittextinarrow,\tkzcircledtxt,\tkzletterblock,\tkzunderlinepen,\phantomulinewithpen,\tkzpencircle,\calligraphypencircle,\calligraphy},%
 		keywordstyle={\color{green!50!black}},%
 		classoffset=3,%
-		morekeywords={color,lines,scale,height,offseth,offsetv,thick,gridcolor,gridafter,nospaceafter,border,colors,style,intdelta,paralcolors,width,node,txtcolor,width,bheight,sheight,hoffset,shadow,shownodes,expand,globalwidth,absolute,thickness,strut,dstrut,hstretch,font,height,spacestretch},%
+		morekeywords={color,lines,scale,height,offseth,offsetv,thick,gridcolor,gridafter,nospaceafter,border,colors,style,intdelta,paralcolors,width,node,txtcolor,width,bheight,sheight,hoffset,shadow,shownodes,expand,globalwidth,absolute,thickness,strut,dstrut,hstretch,font,height,spacestretch,ratio,angle,line,width},%
 		keywordstyle={\color{orange}}
 	},%
 	#1
@@ -135,7 +133,7 @@
 					{\LARGE Simple "decoration" fonts or effects,} \\
 					{\LARGE made with Ti\textit{k}Z, for small texts\ldots} \\
 					\\
-					{\small \texttt{Version \TPversion{} -- \TPdate}}
+					{\small \texttt{Version \tkzdfversion{} -- \tkzdfdate}}
 				\end{tabular}
 			\end{center}
 		\end{tcolorbox}
@@ -228,7 +226,7 @@ In order to load \texttt{tikz-decofonts}, simply use:
 
 Loaded packages are \texttt{tikz}, \texttt{tikz-3dplot}, \texttt{settobox}, \texttt{xintexpr}, \texttt{simplekv}, \texttt{listofitems}, \texttt{xstring}, \texttt{ifthen} and \texttt{calc}.
 
-Loaded \texttt{tikz.librairies} are \texttt{decorations}, \texttt{decorations.pathreplacing}, \texttt{calc}, \texttt{positioning}, \texttt{bbox}, \texttt{arrows.meta}, \texttt{shapes.callouts} and \texttt{bending}.
+Loaded \texttt{tikz.librairies} are \texttt{decorations}, \texttt{decorations.pathreplacing}, \texttt{calc}, \texttt{positioning}, \texttt{bbox}, \texttt{calligraphy}, \texttt{arrows.meta}, \texttt{shapes.callouts} and \texttt{bending}.
 
 \smallskip
 
@@ -743,7 +741,130 @@ H
 
 \pagebreak
 
+\subsection{Calligraphy pen (like \texttt{pencircle} in MetaPost) with calligraphy library}
+
+\subsubsection{Global usage}
+
+This macro is a wrapper around the \TikZ\ \ShowCode{calligraphy} library, designed to mimic the \texttt{pencircle} syntax from \hologo{METAPOST}:
+
+\begin{DemoCode}{listing only}
+pickup pencircle xscaled penunita yscaled penunitb rotated angle ;
+\end{DemoCode}
+
+The \ShowCode{calligraphy} library models the pen as two orthogonal segments
+(major and minor axes), whose lengths control the stroke width variation.
+
+\smallskip
+
+See the doc: \url{https://ctan.org/pkg/spath3} within \texttt{Use for calligraphy}.
+
+\begin{DemoCode}{listing only}
+%configure the pen (to use before \calligraphy)
+\calligraphypencircle(*)[keys]
+
+%starred (*) = outside tikz environment
+%angle       = angle of the pen (60)
+%line width  = width of the pen (3bp)
+%ratio       = ratio xy axis (1/8)
+%name        = name of defined pen (empty)
+%double      = boolean for both axis (true)
+
+%then use calligraphy as usual
+\calligraphy[options] path ;
+\end{DemoCode}
+
+\begin{DemoCode}{}
+\begin{tikzpicture}
+  \calligraphypencircle
+  \calligraphy (0,0) circle[x radius=1.5cm,y radius=2cm] ;
+\end{tikzpicture}
+\begin{tikzpicture}
+  \calligraphypencircle[angle=45]
+  \calligraphy (0,0) circle[x radius=1.5cm,y radius=2cm] ;
+\end{tikzpicture}
+\begin{tikzpicture}
+  \calligraphypencircle[angle=-60,line width=4mm,ratio=0.1]{}
+  \calligraphy (0,0) circle[x radius=1.5cm,y radius=2cm] ;
+\end{tikzpicture}
+\end{DemoCode}
+
+\begin{DemoCode}{}
+\begin{tikzpicture}
+  \calligraphypencircle[line width=2mm]
+  \calligraphy[]
+  (0,0) .. controls (1,2) and (2,-1) .. (3,1)
+  .. controls (4,3) and (5,0)  .. (6,1) ;
+\end{tikzpicture}
+\end{DemoCode}
+
+\begin{DemoCode}{}
+\begin{tikzpicture}
+  \calligraphypencircle[line width=4mm,double=false]
+  \calligraphy[pen colour=red!50!black]
+  (0,0) .. controls (1,2) and (2,-1) .. (3,1)
+  .. controls (4,3) and (5,0)  .. (6,1) ;
+\end{tikzpicture}
+\end{DemoCode}
+
+\begin{DemoCode}{}
+\calligraphypencircle*[name=styleA,angle=60,line width=3bp]
+\calligraphypencircle*[name=styleB,angle=0, line width=6bp,double=false]
+
+\begin{tikzpicture}
+  \calligraphy[use pen=styleA] (0,0) circle[x radius=1cm, y radius=2cm] ;
+  \calligraphy[use pen=styleB] (4,0) circle[x radius=1cm, y radius=2cm] ;
+\end{tikzpicture}
+\end{DemoCode}
+
+\pagebreak
+
+\subsubsection{Predefined pens}
+
+The following pens are predefined and available without any configuration.
+Each pen is available in English and French.
+
+\begin{DemoCode}{listing only}
+%English / Français    -- angle  lw     ratio
+%--------------------------------------------
+%nib     / plume       -- 60°    3bp    1/8
+%italic  / italique    -- 45°    3bp    1/6
+%copper  / cuivre      -- 30°    2bp    1/10
+%brush   / pinceau     -- 70°    5bp    1/4
+%marker  / marqueur    -- 0°     6bp    1/3
+%chisel  / ciseau      -- 45°    4bp    1/5
+%pencil  / crayon      -- 60°    2bp    1/12
+%chalk   / craie       -- 80°    6bp    1/3
+%reed    / roseau      -- 45°    4bp    1/6
+%fude    / japonais    -- 85°    6bp    ---
+\end{DemoCode}
+
+\begin{DemoCode}{}
+\begin{tikzpicture}
+  \foreach \penname/\xpos in {%
+    nib/0,italic/1.5,copper/3,brush/4.5,marker/6,%
+    chisel/7.5,pencil/9,chalk/10.5,reed/12,fude/13.5%
+    }{%
+  \begin{scope}[xshift=\xpos cm]
+      \calligraphy[use pen=\penname]
+        (0,0) circle[x radius=0.6cm, y radius=1cm] ;
+        \node[below, font=\tiny\ttfamily] at (0,-1.2cm) {\penname} ;
+    \end{scope}
+  }
+\end{tikzpicture}
+\end{DemoCode}
+
+\begin{DemoCode}{}
+\begin{tikzpicture}
+  \calligraphy[use pen=fude, taper]
+    (0,0) .. controls (2.5,1.5) and (-3.5,2.75) .. (0,3) ;
+\end{tikzpicture}
+\end{DemoCode}
+
+\pagebreak
+
 \section{History}
+
+\texttt{0.20a: Pencircle effect}
 
 \texttt{0.1.8: Pen-underline}
 

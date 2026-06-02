@@ -4,9 +4,12 @@
 %                 :              (https://tex.stackexchange.com/questions/460836/custom-line-cap-to-simulate-inked-line-in-tikz/460842#460842 from user121799)
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{tikz-decofonts}[2026/04/29 0.1.8 Custom fonts, made with TikZ, with effects]
+\def\tkzdfversion{0.20a}
+\def\tkzdfdate{2026/06/02}
+\ProvidesPackage{tikz-decofonts}[\tkzdfdate\space \tkzdfversion\space Custom fonts or effects, made with TikZ]
 
 %------History
+% 0.20a  Calligraphy macro (like pencircle in MP)
 % 0.1.8  Pen-underline
 % 0.1.7  AlphabetCubes (experimental)
 % 0.1.6  New key for 'freehand' circled text
@@ -27,7 +30,7 @@
 \RequirePackage{simplekv}
 \RequirePackage{ifthen}
 \RequirePackage{calc}
-\usetikzlibrary{decorations,decorations.pathreplacing,decorations.pathmorphing,calc,positioning,bbox,arrows.meta,bending,shapes.callouts}
+\usetikzlibrary{decorations,decorations.pathreplacing,decorations.pathmorphing,calc,positioning,bbox,arrows.meta,bending,shapes.callouts,calligraphy}
 
 %------Paintbrush
 \pgfmathdeclarerandomlist{randcolor}{{black}{white}}
@@ -67,7 +70,7 @@
           let \p1=($(\tikzinputsegmentsupporta)-(\tikzinputsegmentfirst)$),
           \p2=($(\tikzinputsegmentsupportb)-(\tikzinputsegmentsupporta)$),
           \p3=($(\tikzinputsegmentlast)-(\tikzinputsegmentsupportb)$),
-          \n1={90+atan2(\y1,\x1)}, \n2={90+atan2(\y2,\x2)}, 
+          \n1={90+atan2(\y1,\x1)}, \n2={90+atan2(\y2,\x2)},
           \n3={90+atan2(\y3,\x3)} in
           ($(\tikzinputsegmentfirst)+(\n1:{((1.02-0.04*rnd)*\Xbrush-\pgfkeysvalueof{/brush pars/lines}/2)*\pgfkeysvalueof{/brush pars/distance}})$)
           .. controls ($(\tikzinputsegmentsupporta)+(\n2:{((1.02-0.04*rnd)*\Xbrush-\pgfkeysvalueof{/brush pars/lines}/2)*\pgfkeysvalueof{/brush pars/distance}})$)
@@ -152,7 +155,7 @@
       }
     },
   brushK/.style={code={%
-        \draw[brush] (0,-0.5) -- (0,0.5); 
+        \draw[brush] (0,-0.5) -- (0,0.5);
         \draw[brush] (0.4,0.475) -- (0.02,0) --  (0.4,-0.475);
         %\path (0.6,0);
         %\filldraw[blue] (0,0) circle[radius=2pt] ;
@@ -239,7 +242,7 @@
       }
     },
   brushY/.style={code={
-        \draw[brush] (0,0.5) -- (0.25,0);  
+        \draw[brush] (0,0.5) -- (0.25,0);
         \draw[brush] (0.5,0.5) -- (0,-0.5);
         %\path (0.8,0);
         %\filldraw[blue] (0,0) circle[radius=2pt] ;
@@ -354,7 +357,7 @@
       \draw[line width={\tkzbrushthick},{ink[bend]}-] (0,-0.5) -- (0,0.5);
       \draw[line width={\tkzbrushthick},-{ink[bend]}] (0.5,-0.5) -- ([yshift=1pt]0.5,0.5);
       \draw[line width={\tkzbrushthick}] (0,0) -- (0.5,0);
-      %\draw[line width=5,{ink[bend]}-{ink[bend]}] (0,-0.5) -- (0,0.5);  
+      %\draw[line width=5,{ink[bend]}-{ink[bend]}] (0,-0.5) -- (0,0.5);
       %\draw[line width=5,{ink[bend]}-{ink[bend]}] (0.5,-0.5) -- (0.5,0.5);
       %\draw[line width=5] (0,0) -- (0.5,0);
       \path (0.7,0);
@@ -373,9 +376,9 @@
       }
     },
   inkK/.style={code={%
-      \draw[line width={\tkzbrushthick},-{ink[bend]}] (0,-0.5) -- ([yshift=1pt]0,0.5); 
+      \draw[line width={\tkzbrushthick},-{ink[bend]}] (0,-0.5) -- ([yshift=1pt]0,0.5);
       \draw[line width={\tkzbrushthick},-{ink[bend]}] (0.4,0.5) -- (0.02,0) -- (0.4,-0.5);
-      %\draw[line width=5,{ink[bend]}-{ink[bend]}] (0,-0.45) -- (0,0.45); 
+      %\draw[line width=5,{ink[bend]}-{ink[bend]}] (0,-0.45) -- (0,0.45);
       %\draw[line width=5,{ink[bend]}-{ink[bend]}] (0.4,0.45) -- (0.02,0) --  (0.4,-0.45);
       %\path (0.6,0);
       }
@@ -465,9 +468,9 @@
       }
     },
   inkY/.style={code={
-      \draw[line width={\tkzbrushthick},-{ink[bend]}] (0,0.5) -- (0.25,0);  
+      \draw[line width={\tkzbrushthick},-{ink[bend]}] (0,0.5) -- (0.25,0);
       \draw[line width={\tkzbrushthick},{ink[bend]}-{ink[bend]}] (0.5,0.5) -- (0,-0.5);
-      %\draw[line width=5,{ink[bend]}-{ink[bend]}] (0,0.45) -- (0.3,0);  
+      %\draw[line width=5,{ink[bend]}-{ink[bend]}] (0,0.45) -- (0.3,0);
       %\draw[line width=5,{ink[bend]}-{ink[bend]}] (0.6,0.45) -- (0,-0.45);
       %\path (0.8,0);
       }
@@ -778,7 +781,7 @@
     \ifnum\tmplarg=1%
       \foreach \i [count=\j] in \TMPLIST {%
         \ifnum\i=1%
-          \fill[\eightbitpartcolor] (0,{7-\j}) rectangle++ (1,1) ; 
+          \fill[\eightbitpartcolor] (0,{7-\j}) rectangle++ (1,1) ;
         \fi%
       }%
     \fi%
@@ -1020,7 +1023,7 @@
   \pgfpointdiff{\pgfpointanchor{#1}{east}}{\pgfpointanchor{#1}{west}}%
   \pgf@xa=\pgf@x
   \pgf@ya=\pgf@y
-  % to convert from pt to cm   
+  % to convert from pt to cm
   \pgfmathparse{veclen(\pgf@xa,\pgf@ya)/28.45274}%
   \global\let#2\pgfmathresult%
 }
@@ -1028,7 +1031,7 @@
   \pgfpointdiff{\pgfpointanchor{#1}{south}}{\pgfpointanchor{#1}{north}}%
   \pgf@xa=\pgf@x
   \pgf@ya=\pgf@y
-  % to convert from pt to cm   
+  % to convert from pt to cm
   \pgfmathparse{veclen(\pgf@xa,\pgf@ya)/28.45274}%
   \global\let#2\pgfmathresult%
 }
@@ -1088,7 +1091,7 @@
     \xdef\offsettmpdecohb{\fpeval{0.175*\mytmpwidthnode}}%
     \xdef\offsettmpdecohc{\fpeval{0.1*\mytmpwidthnode}}%
     \xdef\offsettmpdecohd{\fpeval{0.005*\mytmpwidthnode}}%
-    \path[draw,line width=\tkzheightwidth,\tkzsurroundcolor,{ink[bend]}-{ink[bend]}] plot[smooth] 
+    \path[draw,line width=\tkzheightwidth,\tkzsurroundcolor,{ink[bend]}-{ink[bend]}] plot[smooth]
       coordinates {%
         ([yshift=-0.5\tkzheightwidth]\tkzsurroundnode.south west)
         ([yshift=-\tkzheightwidth]\tkzsurroundnode.south east)
@@ -1534,5 +1537,78 @@
   \intpenuline%
 }
 \NewCommandCopy\tkzunderlinepen\ulinewithpen
+
+%----pencircle
+\defKV[calligraphypencircle]{%
+  angle=\def\calligraphypencircleangle{#1},%
+  line width=\def\calligraphypencirclelw{#1},%
+  ratio=\def\calligraphypencircleratio{#1},%
+  name=\def\calligraphypencirclename{#1}
+}
+\setKVdefault[calligraphypencircle]{%
+  angle=60,%
+  ratio={1/8},%
+  line width=3bp,%
+  name={},%
+  double=true
+}
+
+\NewDocumentCommand\calligraphypencircle{ s O{} }{%
+  \restoreKV[calligraphypencircle]%
+  \setKV[calligraphypencircle]{#2}%
+  \IfBooleanTF{#1}%
+    {% version étoilée = hors tikzpicture
+      \IfStrEq{\calligraphypencirclename}{}%
+        {\definepen}%
+        {\definepen[pen name=\calligraphypencirclename]}%
+    }%
+    {% version normale = dans tikzpicture
+      \IfStrEq{\calligraphypencirclename}{}%
+        {\pen}%
+        {\path[define pen=\calligraphypencirclename]}%
+    }%
+  \ifboolKV[calligraphypencircle]{double}%
+    {%
+      ({-180+(\calligraphypencircleangle)}:{0.5*\calligraphypencirclelw}) -- ({\calligraphypencircleangle}:{0.5*\calligraphypencirclelw}) %
+      ({\calligraphypencircleangle-90}:{0.5*\calligraphypencircleratio*\calligraphypencirclelw}) -- ({\calligraphypencircleangle+90}:{0.5*\calligraphypencircleratio*\calligraphypencirclelw}) ;
+    }%
+    {%
+      ({-180+(\calligraphypencircleangle)}:{0.5*\calligraphypencirclelw}) -- ({\calligraphypencircleangle}:{0.5*\calligraphypencirclelw}) ;
+    }%
+}
+\NewCommandCopy\tkzpencircle\calligraphypencircle
+
+\AtBeginDocument{%
+  % nib / plume
+  \calligraphypencircle*[name=nib,angle=60,line width=3bp,ratio=0.125]
+  \calligraphypencircle*[name=plume,angle=60,line width=3bp,ratio=0.125]
+  % italic
+  \calligraphypencircle*[name=italic,angle=45,line width=3bp,ratio=0.167]
+  \calligraphypencircle*[name=italique,angle=45,line width=3bp,ratio=0.167]
+  % copper / cuivre
+  \calligraphypencircle*[name=copper,angle=30,line width=2bp,ratio=0.1]
+  \calligraphypencircle*[name=cuivre,angle=30,line width=2bp,ratio=0.1]
+  % brush / pinceau
+  \calligraphypencircle*[name=brush,angle=70,line width=5bp,ratio=0.25]
+  \calligraphypencircle*[name=pinceau,angle=70,line width=5bp,ratio=0.25]
+  % marker / marqueur
+  \calligraphypencircle*[name=marker,angle=0,line width=6bp,ratio=0.333]
+  \calligraphypencircle*[name=marqueur,angle=0,line width=6bp,ratio=0.333]
+  % chisel / ciseau
+  \calligraphypencircle*[name=chisel,angle=45,line width=4bp,ratio=0.2]
+  \calligraphypencircle*[name=ciseau,angle=45,line width=4bp,ratio=0.2]
+  % pencil / crayon
+  \calligraphypencircle*[name=pencil,angle=60,line width=2bp,ratio=0.083]
+  \calligraphypencircle*[name=crayon,angle=60,line width=2bp,ratio=0.083]
+  % chalk / craie
+  \calligraphypencircle*[name=chalk,angle=80,line width=6bp,ratio=0.333]
+  \calligraphypencircle*[name=craie,angle=80,line width=6bp,ratio=0.333]
+  % reed / roseau
+  \calligraphypencircle*[name=reed,angle=45,line width=4bp,ratio=0.167]
+  \calligraphypencircle*[name=roseau,angle=45,line width=4bp,ratio=0.167]
+  % fude / japonais
+  \calligraphypencircle*[name=fude,angle=85,line width=6bp,double=false]
+  \calligraphypencircle*[name=japonais,angle=85,line width=6bp,double=false]
+}
 
 \endinput
