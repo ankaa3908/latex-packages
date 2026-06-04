@@ -28,8 +28,8 @@
 \hypersetup{pdfborder=0 0 0}
 \usepackage[margin=2cm]{geometry}
 \setlength{\parindent}{0pt}
-\def\TPversion{0.20b}
-\def\TPdate{24/03/2026}
+\def\TPversion{0.20c}
+\def\TPdate{04/06/2026}
 \usepackage{tcolorbox}
 \usepackage{pgffor}
 \tcbuselibrary{breakable,skins,hooks,listingsutf8}
@@ -50,7 +50,7 @@
 	keywordstyle={\color{violet}},%
 	classoffset=2,%
 	alsoletter={-},%
-	morekeywords={\ctshowlist,\ctsortasclist,\ctsortdeslist,\ctaddvalinlist,\ctremovevalinlist,\ctboolvalinlist,\cttestifvalinlist,\ctcountvalinlist,\ctminoflist,\ctmaxoflist,\ctmeanoflist,\ctsumoflist,\ctprodoflist,\ctreverselist,\ctgetvaluefromlist,\ctlenoflist,\ctgetindexfromlist,\ctsublist,\ctslicelist,\cttransformlist,\ctuniqlist,\ctintersectlists,\ctmergelists,\ctdifflist,\ctsymdifflist},%
+	morekeywords={\ctshowlist,\ctsortasclist,\ctsortdeslist,\ctaddvalinlist,\ctremovevalinlist,\ctboolvalinlist,\cttestifvalinlist,\ctcountvalinlist,\ctminoflist,\ctmaxoflist,\ctmeanoflist,\ctsumoflist,\ctprodoflist,\ctreverselist,\ctgetvaluefromlist,\ctlenoflist,\ctgetindexfromlist,\ctsublist,\ctslicelist,\cttransformlist,\ctuniqlist,\ctintersectlists,\ctmergelists,\ctdifflist,\ctsymdifflist,\ctshufflelist},%
 	keywordstyle={\color{green!50!black}},%
 	classoffset=3,%
 	morekeywords={asc,des},%
@@ -80,7 +80,7 @@
 		keywordstyle={\color{violet}},%
 		classoffset=2,%
 		alsoletter={-},%
-		morekeywords={\ctshowlist,\ctsortasclist,\ctsortdeslist,\ctaddvalinlist,\ctremovevalinlist,\ctboolvalinlist,\cttestifvalinlist,\ctcountvalinlist,\ctminoflist,\ctmaxoflist,\ctmeanoflist,\ctsumoflist,\ctprodoflist,\ctreverselist,\ctgetvaluefromlist,\ctlenoflist,\ctgetindexfromlist,\ctsublist,\ctslicelist,\cttransformlist,\ctuniqlist,\ctintersectlists,\ctmergelists,\ctdifflist,\ctsymdifflist,\ctgetvaluefromcycllist},%
+		morekeywords={\ctshowlist,\ctsortasclist,\ctsortdeslist,\ctaddvalinlist,\ctremovevalinlist,\ctboolvalinlist,\cttestifvalinlist,\ctcountvalinlist,\ctminoflist,\ctmaxoflist,\ctmeanoflist,\ctsumoflist,\ctprodoflist,\ctreverselist,\ctgetvaluefromlist,\ctlenoflist,\ctgetindexfromlist,\ctsublist,\ctslicelist,\cttransformlist,\ctuniqlist,\ctintersectlists,\ctmergelists,\ctdifflist,\ctsymdifflist,\ctgetvaluefromcycllist,\ctshufflelist},%
 		keywordstyle={\color{green!50!black}},%
 		classoffset=3,%
 		morekeywords={asc,des},%
@@ -556,6 +556,27 @@ The sum is \mysum\ and the prod is \myprod
 \ctuniqlist[des]{\mylist}[\myuniqdes]With [des]: \myuniqdes
 \end{DemoCode}
 
+\subsection{Shuffle}
+
+\begin{DemoCode}{listing only}
+%shuffle list, only printing
+\ctshufflelist*{list}
+%shuffle list and storing into \macro (\myshuffledlist by default)
+\ctshufflelist{list}[\macro]
+\end{DemoCode}
+
+\begin{DemoCode}{}
+\def\mylist{1,2,3,2,4,3,5,1}
+%shuffle, only printing
+\ctshufflelist*{\mylist}
+\end{DemoCode}
+
+\begin{DemoCode}{}
+\def\mylist{5,2,9,2,1,5,7,3,1}
+%storing into \mytestshuffle
+\ctshufflelist{\mylist}[\mytestshuffle]\mytestshuffle
+\end{DemoCode}
+
 \section{With two lists}
 
 \subsection{Intersection}
@@ -762,6 +783,8 @@ The sum is \mysum\ and the prod is \myprod
 \pagebreak
 
 \section{History}
+
+\texttt{0.20c: Shuffle list}
 
 \texttt{0.20b: Extract element with cyclic version of list}
 
