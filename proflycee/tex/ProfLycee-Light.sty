@@ -3,7 +3,8 @@
 % licence cliparts...: CC0 from openclipart or svgrepo
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{ProfLycee-Light}[2026/03/24 4.00f Aide pour l'utilisation de LaTeX en lycee]
+\ProvidesPackage{ProfLycee-Light}[2026/06/03 4.01a Aide pour l'utilisation de LaTeX en lycee]
+% 4.01a  Correction d'un bug avec colortbl
 %4.00f  Modification du style des +/- pour les schémas signes (fa)
 %4.00e  Correction de bugs mineurs
 %4.00d  Gestion des pages de garde
@@ -230,7 +231,7 @@
         \str_if_in:nnT {,#1,} {,analysis,}    { \file_input:n { proflycee-tools-analyse.tex } }
         \str_if_in:nnT {,#1,} {,graphiques,}  { \file_input:n { proflycee-tools-graphiques.tex } }
         \str_if_in:nnT {,#1,} {,listings,}    { \file_input:n { proflycee-tools-listings.tex } }
-        \str_if_in:nnT {,#1,} {,trigo},       { \file_input:n { proflycee-tools-trigo.tex } }
+        \str_if_in:nnT {,#1,} {,trigo,}       { \file_input:n { proflycee-tools-trigo.tex } }
         \str_if_in:nnT {,#1,} {,probas,}      { \file_input:n { proflycee-tools-probas.tex } }
         \str_if_in:nnT {,#1,} {,stats,}       { \file_input:n { proflycee-tools-stats.tex } }
         \str_if_in:nnT {,#1,} {,arithm,}      { \file_input:n { proflycee-tools-arithm.tex } }

@@ -1465,7 +1465,7 @@
     \RowStyle[nb-rows=*,cell-space-limits=2pt]{\addbinposefont}
     &\LigneBinAdd \\
     +&\LigneBinAddB \\
-    \hline 
+    \hline
     \ifboolKV[AddBinaire]{Egal}{=}{}&\LigneBinRes \\
   \end{NiceTabular}
   %\end{tabular}%
@@ -1812,7 +1812,7 @@
         %{\makebox[\the\widestcharwd][r]{${}_{\textcolor{\PoseOpeColReten}{\scalebox{0.5}[0.5]{\text{1}}}}$\xintifboolexpr{ ##1 <= \lenA-\lenB }{}{\kern-0.1em\tmpchiff}}}%
         {\makebox[\the\widestcharwd][r]{\raisebox{-0.5\height}{\textcolor{\PoseOpeColReten}{\scalebox{0.5}[0.5]{\text{1}}}}\xintifboolexpr{ ##1 <= \lenA-\lenB }{\kern0.25em}{\kern-0.1em\tmpchiff}}}%
     }\makebox[\the\widestcharwd][r]{\tmplastB} \\
-    
+
     %\IntCreateBoxNumbers{#2} \\
     \hline
     \ifboolKV[poseoperation]{AffEgal}{=}{} &\IntCreateBoxNumbers[r]{\rescalcbin} \\
@@ -2040,7 +2040,7 @@
 \NewDocumentCommand\DoubleFactorielle{ s O{} m }{%
   \restoreKV[calcfactorielle]%
   \setKV[calcfactorielle]{#2}%
-  \def\tmpres{1}%  
+  \def\tmpres{1}%
   \xintFor* ##1 in {\xintSeq{1}{#3}}\do{%
     \xintifboolexpr{\xintiiOdd{#3} == \xintiiOdd{##1} 'or' \xintiiEven{#3} == \xintiiEven{##1}}%
       {%
@@ -2352,17 +2352,17 @@
 \NewCommandCopy\pflconvbases\ConversionEntreBases
 
 %====PRESENTATION VERTICALE FACT PREMIERS
-\RequirePackage{colortbl}
+%\RequirePackage{colortbl}
 
 \defKV[pflpresfactprem]{%
-  CouleurTrait=\arrayrulecolor{#1},%
-  rulecolor=\arrayrulecolor{#1},%
+  % CouleurTrait=\arrayrulecolor{#1},%
+  % rulecolor=\arrayrulecolor{#1},%
   EpaisseurTrait=\setlength{\arrayrulewidth}{#1},%
   rulethick=\setlength{\arrayrulewidth}{#1}
 }
 \setKVdefault[pflpresfactprem]{%
-  CouleurTrait=black,%
-  rulecolor=black,%
+  % CouleurTrait=black,%
+  % rulecolor=black,%
   EpaisseurTrait=0.4pt,%
   rulethick=0.4pt,%
   EncadreFin=false,%
@@ -2597,15 +2597,15 @@
     \ifboolKV[pflsimplifrac]{d}{\displaystyle}{}%
     \ifboolKV[pflsimplifrac]{t}%
       {%
-        \tfrac{\num{\xintiieval{#2}}}{\num{\xintiieval{#3}}} = 
+        \tfrac{\num{\xintiieval{#2}}}{\num{\xintiieval{#3}}} =
         \tfrac{\AfficherListeAvecCouleur{\pfllistenum}{\pfllistepgcd}}%
-        {\AfficherListeAvecCouleur{\pfllisteden}{\pfllistepgcd}} = 
+        {\AfficherListeAvecCouleur{\pfllisteden}{\pfllistepgcd}} =
         \tfrac{\num{\pflnumsimp}}{\num{\pfldenssimp}}
       }%
       {%
-        \frac{\num{\xintiieval{#2}}}{\num{\xintiieval{#3}}} = 
+        \frac{\num{\xintiieval{#2}}}{\num{\xintiieval{#3}}} =
         \frac{\AfficherListeAvecCouleur{\pfllistenum}{\pfllistepgcd}}%
-        {\AfficherListeAvecCouleur{\pfllisteden}{\pfllistepgcd}} = 
+        {\AfficherListeAvecCouleur{\pfllisteden}{\pfllistepgcd}} =
         \frac{\num{\pflnumsimp}}{\num{\pfldenssimp}}
       }%
   }%
