@@ -289,7 +289,6 @@
       {
         \seq_map_inline:Nn \l__commalists_tmpa_seq
           {
-            \iow_log:n { item: ##1, looking for: #2 }
             \int_incr:N \l__commalists_tmpa_int
             \str_if_eq:nnT { ##1 } { #2 }
               { \seq_map_break: }
